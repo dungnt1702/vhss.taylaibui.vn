@@ -18,12 +18,12 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900">
+        <div class="min-h-screen bg-neutral-50">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white dark:bg-neutral-800 shadow">
+                <header class="bg-white shadow sticky-header">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
@@ -31,7 +31,7 @@
             @endisset
 
             <!-- Page Content -->
-            <main>
+            <main class="pt-4">
                 {{ $slot }}
             </main>
         </div>

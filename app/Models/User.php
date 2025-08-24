@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
+        'role',
     ];
 
     /**
@@ -50,5 +51,29 @@ class User extends Authenticatable
     public static function findByPhone($phone)
     {
         return static::where('phone', $phone)->first();
+    }
+
+    // Check if user is admin
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    // Check if user is regular user
+    public function isUser()
+    {
+        return $this->role === 'user';
+    }
+
+    // Check if user can manage vehicles
+    public function canManageVehicles()
+    {
+        return $this->isAdmin();
+    }
+
+    // Check if user can manage vehicle attributes
+    public function canManageVehicleAttributes()
+    {
+        return $this->isAdmin();
     }
 }

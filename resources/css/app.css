@@ -1,3 +1,116 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom sticky positioning for better cross-browser compatibility */
+@layer utilities {
+    .sticky-nav {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+    }
+    
+    .sticky-header {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 4rem; /* 64px - height of navigation */
+        z-index: 30;
+    }
+    
+    /* Special case for mobile menu header */
+    .sticky-header.mobile-menu-header {
+        top: 0;
+        z-index: 10;
+    }
+    
+    /* Ensure mobile menu header stays on top within the sliding menu */
+    .mobile-menu-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: inherit;
+    }
+    
+    /* Ensure sticky works on iOS Safari */
+    @supports (-webkit-touch-callout: none) {
+        .sticky-nav,
+        .sticky-header {
+            position: -webkit-sticky;
+        }
+    }
+    
+    /* Ensure sticky works on older browsers */
+    @supports not (position: sticky) {
+        .sticky-nav,
+        .sticky-header {
+            position: fixed;
+        }
+    }
+}
+
+/* Additional mobile-specific sticky positioning */
+@media (max-width: 640px) {
+    .sticky-nav {
+        top: 0;
+        z-index: 50; /* Higher z-index on mobile */
+    }
+    
+    .sticky-header {
+        top: 4rem; /* 64px - height of navigation */
+        z-index: 40;
+    }
+    
+    /* Ensure mobile menu header is properly positioned */
+    .mobile-menu-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: inherit;
+    }
+}
+
+/* Ensure proper stacking context and prevent z-index issues */
+.sticky-nav {
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+.sticky-header {
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+/* Prevent content from jumping when sticky elements become fixed */
+body {
+    scroll-behavior: smooth;
+}
+
+/* Ensure proper spacing when elements become sticky */
+main {
+    padding-top: 0;
+}
+
+/* Additional support for older browsers */
+@supports not (position: sticky) {
+    .sticky-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+    }
+    
+    .sticky-header {
+        position: fixed;
+        top: 4rem;
+        left: 0;
+        right: 0;
+        z-index: 30;
+    }
+    
+    /* Add padding to body to prevent content from being hidden behind fixed elements */
+    body {
+        padding-top: 8rem; /* 4rem for nav + 4rem for header */
+    }
+}
