@@ -163,56 +163,56 @@
                                 @if($vehicle->status === 'waiting')
                                     <!-- Waiting vehicles - Chạy 30p, Chạy 45p, Về xưởng -->
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                        <button onclick="startTimer({{ $vehicle->id }}, 30)" style="background-color: #16a34a; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#15803d'" onmouseout="this.style.backgroundColor='#16a34a'">
+                                        <button onclick="startTimer({{ $vehicle->id }}, 30)" class="start-30-btn">
                                             🚗 Chạy 30p
                                         </button>
-                                        <button onclick="startTimer({{ $vehicle->id }}, 45)" style="background-color: #2563eb; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">
+                                        <button onclick="startTimer({{ $vehicle->id }}, 45)" class="start-45-btn">
                                             🚙 Chạy 45p
                                         </button>
-                                        <button onclick="showWorkshopModal({{ $vehicle->id }})" style="background-color: #4b5563; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#374151'" onmouseout="this.style.backgroundColor='#4b5563'">
+                                        <button onclick="showWorkshopModal({{ $vehicle->id }})" class="workshop-btn">
                                             🔧 Về xưởng
                                         </button>
                                     </div>
                                 @elseif($vehicle->status === 'running')
                                     <!-- Running vehicles - Thêm 10p, Tạm dừng, Về bãi -->
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                        <button onclick="addTime({{ $vehicle->id }}, 10)" style="background-color: #f97316; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#ea580c'" onmouseout="this.style.backgroundColor='#f97316'">
+                                        <button onclick="addTime({{ $vehicle->id }}, 10)" class="add-10-btn">
                                             ⏰ Thêm 10p
                                         </button>
-                                        <button onclick="pauseVehicle({{ $vehicle->id }})" style="background-color: #9ca3af; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#6b7280'" onmouseout="this.style.backgroundColor='#9ca3af'">
+                                        <button onclick="pauseVehicle({{ $vehicle->id }})" class="pause-btn">
                                             ⏸️ Tạm dừng
                                         </button>
-                                        <button onclick="returnToYard({{ $vehicle->id }})" style="background-color: #9333ea; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#7c3aed'" onmouseout="this.style.backgroundColor='#9333ea'">
+                                        <button onclick="returnToYard({{ $vehicle->id }})" class="return-btn">
                                             🏠 Về bãi
                                         </button>
                                     </div>
                                 @elseif($vehicle->status === 'expired')
                                     <!-- Expired vehicles - Thêm 10p, Về bãi -->
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                        <button onclick="addTime({{ $vehicle->id }}, 10)" style="background-color: #f97316; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#ea580c'" onmouseout="this.style.backgroundColor='#f97316'">
+                                        <button onclick="addTime({{ $vehicle->id }}, 10)" class="add-10-btn">
                                             ⏰ Thêm 10p
                                         </button>
-                                        <button onclick="returnToYard({{ $vehicle->id }})" style="background-color: #9333ea; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#7c3aed'" onmouseout="this.style.backgroundColor='#9333ea'">
+                                        <button onclick="returnToYard({{ $vehicle->id }})" class="return-btn">
                                             🏠 Về bãi
                                         </button>
                                     </div>
                                 @elseif($vehicle->status === 'paused')
                                     <!-- Paused vehicles - Tiếp tục, Về bãi -->
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                        <button onclick="resumeVehicle({{ $vehicle->id }})" style="background-color: #c2410c; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#9a3412'" onmouseout="this.style.backgroundColor='#c2410c'">
+                                        <button onclick="resumeVehicle({{ $vehicle->id }})" class="resume-btn">
                                             ▶️ Tiếp tục
                                         </button>
-                                        <button onclick="returnToYard({{ $vehicle->id }})" style="background-color: #9333ea; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#7c3aed'" onmouseout="this.style.backgroundColor='#9333ea'">
+                                        <button onclick="returnToYard({{ $vehicle->id }})" class="return-btn">
                                             🏠 Về bãi
                                         </button>
                                     </div>
                                 @else
                                     <!-- Active vehicles (outside yard) - Chạy 30p, Chạy 45p -->
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                        <button onclick="startTimer({{ $vehicle->id }}, 30)" style="background-color: #16a34a; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#15803d'" onmouseout="this.style.backgroundColor='#16a34a'">
+                                        <button onclick="startTimer({{ $vehicle->id }}, 30)" class="start-30-btn">
                                             🚗 Chạy 30p
                                         </button>
-                                        <button onclick="startTimer({{ $vehicle->id }}, 45)" style="background-color: #2563eb; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">
+                                        <button onclick="startTimer({{ $vehicle->id }}, 45)" class="start-45-btn">
                                             🚙 Chạy 45p
                                         </button>
                                     </div>

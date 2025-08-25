@@ -23,7 +23,7 @@ window.toggleVehicle = function(vehicleId) {
     }
 };
 
-window.startVehicle = function(vehicleId) {
+window.startVehicle = function(vehicleId, minutes = 30) {
     // Fallback implementation
 };
 
@@ -140,6 +140,7 @@ function getVehicleName(vehicleId) {
 // Timer Functions
 function startTimer(vehicleId, minutes) {
     if (window.vehicleOperations) {
+        alert('Kiểm tra');
         window.vehicleOperations.startVehicle(vehicleId, minutes);
     }
 }
