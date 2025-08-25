@@ -1,21 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-neutral-800 dark:text-neutral-200 leading-tight">
+            <h2 class="font-semibold text-xl text-neutral-800 leading-tight">
                 {{ $pageTitle }}
             </h2>
             <div class="flex items-center space-x-4">
                 <!-- Rows per page selector and add vehicle button -->
                 <div class="flex items-center space-x-3">
                     <div class="flex items-center space-x-2">
-                        <label for="per-page" class="text-sm text-neutral-600 dark:text-neutral-400">Hiển thị:</label>
-                        <select id="per-page" class="px-3 py-1 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm" style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none;">
+                        <label for="per-page" class="text-sm text-neutral-600">Hiển thị:</label>
+                        <select id="per-page" class="px-3 py-1 border border-neutral-300 rounded-md bg-white text-neutral-900 text-sm" style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none;">
                             <option value="5" {{ request('per_page', 10) == 5 ? 'selected' : '' }}>5</option>
                             <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
                             <option value="20" {{ request('per_page', 10) == 20 ? 'selected' : '' }}>20</option>
                             <option value="30" {{ request('per_page', 10) == 30 ? 'selected' : '' }}>30</option>
                         </select>
-                        <span class="text-sm text-neutral-600 dark:text-neutral-400">/{{ $vehicles->total() }} xe</span>
+                        <span class="text-sm text-neutral-600">/{{ $vehicles->total() }} xe</span>
                     </div>
                     
                     @if(auth()->user()->canManageVehicles() && !in_array($filter, ['active', 'running', 'waiting', 'expired', 'paused']))
@@ -40,23 +40,23 @@
                 <!-- Grid Display for specific statuses -->
                 <div id="vehicle-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     @forelse($vehicles as $vehicle)
-                        <div class="vehicle-card bg-white dark:bg-neutral-800 overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition-shadow duration-200" data-vehicle-id="{{ $vehicle->id }}" data-vehicle-name="{{ $vehicle->name }}" data-status="{{ $vehicle->status }}" data-end-time="{{ $vehicle->end_time ? strtotime($vehicle->end_time) * 1000 : '' }}" data-paused-at="{{ $vehicle->paused_at ? strtotime($vehicle->paused_at) * 1000 : '' }}" data-paused-remaining-seconds="{{ $vehicle->paused_remaining_seconds ?? '' }}">
+                        <div class="vehicle-card bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition-shadow duration-200" data-vehicle-id="{{ $vehicle->id }}" data-vehicle-name="{{ $vehicle->name }}" data-status="{{ $vehicle->status }}" data-end-time="{{ $vehicle->end_time ? strtotime($vehicle->end_time) * 1000 : '' }}" data-paused-at="{{ $vehicle->paused_at ? strtotime($vehicle->paused_at) * 1000 : '' }}" data-paused-remaining-seconds="{{ $vehicle->paused_remaining_seconds ?? '' }}">
                             <!-- Vehicle Header - Clickable for collapse/expand -->
-                            <div class="vehicle-header cursor-pointer p-4 border-b border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors duration-200" onclick="toggleVehicle({{ $vehicle->id }})">
+                            <div class="vehicle-header cursor-pointer p-4 border-b border-neutral-200 hover:bg-neutral-50 transition-colors duration-200" onclick="toggleVehicle({{ $vehicle->id }})">
                                 <div class="flex justify-between items-start mb-2">
-                                    <h3 class="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                                    <h3 class="text-lg font-semibold text-neutral-900">
                                         Xe số {{ $vehicle->name }}
                                     </h3>
                                     <span class="px-2 py-1 text-xs font-medium rounded-full {{ $vehicle->status_color_class }}">
                                         {{ $vehicle->status_display_name }}
                                     </span>
                                 </div>
-                                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                                <p class="text-sm text-neutral-600">
                                     {{ $vehicle->color }} - {{ $vehicle->seats }} chỗ
                                 </p>
                                 <!-- Expand/Collapse Icon -->
                                 <div class="flex justify-center mt-2">
-                                    <svg class="w-4 h-4 text-neutral-500 dark:text-neutral-400 transform transition-transform" id="icon-{{ $vehicle->id }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-neutral-500 transform transition-transform" id="icon-{{ $vehicle->id }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </div>
@@ -93,7 +93,7 @@
                                             <span class="countdown-minutes">00</span>:<span class="countdown-seconds">00</span>
                                         @endif
                                     </div>
-                                    <div class="text-sm text-neutral-500 dark:text-neutral-400 mt-2" id="status-text-{{ $vehicle->id }}">
+                                    <div class="text-sm text-neutral-500 mt-2" id="status-text-{{ $vehicle->id }}">
                                         @if($vehicle->status === 'running')
                                             @if($vehicle->end_time)
                                                 @php
@@ -229,8 +229,8 @@
                                 <svg class="mx-auto h-12 w-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                 </svg>
-                                <h3 class="mt-2 text-sm font-medium text-neutral-900 dark:text-neutral-100">Không có xe nào</h3>
-                                <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+                                <h3 class="mt-2 text-sm font-medium text-neutral-900">Không có xe nào</h3>
+<p class="mt-1 text-sm text-neutral-500">
                                     Bắt đầu bằng cách thêm xe mới vào hệ thống.
                                 </p>
                                 @if(auth()->user()->canManageVehicles())
@@ -249,46 +249,46 @@
                 </div>
             @else
                 <!-- List Display for route and group -->
-                <div class="bg-white dark:bg-neutral-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
-                            <thead class="bg-neutral-50 dark:bg-neutral-700">
+                        <table class="min-w-full divide-y divide-neutral-200">
+                            <thead class="bg-neutral-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Xe số</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Màu sắc</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Chỗ ngồi</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Công suất</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Bánh xe</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Tài xế</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Vị trí</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Trạng thái</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Thao tác</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Xe số</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Màu sắc</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Chỗ ngồi</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Công suất</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Bánh xe</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Tài xế</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Vị trí</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Trạng thái</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Thao tác</th>
                                 </tr>
 
 
                             </thead>
-                            <tbody class="bg-white dark:bg-neutral-800 divide-y divide-neutral-200 dark:divide-neutral-700">
+                            <tbody class="bg-white divide-y divide-neutral-200">
                                 @forelse($vehicles as $vehicle)
-                                    <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                                    <tr class="hover:bg-neutral-50">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">
                                             {{ $vehicle->name }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500 dark:text-neutral-400">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                                             {{ $vehicle->color }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500 dark:text-neutral-400">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                                             {{ $vehicle->seats }} chỗ
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500 dark:text-neutral-400">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                                             {{ $vehicle->power }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500 dark:text-neutral-400">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                                             {{ $vehicle->wheel_size }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500 dark:text-neutral-400">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                                             {{ $vehicle->driver_name ?? 'N/A' }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500 dark:text-neutral-400">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                                             {{ $vehicle->current_location ?? 'N/A' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
@@ -299,18 +299,18 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex space-x-2">
                                                 <button onclick="openStatusModal({{ $vehicle->id }}, '{{ $vehicle->status }}', '{{ $vehicle->notes }}')" 
-                                                        class="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100">
+                                                        class="text-neutral-600 hover:text-neutral-900">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                                     </svg>
                                                 </button>
                                                 @if(auth()->user()->canManageVehicles())
-                                                    <button onclick="openVehicleModal({{ $vehicle->id }})" class="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100">
+                                                    <button onclick="openVehicleModal({{ $vehicle->id }})" class="text-neutral-600 hover:text-neutral-900">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                         </svg>
                                                     </button>
-                                                    <button onclick="deleteVehicle({{ $vehicle->id }})" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">
+                                                    <button onclick="deleteVehicle({{ $vehicle->id }})" class="text-red-600 hover:text-red-900">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                         </svg>
@@ -321,7 +321,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="px-6 py-4 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                                        <td colspan="9" class="px-6 py-4 text-center text-sm text-neutral-500">
                                             Không có xe nào
                                         </td>
                                     </tr>
@@ -331,13 +331,13 @@
             </div>
             
             <!-- Pagination -->
-            <div class="px-6 py-3 border-t border-neutral-200 dark:border-neutral-700">
+            <div class="px-6 py-3 border-t border-neutral-200">
                 <div class="flex justify-center">
                     @if($vehicles->hasPages())
                         <div class="flex items-center space-x-1">
                             <!-- Previous Page -->
                             @if($vehicles->onFirstPage())
-                                <span class="px-2 py-1 text-xs text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-700 rounded cursor-not-allowed">
+                                <span class="px-2 py-1 text-xs text-neutral-400 bg-neutral-100 rounded cursor-not-allowed">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                                     </svg>
@@ -349,7 +349,7 @@
                                         $prevUrl = $prevUrl . (str_contains($prevUrl, '?') ? '&' : '?') . 'per_page=' . request('per_page');
                                     }
                                 @endphp
-                                <a href="{{ $prevUrl }}" class="px-2 py-1 text-xs text-neutral-600 dark:text-neutral-400 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 rounded hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors duration-200">
+                                <a href="{{ $prevUrl }}" class="px-2 py-1 text-xs text-neutral-600 bg-white border border-neutral-300 rounded hover:bg-neutral-50 transition-colors duration-200">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                                     </svg>
@@ -364,7 +364,7 @@
                                         $pageUrl = $pageUrl . (str_contains($pageUrl, '?') ? '&' : '?') . 'per_page=' . request('per_page');
                                     }
                                 @endphp
-                                <a href="{{ $pageUrl }}" class="px-2 py-1 text-xs rounded transition-colors duration-200 {{ $page == $vehicles->currentPage() ? 'bg-brand-500 text-white' : 'text-neutral-600 dark:text-neutral-400 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700' }}">
+                                <a href="{{ $pageUrl }}" class="px-2 py-1 text-xs rounded transition-colors duration-200 {{ $page == $vehicles->currentPage() ? 'bg-brand-500 text-white' : 'text-neutral-600 bg-white border border-neutral-300 hover:bg-neutral-50' }}">
                                     {{ $page }}
                                 </a>
                             @endforeach
@@ -379,7 +379,7 @@
                                                 $pageUrl = $pageUrl . (str_contains($pageUrl, '?') ? '&' : '?') . 'per_page=' . request('per_page');
                                             }
                                         @endphp
-                                        <a href="{{ $pageUrl }}" class="px-2 py-1 text-xs rounded transition-colors duration-200 {{ $page == $vehicles->currentPage() ? 'bg-brand-500 text-white' : 'text-neutral-600 dark:text-neutral-400 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700' }}">
+                                        <a href="{{ $pageUrl }}" class="px-2 py-1 text-xs rounded transition-colors duration-200 {{ $page == $vehicles->currentPage() ? 'bg-brand-500 text-white' : 'text-neutral-600 bg-white border border-neutral-300 hover:bg-neutral-50' }}">
                                             {{ $page }}
                                         </a>
                                     @endif
@@ -394,13 +394,13 @@
                                         $nextUrl = $nextUrl . (str_contains($nextUrl, '?') ? '&' : '?') . 'per_page=' . request('per_page');
                                     }
                                 @endphp
-                                <a href="{{ $nextUrl }}" class="px-2 py-1 text-xs text-neutral-600 dark:text-neutral-400 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 rounded hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors duration-200">
+                                <a href="{{ $nextUrl }}" class="px-2 py-1 text-xs text-neutral-600 bg-white border border-neutral-300 rounded hover:bg-neutral-50 transition-colors duration-200">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                     </svg>
                                 </a>
                             @else
-                                <span class="px-2 py-1 text-xs text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-700 rounded cursor-not-allowed">
+                                <span class="px-2 py-1 text-xs text-neutral-400 bg-neutral-100 rounded cursor-not-allowed">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                     </svg>
@@ -419,14 +419,14 @@
     <div id="vehicle-modal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black bg-opacity-50"></div>
         <div class="relative min-h-screen flex items-center justify-center p-2 sm:p-4">
-            <div class="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-full max-w-sm sm:max-w-md md:max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-sm sm:max-w-md md:max-w-2xl max-h-[90vh] flex flex-col">
                 <!-- Header -->
-                <div class="p-6 pb-4 border-b border-neutral-200 dark:border-neutral-700 flex-shrink-0">
+                <div class="p-6 pb-4 border-b border-neutral-200 flex-shrink-0">
                     <div class="flex justify-between items-center">
-                        <h3 id="vehicle-modal-title" class="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                        <h3 id="vehicle-modal-title" class="text-lg font-semibold text-neutral-900">
                             Thêm xe mới
                         </h3>
-                        <button onclick="closeVehicleModal()" class="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300">
+                        <button onclick="closeVehicleModal()" class="text-neutral-400 hover:text-neutral-600">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -442,20 +442,20 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="vehicle-name" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                <label for="vehicle-name" class="block text-sm font-medium text-neutral-700 mb-2">
                                     Xe số <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" id="vehicle-name" name="name" required
-                                       class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                                       class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                                        placeholder="Nhập số xe">
                             </div>
                             
                             <div>
-                                <label for="vehicle-color" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                <label for="vehicle-color" class="block text-sm font-medium text-neutral-700 mb-2">
                                     Màu sắc <span class="text-red-500">*</span>
                                 </label>
                                 <select id="vehicle-color" name="color" required
-                                        class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                        class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
                                     <option value="">Chọn màu sắc</option>
                                     @if($colors && count($colors) > 0)
                                         @foreach($colors as $color)
@@ -473,11 +473,11 @@
                             </div>
                             
                             <div>
-                                <label for="vehicle-seats" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                <label for="vehicle-seats" class="block text-sm font-medium text-neutral-700 mb-2">
                                     Số chỗ ngồi <span class="text-red-500">*</span>
                                 </label>
                                 <select id="vehicle-seats" name="seats" required
-                                        class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                        class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
                                     <option value="">Chọn số chỗ</option>
                                     @if($seats && count($seats) > 0)
                                         @foreach($seats as $seat)
@@ -491,11 +491,11 @@
                             </div>
                             
                             <div>
-                                <label for="vehicle-power" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                <label for="vehicle-power" class="block text-sm font-medium text-neutral-700 mb-2">
                                     Công suất <span class="text-red-500">*</span>
                                 </label>
                                 <select id="vehicle-power" name="power" required
-                                        class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                        class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
                                     <option value="">Chọn công suất</option>
                                     @if($powerOptions && count($powerOptions) > 0)
                                         @foreach($powerOptions as $power)
@@ -509,11 +509,11 @@
                             </div>
                             
                             <div>
-                                <label for="vehicle-wheel-size" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                <label for="vehicle-wheel-size" class="block text-sm font-medium text-neutral-700 mb-2">
                                     Kích cỡ bánh <span class="text-red-500">*</span>
                                 </label>
                                 <select id="vehicle-wheel-size" name="wheel_size" required
-                                        class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                        class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
                                     <option value="">Chọn kích cỡ bánh</option>
                                     @if($wheelSizes && count($wheelSizes) > 0)
                                         @foreach($wheelSizes as $wheelSize)
@@ -527,11 +527,11 @@
                             </div>
                             
                             <div class="md:col-span-2">
-                                <label for="vehicle-notes" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                <label for="vehicle-notes" class="block text-sm font-medium text-neutral-700 mb-2">
                                     Ghi chú
                                 </label>
                                 <textarea id="vehicle-notes" name="notes" rows="3"
-                                          class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                                          class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                                           placeholder="Nhập ghi chú về xe..."></textarea>
                             </div>
                         </div>
@@ -539,12 +539,12 @@
                 </div>
                 
                 <!-- Footer - Fixed at bottom -->
-                <div class="p-6 pt-4 border-t border-neutral-200 dark:border-neutral-700 flex-shrink-0">
+                <div class="p-6 pt-4 border-t border-neutral-200 flex-shrink-0">
                     <div class="flex space-x-3">
                         <button type="submit" form="vehicle-form" id="vehicle-submit-btn" class="flex-1 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-md transition-colors duration-200">
                             Thêm xe
                         </button>
-                        <button type="button" onclick="closeVehicleModal()" class="flex-1 px-4 py-2 bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500 text-neutral-700 dark:text-neutral-300 font-semibold rounded-md transition-colors duration-200">
+                        <button type="button" onclick="closeVehicleModal()" class="flex-1 px-4 py-2 bg-neutral-300 hover:bg-neutral-400 text-neutral-700 font-semibold rounded-md transition-colors duration-200">
                             Hủy
                         </button>
                     </div>
@@ -557,9 +557,9 @@
     <div id="status-modal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black bg-opacity-50"></div>
         <div class="relative min-h-screen flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-neutral-800 rounded-lg shadow-xl max-w-md w-full">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
                 <div class="p-6">
-                    <h3 class="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+                    <h3 class="text-lg font-semibold text-neutral-900 mb-4">
                         Cập nhật trạng thái xe
                     </h3>
                     
@@ -568,10 +568,10 @@
                         <input type="hidden" id="vehicle-id" name="vehicle_id">
                         
                         <div class="mb-4">
-                            <label for="status-select" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            <label for="status-select" class="block text-sm font-medium text-neutral-700 mb-2">
                                 Trạng thái mới
                             </label>
-                            <select id="status-select" name="status" class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                            <select id="status-select" name="status" class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
                                 <option value="active">Xe ngoài bãi</option>
                                 <option value="inactive">Xe trong xưởng</option>
                                 <option value="running">Xe đang chạy</option>
@@ -584,17 +584,17 @@
                         </div>
                         
                         <div class="mb-4">
-                            <label for="status-notes" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            <label for="status-notes" class="block text-sm font-medium text-neutral-700 mb-2">
                                 Ghi chú
                             </label>
-                            <textarea id="status-notes" name="notes" rows="3" class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500" placeholder="Nhập ghi chú về trạng thái xe..."></textarea>
+                            <textarea id="status-notes" name="notes" rows="3" class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500" placeholder="Nhập ghi chú về trạng thái xe..."></textarea>
                         </div>
                         
                         <div class="flex space-x-3">
                             <button type="submit" class="flex-1 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-md transition-colors duration-200">
                                 Cập nhật
                             </button>
-                            <button type="button" onclick="closeStatusModal()" class="flex-1 px-4 py-2 bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500 text-neutral-700 dark:text-neutral-300 font-semibold rounded-md transition-colors duration-200">
+                            <button type="button" onclick="closeStatusModal()" class="flex-1 px-4 py-2 bg-neutral-300 hover:bg-neutral-400 text-neutral-700 font-semibold rounded-md transition-colors duration-200">
                                 Hủy
                             </button>
                         </div>
@@ -608,9 +608,9 @@
     <div id="workshop-modal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black bg-opacity-50"></div>
         <div class="relative min-h-screen flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-neutral-800 rounded-lg shadow-xl max-w-md w-full">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
                 <div class="p-6">
-                    <h3 class="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+                    <h3 class="text-lg font-semibold text-neutral-900 mb-4">
                         Chuyển xe về xưởng
                     </h3>
                     
@@ -619,17 +619,17 @@
                         <input type="hidden" id="workshop-vehicle-id" name="vehicle_id">
                         
                         <div class="mb-4">
-                            <label for="workshop-reason" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            <label for="workshop-reason" class="block text-sm font-medium text-neutral-700 mb-2">
                                 Lý do chuyển xe về xưởng
                             </label>
-                            <textarea id="workshop-reason" name="reason" rows="4" class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500" placeholder="Nhập lý do chuyển xe về xưởng kiểm tra..." required></textarea>
+                            <textarea id="workshop-reason" name="reason" rows="4" class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500" placeholder="Nhập lý do chuyển xe về xưởng kiểm tra..." required></textarea>
                         </div>
                         
                         <div class="flex space-x-3">
                             <button type="submit" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition-colors duration-200">
                                 Chuyển về xưởng
                             </button>
-                            <button type="button" onclick="closeWorkshopModal()" class="flex-1 px-4 py-2 bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500 text-neutral-700 dark:text-neutral-300 font-semibold rounded-md transition-colors duration-200">
+                            <button type="button" onclick="closeWorkshopModal()" class="flex-1 px-4 py-2 bg-neutral-300 hover:bg-neutral-400 text-neutral-700 font-semibold rounded-md transition-colors duration-200">
                                 Hủy
                             </button>
                         </div>

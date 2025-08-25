@@ -139,6 +139,8 @@ function getVehicleName(vehicleId) {
 
 // Timer Functions
 function startTimer(vehicleId, minutes) {
+    alert('start Timer');
+
     if (window.vehicleOperations) {
         alert('Kiểm tra');
         window.vehicleOperations.startVehicle(vehicleId, minutes);
