@@ -48,7 +48,7 @@ window.resumeVehicle = function(vehicleId) {
 import './vehicles';
 import './vehicle-forms';
 import './vehicle-operations';
-import './vehicle-wrappers';
+// vehicle-wrappers.js will be loaded after vehicleOperations is initialized
 
 window.Alpine = Alpine;
 
@@ -93,6 +93,13 @@ function initializeVehicleSystem() {
             window.resumeVehicle = function(vehicleId) {
                 window.vehicleOperations.resumeVehicle(vehicleId);
             };
+        }
+        
+        // Now that vehicleOperations is ready, load vehicle-wrappers.js
+        if (!window.vehicleWrappersLoaded) {
+            import('./vehicle-wrappers').then(() => {
+                window.vehicleWrappersLoaded = true;
+            });
         }
     }
     
