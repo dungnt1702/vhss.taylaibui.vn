@@ -4,71 +4,45 @@
             <h2 class="font-semibold text-xl text-neutral-800 dark:text-neutral-200 leading-tight">
                 {{ $pageTitle }}
             </h2>
-            @if(auth()->user()->canManageVehicles())
-                <a href="{{ route('vehicles.create') }}" class="inline-flex items-center px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-lg transition-colors duration-200">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Thêm xe mới
-                </a>
-            @endif
-        </div>
-    </x-slot>
-
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Navigation Tabs -->
-            <div class="bg-white dark:bg-neutral-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-4">
-                    <nav class="flex flex-wrap gap-2" aria-label="Vehicle navigation">
-                        <a href="{{ route('vehicles.index', ['filter' => 'all']) }}" 
-                           class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 {{ $filter === 'all' ? 'bg-brand-500 text-white' : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700' }}">
-                            Tất cả xe
-                        </a>
-                        <a href="{{ route('vehicles.index', ['filter' => 'inactive']) }}" 
-                           class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 {{ $filter === 'inactive' ? 'bg-red-500 text-white' : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700' }}">
-                            Xe trong xưởng
-                        </a>
-                        <a href="{{ route('vehicles.index', ['filter' => 'active']) }}" 
-                           class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 {{ $filter === 'active' ? 'bg-green-500 text-white' : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700' }}">
-                            Xe ngoài bãi
-                        </a>
-                        <a href="{{ route('vehicles.index', ['filter' => 'running']) }}" 
-                           class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 {{ $filter === 'running' ? 'bg-blue-500 text-white' : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700' }}">
-                            Xe đang chạy
-                        </a>
-                        <a href="{{ route('vehicles.index', ['filter' => 'waiting']) }}" 
-                           class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 {{ $filter === 'waiting' ? 'bg-yellow-500 text-white' : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700' }}">
-                            Xe đang chờ
-                        </a>
-                        <a href="{{ route('vehicles.index', ['filter' => 'expired']) }}" 
-                           class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 {{ $filter === 'expired' ? 'bg-orange-500 text-white' : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700' }}">
-                            Xe hết giờ
-                        </a>
-                        <a href="{{ route('vehicles.index', ['filter' => 'paused']) }}" 
-                           class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 {{ $filter === 'paused' ? 'bg-gray-500 text-white' : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700' }}">
-                            Xe tạm dừng
-                        </a>
-                        <a href="{{ route('vehicles.index', ['filter' => 'route']) }}" 
-                           class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 {{ $filter === 'route' ? 'bg-purple-500 text-white' : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700' }}">
-                            Xe cung đường
-                        </a>
-                        <a href="{{ route('vehicles.index', ['filter' => 'group']) }}" 
-                           class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 {{ $filter === 'group' ? 'bg-indigo-500 text-white' : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700' }}">
-                            Xe khách đoàn
-                        </a>
-                    </nav>
+            <div class="flex items-center space-x-4">
+                <!-- Rows per page selector and add vehicle button -->
+                <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-2">
+                        <label for="per-page" class="text-sm text-neutral-600 dark:text-neutral-400">Hiển thị:</label>
+                        <select id="per-page" class="px-3 py-1 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 text-sm" style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none;">
+                            <option value="5" {{ request('per_page', 10) == 5 ? 'selected' : '' }}>5</option>
+                            <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                            <option value="20" {{ request('per_page', 10) == 20 ? 'selected' : '' }}>20</option>
+                            <option value="30" {{ request('per_page', 10) == 30 ? 'selected' : '' }}>30</option>
+                        </select>
+                        <span class="text-sm text-neutral-600 dark:text-neutral-400">/{{ $vehicles->total() }} xe</span>
+                    </div>
+                    
+                    @if(auth()->user()->canManageVehicles() && !in_array($filter, ['active', 'running', 'waiting', 'expired', 'paused']))
+                    <button onclick="openVehicleModal()" class="inline-flex items-center p-2 bg-brand-500 hover:bg-brand-600 text-white rounded-md transition-colors duration-200" title="Thêm xe mới">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </button>
+                    @endif
                 </div>
             </div>
+        </div>
+    </x-slot>
+    
 
-            <!-- Vehicle List -->
-            @if($displayMode === 'grid')
-                <!-- Grid Display for most statuses -->
+
+    <!-- Page Content -->
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Filter Tabs -->
+            @if(in_array($filter, ['active', 'running', 'waiting', 'expired', 'paused']))
+                <!-- Grid Display for specific statuses -->
                 <div id="vehicle-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     @forelse($vehicles as $vehicle)
-                        <div class="bg-white dark:bg-neutral-800 overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition-shadow duration-200">
-                            <!-- Vehicle Header -->
-                            <div class="p-4 border-b border-neutral-200 dark:border-neutral-700">
+                        <div class="vehicle-card bg-white dark:bg-neutral-800 overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition-shadow duration-200" data-vehicle-id="{{ $vehicle->id }}" data-vehicle-name="{{ $vehicle->name }}" data-status="{{ $vehicle->status }}" data-end-time="{{ $vehicle->end_time ? strtotime($vehicle->end_time) * 1000 : '' }}" data-paused-at="{{ $vehicle->paused_at ? strtotime($vehicle->paused_at) * 1000 : '' }}" data-paused-remaining-seconds="{{ $vehicle->paused_remaining_seconds ?? '' }}">
+                            <!-- Vehicle Header - Clickable for collapse/expand -->
+                            <div class="vehicle-header cursor-pointer p-4 border-b border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors duration-200" onclick="toggleVehicle({{ $vehicle->id }})">
                                 <div class="flex justify-between items-start mb-2">
                                     <h3 class="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
                                         Xe số {{ $vehicle->name }}
@@ -80,71 +54,174 @@
                                 <p class="text-sm text-neutral-600 dark:text-neutral-400">
                                     {{ $vehicle->color }} - {{ $vehicle->seats }} chỗ
                                 </p>
+                                <!-- Expand/Collapse Icon -->
+                                <div class="flex justify-center mt-2">
+                                    <svg class="w-4 h-4 text-neutral-500 dark:text-neutral-400 transform transition-transform" id="icon-{{ $vehicle->id }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
                             </div>
 
-                            <!-- Vehicle Details -->
-                            <div class="p-4">
-                                <div class="space-y-2 text-sm">
-                                    <div class="flex justify-between">
-                                        <span class="text-neutral-500 dark:text-neutral-400">Công suất:</span>
-                                        <span class="text-neutral-900 dark:text-neutral-100">{{ $vehicle->power }}</span>
+                            <!-- Vehicle Details - Collapsible -->
+                            <div class="vehicle-content hidden p-4" id="content-{{ $vehicle->id }}">
+                                <!-- Debug: Current vehicle status: {{ $vehicle->status }} -->
+                                
+                                <!-- Countdown Timer Display - ALWAYS ON TOP -->
+                                <div class="text-center mb-4">
+                                    <div class="countdown-display text-4xl font-bold {{ $vehicle->status === 'expired' ? 'text-red-600' : 'text-blue-600' }}" id="countdown-{{ $vehicle->id }}">
+                                        @if($vehicle->status === 'expired')
+                                            <span class="text-red-600 font-bold">HẾT GIỜ</span>
+                                        @elseif($vehicle->end_time)
+                                            <!-- Show actual time if vehicle has end_time -->
+                                            @php
+                                                $endTime = strtotime($vehicle->end_time);
+                                                $now = time();
+                                                $timeLeft = $endTime - $now;
+                                                
+                                                if ($timeLeft > 0) {
+                                                    $minutesLeft = floor($timeLeft / 60);
+                                                    $secondsLeft = $timeLeft % 60;
+                                                    $minutesDisplay = str_pad($minutesLeft, 2, '0', STR_PAD_LEFT);
+                                                    $secondsDisplay = str_pad($secondsLeft, 2, '0', STR_PAD_LEFT);
+                                                } else {
+                                                    $minutesDisplay = '00';
+                                                    $secondsDisplay = '00';
+                                                }
+                                            @endphp
+                                            <span class="countdown-minutes">{{ $minutesDisplay }}</span>:<span class="countdown-seconds">{{ $secondsDisplay }}</span>
+                                        @else
+                                            <span class="countdown-minutes">00</span>:<span class="countdown-seconds">00</span>
+                                        @endif
                                     </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-neutral-500 dark:text-neutral-400">Bánh xe:</span>
-                                        <span class="text-neutral-900 dark:text-neutral-100">{{ $vehicle->wheel_size }}</span>
+                                    <div class="text-sm text-neutral-500 dark:text-neutral-400 mt-2" id="status-text-{{ $vehicle->id }}">
+                                        @if($vehicle->status === 'running')
+                                            @if($vehicle->end_time)
+                                                @php
+                                                    $endTime = strtotime($vehicle->end_time);
+                                                    $now = time();
+                                                    $timeLeft = $endTime - $now;
+                                                @endphp
+                                                @if($timeLeft > 0)
+                                                    Xe chạy {{ floor($timeLeft / 60) }}p
+                                                @else
+                                                    Hết giờ
+                                                @endif
+                                            @else
+                                                Đang chạy
+                                            @endif
+                                        @elseif($vehicle->status === 'expired')
+                                            Hết giờ
+                                        @elseif($vehicle->status === 'paused')
+                                            @if($vehicle->end_time)
+                                                @php
+                                                    $endTime = strtotime($vehicle->end_time);
+                                                    $now = time();
+                                                    $timeLeft = $endTime - $now;
+                                                @endphp
+                                                @if($timeLeft > 0)
+                                                    Xe tạm dừng {{ floor($timeLeft / 60) }}p
+                                                @else
+                                                    Hết giờ
+                                                @endif
+                                            @else
+                                                Tạm dừng
+                                            @endif
+                                        @elseif($vehicle->status === 'active')
+                                            @if($vehicle->end_time)
+                                                @php
+                                                    $endTime = strtotime($vehicle->end_time);
+                                                    $now = time();
+                                                    $timeLeft = $endTime - $now;
+                                                @endphp
+                                                @if($timeLeft > 0)
+                                                    Xe chạy {{ floor($timeLeft / 60) }}p
+                                                @else
+                                                    Ngoài bãi
+                                                @endif
+                                            @else
+                                                Ngoài bãi
+                                            @endif
+                                        @elseif($vehicle->status === 'waiting')
+                                            @if($vehicle->end_time)
+                                                @php
+                                                    $endTime = strtotime($vehicle->end_time);
+                                                    $now = time();
+                                                    $timeLeft = $endTime - $now;
+                                                @endphp
+                                                @if($timeLeft > 0)
+                                                    Xe chạy {{ floor($timeLeft / 60) }}p
+                                                @else
+                                                    Đang chờ
+                                                @endif
+                                            @else
+                                                Đang chờ
+                                            @endif
+                                        @endif
                                     </div>
-                                    @if($vehicle->driver_name)
-                                        <div class="flex justify-between">
-                                            <span class="text-neutral-500 dark:text-neutral-400">Tài xế:</span>
-                                            <span class="text-neutral-900 dark:text-neutral-100">{{ $vehicle->driver_name }}</span>
-                                        </div>
-                                    @endif
-                                    @if($vehicle->current_location)
-                                        <div class="flex justify-between">
-                                            <span class="text-neutral-500 dark:text-neutral-400">Vị trí:</span>
-                                            <span class="text-neutral-900 dark:text-neutral-100">{{ $vehicle->current_location }}</span>
-                                        </div>
-                                    @endif
-                                    @if($vehicle->route_number)
-                                        <div class="flex justify-between">
-                                            <span class="text-neutral-500 dark:text-neutral-400">Cung đường:</span>
-                                            <span class="text-neutral-900 dark:text-neutral-100">{{ $vehicle->route_number }}</span>
-                                        </div>
-                                    @endif
                                 </div>
-
-                                @if($vehicle->notes)
-                                    <div class="mt-3 p-2 bg-neutral-50 dark:bg-neutral-700 rounded">
-                                        <p class="text-xs text-neutral-600 dark:text-neutral-400">{{ $vehicle->notes }}</p>
+                                
+                                @if($vehicle->status === 'waiting')
+                                    <!-- Waiting vehicles - Chạy 30p, Chạy 45p, Về xưởng -->
+                                    <div class="flex flex-wrap gap-2 justify-center">
+                                        <button onclick="startTimer({{ $vehicle->id }}, 30)" style="background-color: #16a34a; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#15803d'" onmouseout="this.style.backgroundColor='#16a34a'">
+                                            🚗 Chạy 30p
+                                        </button>
+                                        <button onclick="startTimer({{ $vehicle->id }}, 45)" style="background-color: #2563eb; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">
+                                            🚙 Chạy 45p
+                                        </button>
+                                        <button onclick="showWorkshopModal({{ $vehicle->id }})" style="background-color: #4b5563; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#374151'" onmouseout="this.style.backgroundColor='#4b5563'">
+                                            🔧 Về xưởng
+                                        </button>
+                                    </div>
+                                @elseif($vehicle->status === 'running')
+                                    <!-- Running vehicles - Thêm 10p, Tạm dừng, Về bãi -->
+                                    <div class="flex flex-wrap gap-2 justify-center">
+                                        <button onclick="addTime({{ $vehicle->id }}, 10)" style="background-color: #f97316; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#ea580c'" onmouseout="this.style.backgroundColor='#f97316'">
+                                            ⏰ Thêm 10p
+                                        </button>
+                                        <button onclick="pauseVehicle({{ $vehicle->id }})" style="background-color: #9ca3af; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#6b7280'" onmouseout="this.style.backgroundColor='#9ca3af'">
+                                            ⏸️ Tạm dừng
+                                        </button>
+                                        <button onclick="returnToYard({{ $vehicle->id }})" style="background-color: #9333ea; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#7c3aed'" onmouseout="this.style.backgroundColor='#9333ea'">
+                                            🏠 Về bãi
+                                        </button>
+                                    </div>
+                                @elseif($vehicle->status === 'expired')
+                                    <!-- Expired vehicles - Thêm 10p, Về bãi -->
+                                    <div class="flex flex-wrap gap-2 justify-center">
+                                        <button onclick="addTime({{ $vehicle->id }}, 10)" style="background-color: #f97316; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#ea580c'" onmouseout="this.style.backgroundColor='#f97316'">
+                                            ⏰ Thêm 10p
+                                        </button>
+                                        <button onclick="returnToYard({{ $vehicle->id }})" style="background-color: #9333ea; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#7c3aed'" onmouseout="this.style.backgroundColor='#9333ea'">
+                                            🏠 Về bãi
+                                        </button>
+                                    </div>
+                                @elseif($vehicle->status === 'paused')
+                                    <!-- Paused vehicles - Tiếp tục, Về bãi -->
+                                    <div class="flex flex-wrap gap-2 justify-center">
+                                        <button onclick="resumeVehicle({{ $vehicle->id }})" style="background-color: #c2410c; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#9a3412'" onmouseout="this.style.backgroundColor='#c2410c'">
+                                            ▶️ Tiếp tục
+                                        </button>
+                                        <button onclick="returnToYard({{ $vehicle->id }})" style="background-color: #9333ea; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#7c3aed'" onmouseout="this.style.backgroundColor='#9333ea'">
+                                            🏠 Về bãi
+                                        </button>
+                                    </div>
+                                @else
+                                    <!-- Active vehicles (outside yard) - Chạy 30p, Chạy 45p -->
+                                    <div class="flex flex-wrap gap-2 justify-center">
+                                        <button onclick="startTimer({{ $vehicle->id }}, 30)" style="background-color: #16a34a; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#15803d'" onmouseout="this.style.backgroundColor='#16a34a'">
+                                            🚗 Chạy 30p
+                                        </button>
+                                        <button onclick="startTimer({{ $vehicle->id }}, 45)" style="background-color: #2563eb; color: white; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);" onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">
+                                            🚙 Chạy 45p
+                                        </button>
                                     </div>
                                 @endif
+                                
+
                             </div>
 
-                            <!-- Vehicle Actions -->
-                            <div class="px-4 pb-4">
-                                <div class="flex space-x-2">
-                                    <button onclick="openStatusModal({{ $vehicle->id }}, '{{ $vehicle->status }}', '{{ $vehicle->notes }}')" 
-                                            class="flex-1 px-3 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-700 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors duration-200">
-                                        <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                    </button>
-                                    @if(auth()->user()->canManageVehicles())
-                                        <a href="{{ route('vehicles.edit', $vehicle) }}" 
-                                           class="flex-1 px-3 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-700 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors duration-200">
-                                            <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </a>
-                                        <button onclick="deleteVehicle({{ $vehicle->id }})" 
-                                                class="flex-1 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/20 rounded-md hover:bg-red-200 dark:hover:bg-red-900/40 transition-colors duration-200">
-                                            <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
-                                    @endif
-                                </div>
-                            </div>
+
                         </div>
                     @empty
                         <div class="col-span-full">
@@ -158,12 +235,12 @@
                                 </p>
                                 @if(auth()->user()->canManageVehicles())
                                     <div class="mt-6">
-                                        <a href="{{ route('vehicles.create') }}" class="inline-flex items-center px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-lg transition-colors duration-200">
+                                        <button onclick="openVehicleModal()" class="inline-flex items-center px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-lg transition-colors duration-200">
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                             </svg>
                                             Thêm xe mới
-                                        </a>
+                                        </button>
                                     </div>
                                 @endif
                             </div>
@@ -187,6 +264,8 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Trạng thái</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Thao tác</th>
                                 </tr>
+
+
                             </thead>
                             <tbody class="bg-white dark:bg-neutral-800 divide-y divide-neutral-200 dark:divide-neutral-700">
                                 @forelse($vehicles as $vehicle)
@@ -226,11 +305,11 @@
                                                     </svg>
                                                 </button>
                                                 @if(auth()->user()->canManageVehicles())
-                                                    <a href="{{ route('vehicles.edit', $vehicle) }}" class="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100">
+                                                    <button onclick="openVehicleModal({{ $vehicle->id }})" class="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                         </svg>
-                                                    </a>
+                                                    </button>
                                                     <button onclick="deleteVehicle({{ $vehicle->id }})" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -247,11 +326,230 @@
                                         </td>
                                     </tr>
                                 @endforelse
-                            </tbody>
-                        </table>
+                                                </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="px-6 py-3 border-t border-neutral-200 dark:border-neutral-700">
+                <div class="flex justify-center">
+                    @if($vehicles->hasPages())
+                        <div class="flex items-center space-x-1">
+                            <!-- Previous Page -->
+                            @if($vehicles->onFirstPage())
+                                <span class="px-2 py-1 text-xs text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-700 rounded cursor-not-allowed">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </span>
+                            @else
+                                @php
+                                    $prevUrl = $vehicles->previousPageUrl();
+                                    if (request('per_page')) {
+                                        $prevUrl = $prevUrl . (str_contains($prevUrl, '?') ? '&' : '?') . 'per_page=' . request('per_page');
+                                    }
+                                @endphp
+                                <a href="{{ $prevUrl }}" class="px-2 py-1 text-xs text-neutral-600 dark:text-neutral-400 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 rounded hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors duration-200">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </a>
+                            @endif
+
+                            <!-- Page Numbers -->
+                            @foreach($vehicles->getUrlRange(1, min(3, $vehicles->lastPage())) as $page => $url)
+                                @php
+                                    $pageUrl = $url;
+                                    if (request('per_page')) {
+                                        $pageUrl = $pageUrl . (str_contains($pageUrl, '?') ? '&' : '?') . 'per_page=' . request('per_page');
+                                    }
+                                @endphp
+                                <a href="{{ $pageUrl }}" class="px-2 py-1 text-xs rounded transition-colors duration-200 {{ $page == $vehicles->currentPage() ? 'bg-brand-500 text-white' : 'text-neutral-600 dark:text-neutral-400 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700' }}">
+                                    {{ $page }}
+                                </a>
+                            @endforeach
+
+                            @if($vehicles->lastPage() > 3)
+                                <span class="px-1 py-1 text-xs text-neutral-500">...</span>
+                                @foreach($vehicles->getUrlRange(max(4, $vehicles->lastPage() - 2), $vehicles->lastPage()) as $page => $url)
+                                    @if($page > 3)
+                                        @php
+                                            $pageUrl = $url;
+                                            if (request('per_page')) {
+                                                $pageUrl = $pageUrl . (str_contains($pageUrl, '?') ? '&' : '?') . 'per_page=' . request('per_page');
+                                            }
+                                        @endphp
+                                        <a href="{{ $pageUrl }}" class="px-2 py-1 text-xs rounded transition-colors duration-200 {{ $page == $vehicles->currentPage() ? 'bg-brand-500 text-white' : 'text-neutral-600 dark:text-neutral-400 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700' }}">
+                                            {{ $page }}
+                                        </a>
+                                    @endif
+                                @endforeach
+                            @endif
+
+                            <!-- Next Page -->
+                            @if($vehicles->hasMorePages())
+                                @php
+                                    $nextUrl = $vehicles->nextPageUrl();
+                                    if (request('per_page')) {
+                                        $nextUrl = $nextUrl . (str_contains($nextUrl, '?') ? '&' : '?') . 'per_page=' . request('per_page');
+                                    }
+                                @endphp
+                                <a href="{{ $nextUrl }}" class="px-2 py-1 text-xs text-neutral-600 dark:text-neutral-400 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 rounded hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors duration-200">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </a>
+                            @else
+                                <span class="px-2 py-1 text-xs text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-700 rounded cursor-not-allowed">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </span>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endif
+        </div>
+    </div>
+
+    <!-- Vehicle Modal -->
+    <div id="vehicle-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-2 sm:p-4">
+            <div class="bg-white dark:bg-neutral-800 rounded-lg shadow-xl w-full max-w-sm sm:max-w-md md:max-w-2xl max-h-[90vh] flex flex-col">
+                <!-- Header -->
+                <div class="p-6 pb-4 border-b border-neutral-200 dark:border-neutral-700 flex-shrink-0">
+                    <div class="flex justify-between items-center">
+                        <h3 id="vehicle-modal-title" class="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                            Thêm xe mới
+                        </h3>
+                        <button onclick="closeVehicleModal()" class="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
-            @endif
+                
+                <!-- Form Content with Scroll -->
+                <div class="flex-1 overflow-y-auto p-6 modal-scroll">
+                    <form id="vehicle-form">
+                        @csrf
+                        <input type="hidden" id="vehicle-edit-id" name="vehicle_id">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="vehicle-name" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                    Xe số <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="vehicle-name" name="name" required
+                                       class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                                       placeholder="Nhập số xe">
+                            </div>
+                            
+                            <div>
+                                <label for="vehicle-color" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                    Màu sắc <span class="text-red-500">*</span>
+                                </label>
+                                <select id="vehicle-color" name="color" required
+                                        class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                    <option value="">Chọn màu sắc</option>
+                                    @if($colors && count($colors) > 0)
+                                        @foreach($colors as $color)
+                                            <option value="{{ $color }}">{{ $color }}</option>
+                                        @endforeach
+                                    @else
+                                        <option value="Xanh biển">Xanh biển</option>
+                                        <option value="Xanh cây">Xanh cây</option>
+                                        <option value="Cam">Cam</option>
+                                        <option value="Đỏ">Đỏ</option>
+                                        <option value="Vàng">Vàng</option>
+                                        <option value="Đen">Đen</option>
+                                    @endif
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="vehicle-seats" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                    Số chỗ ngồi <span class="text-red-500">*</span>
+                                </label>
+                                <select id="vehicle-seats" name="seats" required
+                                        class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                    <option value="">Chọn số chỗ</option>
+                                    @if($seats && count($seats) > 0)
+                                        @foreach($seats as $seat)
+                                            <option value="{{ $seat }}">{{ $seat }}</option>
+                                        @endforeach
+                                    @else
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                    @endif
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="vehicle-power" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                    Công suất <span class="text-red-500">*</span>
+                                </label>
+                                <select id="vehicle-power" name="power" required
+                                        class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                    <option value="">Chọn công suất</option>
+                                    @if($powerOptions && count($powerOptions) > 0)
+                                        @foreach($powerOptions as $power)
+                                            <option value="{{ $power }}">{{ $power }}</option>
+                                        @endforeach
+                                    @else
+                                        <option value="48V-1000W">48V-1000W</option>
+                                        <option value="60V-1200W">60V-1200W</option>
+                                    @endif
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="vehicle-wheel-size" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                    Kích cỡ bánh <span class="text-red-500">*</span>
+                                </label>
+                                <select id="vehicle-wheel-size" name="wheel_size" required
+                                        class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                    <option value="">Chọn kích cỡ bánh</option>
+                                    @if($wheelSizes && count($wheelSizes) > 0)
+                                        @foreach($wheelSizes as $wheelSize)
+                                            <option value="{{ $wheelSize }}">{{ $wheelSize }}</option>
+                                        @endforeach
+                                    @else
+                                        <option value="7inch">7inch</option>
+                                        <option value="8inch">8inch</option>
+                                    @endif
+                                </select>
+                            </div>
+                            
+                            <div class="md:col-span-2">
+                                <label for="vehicle-notes" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                    Ghi chú
+                                </label>
+                                <textarea id="vehicle-notes" name="notes" rows="3"
+                                          class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                                          placeholder="Nhập ghi chú về xe..."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Footer - Fixed at bottom -->
+                <div class="p-6 pt-4 border-t border-neutral-200 dark:border-neutral-700 flex-shrink-0">
+                    <div class="flex space-x-3">
+                        <button type="submit" form="vehicle-form" id="vehicle-submit-btn" class="flex-1 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-md transition-colors duration-200">
+                            Thêm xe
+                        </button>
+                        <button type="button" onclick="closeVehicleModal()" class="flex-1 px-4 py-2 bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500 text-neutral-700 dark:text-neutral-300 font-semibold rounded-md transition-colors duration-200">
+                            Hủy
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -306,73 +604,210 @@
         </div>
     </div>
 
-    @push('scripts')
-    <script>
-        function openStatusModal(vehicleId, currentStatus, currentNotes) {
-            document.getElementById('vehicle-id').value = vehicleId;
-            document.getElementById('status-select').value = currentStatus;
-            document.getElementById('status-notes').value = currentNotes || '';
-            document.getElementById('status-modal').classList.remove('hidden');
+    <!-- Workshop Modal -->
+    <div id="workshop-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-neutral-800 rounded-lg shadow-xl max-w-md w-full">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+                        Chuyển xe về xưởng
+                    </h3>
+                    
+                    <form id="workshop-form">
+                        @csrf
+                        <input type="hidden" id="workshop-vehicle-id" name="vehicle_id">
+                        
+                        <div class="mb-4">
+                            <label for="workshop-reason" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                Lý do chuyển xe về xưởng
+                            </label>
+                            <textarea id="workshop-reason" name="reason" rows="4" class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500" placeholder="Nhập lý do chuyển xe về xưởng kiểm tra..." required></textarea>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button type="submit" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition-colors duration-200">
+                                Chuyển về xưởng
+                            </button>
+                            <button type="button" onclick="closeWorkshopModal()" class="flex-1 px-4 py-2 bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500 text-neutral-700 dark:text-neutral-300 font-semibold rounded-md transition-colors duration-200">
+                                Hủy
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Standard input/select sizes for modal */
+        #vehicle-modal input,
+        #vehicle-modal select,
+        #vehicle-modal textarea {
+            padding: 0.375rem 0.5rem !important;
+            font-size: 0.875rem !important;
+            line-height: 1.25rem !important;
+            height: 2rem !important;
+            min-height: 2rem !important;
+            max-height: 2rem !important;
+            border-radius: 0.25rem !important;
         }
-
-        function closeStatusModal() {
-            document.getElementById('status-modal').classList.add('hidden');
+        
+        #vehicle-modal label {
+            font-size: 0.875rem !important;
+            margin-bottom: 0.5rem !important;
         }
-
-        document.getElementById('status-form').addEventListener('submit', function(e) {
-            e.preventDefault();
+        
+        #vehicle-modal .grid {
+            gap: 0.75rem !important;
+        }
+        
+        #vehicle-modal .space-y-4 > div {
+            margin-bottom: 0.75rem !important;
+        }
+        
+        /* Custom scrollbar for modal */
+        .modal-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .modal-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+        
+        .modal-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        .modal-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Dark mode scrollbar */
+        .dark .modal-scroll::-webkit-scrollbar-track {
+            background: #374151;
+        }
+        
+        .dark .modal-scroll::-webkit-scrollbar-thumb {
+            background: #6b7280;
+        }
+        
+        .dark .modal-scroll::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+        
+        /* Mobile input/select optimization */
+        @media (max-width: 640px) {
+            #vehicle-modal input[type="text"],
+            #vehicle-modal select,
+            #vehicle-modal textarea {
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                border-radius: 0.25rem;
+                border-width: 1px;
+                box-shadow: none;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
             
-            const vehicleId = document.getElementById('vehicle-id').value;
-            const formData = new FormData(this);
+            #vehicle-modal select {
+                background-image: none !important;
+            }
             
-            fetch(`/vehicles/${vehicleId}/status`, {
-                method: 'PATCH',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    status: formData.get('status'),
-                    notes: formData.get('notes')
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    closeStatusModal();
-                    location.reload();
-                } else {
-                    alert('Có lỗi xảy ra: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra khi cập nhật trạng thái xe');
-            });
-        });
-
-        function deleteVehicle(vehicleId) {
-            if (confirm('Bạn có chắc chắn muốn xóa xe này?')) {
-                fetch(`/vehicles/${vehicleId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert('Có lỗi xảy ra: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra khi xóa xe');
-                });
+            /* Reduce input/select size on mobile */
+            #vehicle-modal .grid-cols-1,
+            #vehicle-modal .grid-cols-2 {
+                gap: 0.75rem !important;
+            }
+            
+            #vehicle-modal .space-y-4 > div {
+                margin-bottom: 0.75rem !important;
             }
         }
-    </script>
+        
+        /* Mobile modal styles */
+        @media (max-width: 640px) {
+            #vehicle-modal .relative {
+                align-items: flex-start;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+            
+            #vehicle-modal .bg-white {
+                width: calc(100vw - 1rem);
+                max-width: calc(100vw - 1rem);
+                height: calc(100vh - 1rem);
+                max-height: calc(100vh - 1rem);
+            }
+            
+            /* Mobile modal specific adjustments */
+            #vehicle-modal .p-6 {
+                padding: 1rem !important;
+            }
+            
+            #vehicle-modal .grid {
+                gap: 0.5rem !important;
+            }
+            
+            #vehicle-modal .space-y-4 > div {
+                margin-bottom: 0.5rem !important;
+            }
+        }
+
+        /* Vehicle Grid Styles */
+        .vehicle-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .vehicle-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 2px;
+        }
+        .vehicle-content::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 2px;
+        }
+        .vehicle-content::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Dark mode scrollbar */
+        .dark .vehicle-content::-webkit-scrollbar-track {
+            background: #374151;
+        }
+        .dark .vehicle-content::-webkit-scrollbar-thumb {
+            background: #6b7280;
+        }
+        .dark .vehicle-content::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        /* Mobile responsive adjustments for vehicle grid */
+        @media (max-width: 640px) {
+            .grid {
+                grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+            }
+            
+            .vehicle-card {
+                margin-bottom: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+        }
+    </style>
+    
+    @push('scripts')
+    <!-- All JavaScript functionality moved to separate modules:
+         - vehicles.js: Main vehicle management logic
+         - vehicle-forms.js: Form handling and modals
+         - vehicle-operations.js: Vehicle control operations
+         - vehicle-wrappers.js: Wrapper functions for HTML onclick events
+    -->
     @endpush
 </x-app-layout>

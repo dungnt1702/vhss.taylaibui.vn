@@ -28,6 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Vehicle Status Management
     Route::patch('/vehicles/{vehicle}/status', [VehicleController::class, 'updateStatus'])->name('vehicles.updateStatus');
     Route::patch('/vehicles/{vehicle}/route', [VehicleController::class, 'updateRoute'])->name('vehicles.updateRoute');
+    Route::patch('/vehicles/{vehicle}/workshop', [VehicleController::class, 'moveToWorkshop'])->name('vehicles.moveToWorkshop');
     
     // Vehicle Attributes Management (Admin only)
     Route::get('/vehicles/attributes', [VehicleController::class, 'attributes'])->name('vehicles.attributes');

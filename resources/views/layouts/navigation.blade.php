@@ -1,4 +1,31 @@
-<nav x-data="{ open: false, vehicleMenuOpen: false }" class="bg-white dark:bg-neutral-800 border-b border-neutral-100 dark:border-neutral-700 sticky-nav shadow-sm">
+<nav x-data="{ open: false, vehicleMenuOpen: false }" 
+     x-init="
+        $watch('open', value => {
+            if (value) {
+                document.body.style.overflow = 'hidden';
+                // Add click event to body to close menu when clicking outside
+                setTimeout(() => {
+                    document.body.addEventListener('click', closeMenuOnOutsideClick);
+                }, 100);
+            } else {
+                document.body.style.overflow = '';
+                document.body.removeEventListener('click', closeMenuOnOutsideClick);
+            }
+        });
+        
+        function closeMenuOnOutsideClick(event) {
+            const sidebar = document.querySelector('[data-mobile-sidebar]');
+            const overlay = document.querySelector('[data-mobile-overlay]');
+            
+            // Don't close if clicking on sidebar or overlay
+            if (sidebar && sidebar.contains(event.target)) return;
+            if (overlay && overlay.contains(event.target)) return;
+            
+            // Close menu if clicking anywhere else
+            open = false;
+        }
+     "
+     class="bg-white dark:bg-neutral-800 border-b border-neutral-100 dark:border-neutral-700 sticky-nav shadow-sm">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -51,14 +78,7 @@
                              x-transition:leave-end="opacity-0 transform scale-95 -translate-y-2"
                              class="absolute left-0 mt-2 w-64 bg-white dark:bg-neutral-800 rounded-md shadow-lg z-50 border border-neutral-200 dark:border-neutral-700">
                             <div class="py-2">
-                                <a href="{{ route('vehicles.index', ['filter' => 'all']) }}" class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors duration-150">
-                                    <div class="flex items-center">
-                                        <svg class="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                        </svg>
-                                        Tất cả xe
-                                    </div>
-                                </a>
+
                                 
 
                                 
@@ -125,12 +145,48 @@
                         </div>
                                            </div>
                        
-                       <!-- Vehicle Attributes Section - New standalone menu -->
-                       @if(auth()->user()->canManageVehicleAttributes())
-                       <x-nav-link href="{{ route('vehicles.attributes') }}" class="hover:text-neutral-700 dark:hover:text-neutral-300 px-4 py-2 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-all duration-200">
-                           Thuộc tính xe
-                       </x-nav-link>
-                       @endif
+                       <!-- Vehicle Management Section - New standalone menu -->
+                       <div class="relative group" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                           <button class="inline-flex items-center px-4 py-2 border-b-2 border-transparent text-sm font-medium leading-5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 hover:border-neutral-300 dark:hover:border-neutral-700 focus:outline-none focus:text-neutral-700 dark:focus:text-neutral-300 focus:border-neutral-300 dark:focus:border-neutral-700 transition duration-200 ease-in-out rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-700/50">
+                               Quản lý xe
+                               <svg class="ml-2 h-4 w-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                               </svg>
+                           </button>
+                           
+                           <!-- Vehicle Management Dropdown Menu -->
+                           <div x-show="open" 
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 transform scale-95 -translate-y-2"
+                                x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-150"
+                                x-transition:leave-start="opacity-100 transform scale-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 transform scale-95 -translate-y-2"
+                                class="absolute left-0 mt-2 w-48 bg-white dark:bg-neutral-800 rounded-md shadow-lg z-50 border border-neutral-200 dark:border-neutral-700">
+                               <div class="py-2">
+                                   <a href="{{ route('vehicles.index', ['filter' => 'vehicles_list']) }}" class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors duration-150">
+                                       <div class="flex items-center">
+                                           <svg class="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                           </svg>
+                                           Danh sách xe
+                                       </div>
+                                   </a>
+
+                                   @if(auth()->user()->canManageVehicleAttributes())
+                                   <a href="{{ route('vehicles.attributes') }}" class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors duration-150">
+                                       <div class="flex items-center">
+                                           <svg class="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                           </svg>
+                                           Thuộc tính xe
+                                       </div>
+                                   </a>
+                                   @endif
+                               </div>
+                           </div>
+                       </div>
                        
                        <!-- Workshop Management Section - New standalone menu -->
                        <div class="relative group" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
@@ -226,9 +282,12 @@
          x-transition:leave="transition ease-in duration-400"
          x-transition:leave-start="transform translate-x-0 opacity-100"
          x-transition:leave-end="transform -translate-x-full opacity-0"
-         class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-2xl sm:hidden">
+         class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-neutral-800 shadow-2xl sm:hidden"
+         style="backdrop-filter: blur(10px);"
+         @click.stop
+         data-mobile-sidebar>
                 <!-- Mobile Menu Header - Fixed -->
-        <div class="flex items-center justify-between p-4 border-b border-neutral-200 bg-white mobile-menu-header">
+        <div class="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 mobile-menu-header">
             <div class="flex items-center">
                 <x-application-logo class="block h-8 w-auto fill-current text-brand-500" />
                 <span class="ml-3 text-lg font-semibold text-neutral-900">TAY LÁI BỤI</span>
@@ -241,10 +300,10 @@
         </div>
 
         <!-- Mobile Menu Content - Scrollable with smooth animations -->
-        <div class="flex-1 overflow-y-auto" style="height: calc(100vh - 80px);">
-            <div class="px-4 py-6 pb-32">
+        <div class="flex-1 overflow-y-auto bg-white dark:bg-neutral-800" style="height: calc(100vh - 80px);">
+            <div class="px-4 py-6 pb-32 bg-white dark:bg-neutral-800">
                 <!-- User Info -->
-                <div class="mb-6 p-4 bg-neutral-50 rounded-lg">
+                <div class="mb-6 p-4 bg-neutral-100 dark:bg-neutral-700 rounded-lg border border-neutral-200 dark:border-neutral-600">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-10 h-10 bg-brand-500 rounded-full flex items-center justify-center">
@@ -275,7 +334,7 @@
                     </a>
 
                     <!-- Vehicle Management Section - Collapsible on mobile -->
-                    <div class="pt-4 border-t border-neutral-200">
+                    <div class="pt-4 border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-700/50 rounded-lg p-3">
                         <button @click="vehicleMenuOpen = !vehicleMenuOpen" 
                                 class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-neutral-700 rounded-md hover:bg-neutral-100 hover:text-neutral-900 transition-all duration-200">
                             <div class="flex items-center">
@@ -299,12 +358,7 @@
                              x-transition:leave-end="opacity-0 transform -translate-y-2"
                              class="ml-6 mt-2 space-y-1">
                             
-                            <a href="{{ route('vehicles.index', ['filter' => 'all']) }}" class="flex items-center px-3 py-2 text-sm font-medium text-neutral-600 rounded-md hover:bg-neutral-100 hover:text-neutral-900 transition-all duration-200">
-                                <svg class="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                </svg>
-                                Tất cả xe
-                            </a>
+
 
 
 
@@ -371,11 +425,20 @@
                         </div>
                     </div>
 
-                    <!-- Vehicle Attributes Section - Mobile standalone menu -->
-                    @if(auth()->user()->canManageVehicleAttributes())
-                    <div class="pt-4 border-t border-neutral-200">
-                        <h3 class="px-3 mb-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Thuộc tính xe</h3>
+                    <!-- Vehicle Management Section - Mobile menu -->
+                    <div class="pt-4 border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-700/50 rounded-lg p-3">
+                        <h3 class="px-3 mb-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Quản lý xe</h3>
                         
+                        <a href="{{ route('vehicles.index', ['filter' => 'vehicles_list']) }}" class="flex items-center px-3 py-2 text-sm font-medium text-neutral-700 rounded-md hover:bg-neutral-100 hover:text-neutral-900 transition-all duration-200">
+                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            Danh sách xe
+                        </a>
+                        
+
+                        
+                        @if(auth()->user()->canManageVehicleAttributes())
                         <a href="{{ route('vehicles.attributes') }}" class="flex items-center px-3 py-2 text-sm font-medium text-neutral-700 rounded-md hover:bg-neutral-100 hover:text-neutral-900 transition-all duration-200">
                             <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -383,10 +446,10 @@
                             </svg>
                             Thuộc tính xe
                         </a>
+                        @endif
                     </div>
-                    @endif
                     
-                    <div class="pt-4 border-t border-neutral-200">
+                    <div class="pt-4 border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-700/50 rounded-lg p-3">
                         <h3 class="px-3 mb-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Xưởng sửa chữa</h3>
                         
                         <a href="{{ route('vehicles.index', ['filter' => 'inactive']) }}" class="flex items-center px-3 py-2 text-sm font-medium text-neutral-700 rounded-md hover:bg-neutral-100 hover:text-neutral-900 transition-all duration-200">
@@ -412,7 +475,7 @@
             </div>
 
                     <!-- User Management Section -->
-                    <div class="pt-4 border-t border-neutral-200">
+                    <div class="pt-4 border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-700/50 rounded-lg p-3">
                         <h3 class="px-3 mb-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Quản lý</h3>
                         
                         <a href="{{ route('profile.edit') }}" class="flex items-center px-3 py-2 text-sm font-medium text-neutral-700 rounded-md hover:bg-neutral-100 hover:text-neutral-900 transition-all duration-200">
@@ -447,5 +510,7 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          @click="open = false"
-         class="fixed inset-0 z-40 bg-black bg-opacity-50 sm:hidden"></div>
+         class="fixed inset-0 z-40 bg-neutral-800 bg-opacity-30 sm:hidden"
+         style="width: 100vw; height: 100vh; backdrop-filter: blur(2px);"
+         data-mobile-overlay></div>
 </nav>

@@ -16,6 +16,9 @@ class Vehicle extends Model
         'power',
         'wheel_size',
         'status',
+        'end_time',
+        'paused_at',
+        'paused_remaining_seconds',
         'notes',
         'current_location',
         'driver_name',
@@ -30,6 +33,9 @@ class Vehicle extends Model
         'last_maintenance' => 'datetime',
         'next_maintenance' => 'datetime',
         'status_changed_at' => 'datetime',
+        'end_time' => 'datetime',
+        'paused_at' => 'datetime',
+        'paused_remaining_seconds' => 'integer',
         'route_number' => 'integer',
     ];
 

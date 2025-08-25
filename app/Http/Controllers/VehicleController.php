@@ -15,22 +15,23 @@ class VehicleController extends Controller
     public function index(Request $request)
     {
         $filter = $request->get('filter', 'all');
+        $perPage = $request->get('per_page', 10);
         
         $vehicles = match($filter) {
-            'all' => Vehicle::latest()->get(),
-            'active' => Vehicle::active()->latest()->get(),
-            'inactive' => Vehicle::inactive()->latest()->get(),
-            'running' => Vehicle::running()->latest()->get(),
-            'waiting' => Vehicle::waiting()->latest()->get(),
-            'expired' => Vehicle::expired()->latest()->get(),
-            'paused' => Vehicle::paused()->latest()->get(),
-            'route' => Vehicle::route()->latest()->get(),
-            'group' => Vehicle::group()->latest()->get(),
-            default => Vehicle::latest()->get()
+            'vehicles_list' => Vehicle::latest()->paginate($perPage),
+            'active' => Vehicle::active()->latest()->paginate($perPage),
+            'inactive' => Vehicle::inactive()->latest()->paginate($perPage),
+            'running' => Vehicle::running()->latest()->paginate($perPage),
+            'waiting' => Vehicle::waiting()->latest()->paginate($perPage),
+            'expired' => Vehicle::expired()->latest()->paginate($perPage),
+            'paused' => Vehicle::paused()->latest()->paginate($perPage),
+            'route' => Vehicle::route()->latest()->paginate($perPage),
+            'group' => Vehicle::active()->latest()->get(),
+            default => Vehicle::latest()->paginate($perPage)
         };
 
         $pageTitle = match($filter) {
-            'all' => 'Tất cả xe',
+            'vehicles_list' => 'Danh sách xe',
             'active' => 'Xe ngoài bãi',
             'inactive' => 'Xe trong xưởng',
             'running' => 'Xe đang chạy',
@@ -38,15 +39,28 @@ class VehicleController extends Controller
             'expired' => 'Xe hết giờ',
             'paused' => 'Xe tạm dừng',
             'route' => 'Xe cung đường',
-            'group' => 'Xe khách đoàn',
-            default => 'Tất cả xe'
+            'group' => 'Khách đoàn',
+            default => 'Danh sách xe'
         };
 
         // Get display mode based on filter
         $displayMode = in_array($filter, ['route', 'group']) ? 'list' : 'grid';
 
-        return view('vehicles.index', compact('vehicles', 'filter', 'pageTitle', 'displayMode'));
+        // Get vehicle attributes for modal
+        $colors = VehicleAttribute::getColors();
+        $seats = VehicleAttribute::getSeats();
+        $powerOptions = VehicleAttribute::getPowerOptions();
+        $wheelSizes = VehicleAttribute::getWheelSizes();
+
+        // Return different view for group
+        if ($filter === 'group') {
+            return view('vehicles.group', compact('vehicles', 'filter', 'pageTitle', 'colors', 'seats', 'powerOptions', 'wheelSizes'));
+        }
+
+        return view('vehicles.index', compact('vehicles', 'filter', 'pageTitle', 'displayMode', 'colors', 'seats', 'powerOptions', 'wheelSizes'));
     }
+
+
 
     /**
      * Show the form for creating a new vehicle (Admin only)
@@ -126,20 +140,21 @@ class VehicleController extends Controller
     }
 
     /**
-     * Show the form for editing the specified vehicle (Admin only)
+     * Get vehicle data for editing (API)
      */
     public function edit(Vehicle $vehicle)
     {
         if (!auth()->user()->canManageVehicles()) {
-            abort(403, 'Bạn không có quyền thực hiện hành động này.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền thực hiện hành động này.'
+            ], 403);
         }
 
-        $colors = VehicleAttribute::getColors();
-        $seats = VehicleAttribute::getSeats();
-        $powerOptions = VehicleAttribute::getPowerOptions();
-        $wheelSizes = VehicleAttribute::getWheelSizes();
-
-        return view('vehicles.edit', compact('vehicle', 'colors', 'seats', 'powerOptions', 'wheelSizes'));
+        return response()->json([
+            'success' => true,
+            'vehicle' => $vehicle
+        ]);
     }
 
     /**
@@ -200,6 +215,7 @@ class VehicleController extends Controller
         $validator = Validator::make($request->all(), [
             'status' => 'required|string|in:active,inactive,running,waiting,expired,paused,route,group',
             'notes' => 'nullable|string|max:500',
+            'end_time' => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {
@@ -209,11 +225,34 @@ class VehicleController extends Controller
             ], 422);
         }
 
-        $vehicle->update([
+        $updateData = [
             'status' => $request->status,
             'notes' => $request->notes,
             'status_changed_at' => now(),
-        ]);
+        ];
+
+        // Add end_time if provided (for running vehicles)
+        if ($request->has('end_time') && $request->end_time) {
+            // Convert milliseconds timestamp to datetime
+            $endTime = $request->end_time / 1000; // Convert from milliseconds to seconds
+            $updateData['end_time'] = date('Y-m-d H:i:s', $endTime);
+        }
+        
+        // Handle paused status - store pause time and remaining seconds
+        if ($request->status === 'paused') {
+            $updateData['paused_at'] = now();
+            // Calculate remaining seconds from end_time
+            if ($vehicle->end_time) {
+                $remainingSeconds = max(0, strtotime($vehicle->end_time) - time());
+                $updateData['paused_remaining_seconds'] = $remainingSeconds;
+            }
+        } elseif ($request->status === 'running') {
+            // Clear paused data when resuming
+            $updateData['paused_at'] = null;
+            $updateData['paused_remaining_seconds'] = null;
+        }
+
+        $vehicle->update($updateData);
 
         return response()->json([
             'success' => true,
@@ -312,5 +351,34 @@ class VehicleController extends Controller
         $wheelSizes = VehicleAttribute::where('type', 'wheel_size')->orderBy('sort_order')->get();
 
         return view('vehicles.attributes', compact('colors', 'seats', 'powerOptions', 'wheelSizes'));
+    }
+
+    /**
+     * Move vehicle to workshop
+     */
+    public function moveToWorkshop(Request $request, Vehicle $vehicle)
+    {
+        $validator = Validator::make($request->all(), [
+            'reason' => 'required|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $vehicle->update([
+            'status' => Vehicle::STATUS_INACTIVE,
+            'status_changed_at' => now(),
+            'notes' => 'Chuyển về xưởng: ' . $request->reason,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Xe đã được chuyển về xưởng thành công!',
+            'vehicle' => $vehicle
+        ]);
     }
 }
