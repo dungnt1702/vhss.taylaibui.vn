@@ -350,3 +350,174 @@
         font-size: 0.75rem;
     }
 }
+
+/* Mobile responsive adjustments for vehicle grid */
+@media (max-width: 640px) {
+    .grid {
+        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+    }
+    
+    .vehicle-card {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+/* Modal Styles */
+.modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Vehicle Modal Specific Styles */
+#vehicle-modal input,
+#vehicle-modal select,
+#vehicle-modal textarea {
+    padding: 0.375rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.25rem !important;
+    height: 2rem !important;
+    min-height: 2rem !important;
+    max-height: 2rem !important;
+    border-radius: 0.25rem !important;
+}
+
+#vehicle-modal label {
+    font-size: 0.875rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+#vehicle-modal .grid {
+    gap: 0.75rem !important;
+}
+
+#vehicle-modal .space-y-4 > div {
+    margin-bottom: 0.75rem !important;
+}
+
+/* Custom Scrollbar Styles */
+.modal-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.vehicle-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.vehicle-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+.vehicle-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+}
+
+.vehicle-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Dark Mode Scrollbar */
+.dark .modal-scroll::-webkit-scrollbar-track {
+    background: #374151;
+}
+
+.dark .modal-scroll::-webkit-scrollbar-thumb {
+    background: #6b7280;
+}
+
+.dark .modal-scroll::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+.dark .vehicle-content::-webkit-scrollbar-track {
+    background: #374151;
+}
+
+.dark .vehicle-content::-webkit-scrollbar-thumb {
+    background: #6b7280;
+}
+
+.dark .vehicle-content::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Mobile Modal Styles */
+@media (max-width: 640px) {
+    #vehicle-modal input[type="text"],
+    #vehicle-modal select,
+    #vehicle-modal textarea {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: 0.25rem;
+        border-width: 1px;
+        box-shadow: none;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    #vehicle-modal select {
+        background-image: none !important;
+    }
+    
+    #vehicle-modal .grid-cols-1,
+    #vehicle-modal .grid-cols-2 {
+        gap: 0.75rem !important;
+    }
+    
+    #vehicle-modal .space-y-4 > div {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    #vehicle-modal .relative {
+        align-items: flex-start;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+    
+    #vehicle-modal .bg-white {
+        width: calc(100vw - 1rem);
+        max-width: calc(100vw - 1rem);
+        height: calc(100vh - 1rem);
+        max-height: calc(100vh - 1rem);
+    }
+    
+    #vehicle-modal .p-6 {
+        padding: 1rem !important;
+    }
+    
+    #vehicle-modal .grid {
+        gap: 0.5rem !important;
+    }
+    
+    #vehicle-modal .space-y-4 > div {
+        margin-bottom: 0.5rem !important;
+    }
+}
