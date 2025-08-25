@@ -139,11 +139,11 @@ function getVehicleName(vehicleId) {
 
 // Timer Functions
 function startTimer(vehicleId, minutes) {
-    alert('start Timer');
-
-    if (window.vehicleOperations) {
-        alert('Kiểm tra');
+    if (window.vehicleOperations && window.vehicleOperations.startVehicle) {
         window.vehicleOperations.startVehicle(vehicleId, minutes);
+    } else if (window.startVehicle) {
+        // Fallback to global startVehicle function
+        window.startVehicle(vehicleId, minutes);
     }
 }
 
