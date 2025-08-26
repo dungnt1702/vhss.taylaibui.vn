@@ -14,11 +14,13 @@ class VehicleOperations {
         const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
         if (!vehicleCard) return;
         
-        // Calculate end time
+        // Calculate start and end time
         const now = new Date().getTime();
+        const startTimeMs = now;
         const endTimeMs = now + (minutes * 60 * 1000);
         
         // Update vehicle card
+        vehicleCard.dataset.startTime = startTimeMs.toString();
         vehicleCard.dataset.endTime = endTimeMs.toString();
         vehicleCard.dataset.status = 'running';
         
@@ -32,8 +34,8 @@ class VehicleOperations {
         // Update countdown display
         this.updateCountdownDisplay(vehicleId, minutes * 60 * 1000);
         
-        // Send to server
-        this.updateVehicleStatus(vehicleId, 'running', endTimeMs);
+        // Send to server with start_time and end_time
+        this.updateVehicleStatus(vehicleId, 'running', endTimeMs, startTimeMs);
         
         // Speak notification
         this.speakVietnamese(`Xe ${this.getVehicleName(vehicleId)} đã xuất bãi với ${minutes} phút`);
@@ -215,15 +217,16 @@ class VehicleOperations {
         // Update the vehicle card's data attributes immediately
         const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
         if (vehicleCard) {
+            vehicleCard.dataset.startTime = '';
             vehicleCard.dataset.endTime = '';
-            vehicleCard.dataset.status = 'waiting';
+            vehicleCard.dataset.status = 'active';
         }
         
-        // Update status text to show waiting status
-        this.updateStatusText(vehicleId, 'waiting', null);
+        // Update status text to show active status
+        this.updateStatusText(vehicleId, 'active', null);
         
-        // Update button display to show waiting buttons
-        this.updateVehicleButtons(vehicleId, 'waiting');
+        // Update button display to show active buttons
+        this.updateVehicleButtons(vehicleId, 'active');
         
         // Speak notification
         const vehicleName = this.getVehicleName(vehicleId);
@@ -249,11 +252,11 @@ class VehicleOperations {
             }, 500);
         }
         
-        // Update vehicle status to waiting and clear end_time
-        this.updateVehicleStatus(vehicleId, 'waiting', null);
+        // Update vehicle status to active and clear all timing data
+        this.updateVehicleStatus(vehicleId, 'active', null, null);
         
         // Show navigation hint to user
-        this.showNavigationHint(vehicleId, 'waiting');
+        this.showNavigationHint(vehicleId, 'active');
     }
 
     addTime(vehicleId, additionalMinutes) {
@@ -336,7 +339,7 @@ class VehicleOperations {
     }
 
     // Vehicle Status Updates
-    updateVehicleStatus(vehicleId, status, endTime = null) {
+    updateVehicleStatus(vehicleId, status, endTime = null, startTime = null) {
         const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
         if (!vehicleCard) return;
         
@@ -344,6 +347,10 @@ class VehicleOperations {
         
         if (endTime) {
             vehicleCard.dataset.endTime = endTime.toString();
+        }
+
+        if (startTime) {
+            vehicleCard.dataset.startTime = startTime.toString();
         }
         
         // Update UI based on status
@@ -378,7 +385,7 @@ class VehicleOperations {
                 statusText = 'Hết giờ';
                 break;
             case 'active':
-                statusText = minutes !== null ? `Xe chạy ${minutes}p` : 'Ngoài bãi';
+                statusText = 'Sẵn sàng chạy';
                 break;
             default:
                 statusText = 'Không xác định';
@@ -424,10 +431,26 @@ class VehicleOperations {
                     </button>
                 `;
                 break;
+            case 'active':
+                buttonHTML = `
+                    <button onclick="vehicleOperations.startVehicle(${vehicleId}, 30)" class="start-30-btn">
+                        🚗 Chạy 30p
+                    </button>
+                    <button onclick="vehicleOperations.startVehicle(${vehicleId}, 45)" class="start-45-btn">
+                        🚙 Chạy 45p
+                    </button>
+                    <button onclick="vehicleForms.openWorkshopModal(${vehicleId})" class="workshop-btn">
+                        🔧 Về xưởng
+                    </button>
+                `;
+                break;
             case 'waiting':
                 buttonHTML = `
-                    <button onclick="vehicleOperations.startVehicle(${vehicleId}, 30)" class="start-btn">
-                        🚀 Xuất bãi
+                    <button onclick="vehicleOperations.startVehicle(${vehicleId}, 30)" class="start-30-btn">
+                        🚗 Chạy 30p
+                    </button>
+                    <button onclick="vehicleOperations.startVehicle(${vehicleId}, 45)" class="start-45-btn">
+                        🚙 Chạy 45p
                     </button>
                     <button onclick="vehicleForms.openWorkshopModal(${vehicleId})" class="workshop-btn">
                         🔧 Về xưởng

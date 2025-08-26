@@ -26,20 +26,20 @@ class VehicleController extends Controller
             'expired' => Vehicle::expired()->latest()->paginate($perPage),
             'paused' => Vehicle::paused()->latest()->paginate($perPage),
             'route' => Vehicle::route()->latest()->paginate($perPage),
-            'group' => Vehicle::active()->latest()->get(),
+            'group' => Vehicle::notInactive()->latest()->paginate($perPage),
             default => Vehicle::latest()->paginate($perPage)
         };
 
         $pageTitle = match($filter) {
             'vehicles_list' => 'Danh sách xe',
-            'active' => 'Xe ngoài bãi',
+            'active' => 'Xe sẵn sàng chạy',
             'inactive' => 'Xe trong xưởng',
             'running' => 'Xe đang chạy',
             'waiting' => 'Xe đang chờ',
             'expired' => 'Xe hết giờ',
             'paused' => 'Xe tạm dừng',
             'route' => 'Xe cung đường',
-            'group' => 'Khách đoàn',
+            'group' => 'Xe ngoài bãi',
             default => 'Danh sách xe'
         };
 
@@ -231,11 +231,19 @@ class VehicleController extends Controller
             'status_changed_at' => now(),
         ];
 
-        // Add end_time if provided (for running vehicles)
-        if ($request->has('end_time') && $request->end_time) {
-            // Convert milliseconds timestamp to datetime
-            $endTime = $request->end_time / 1000; // Convert from milliseconds to seconds
-            $updateData['end_time'] = date('Y-m-d H:i:s', $endTime);
+        // Handle running status - set start_time and end_time
+        if ($request->status === 'running') {
+            $updateData['start_time'] = now();
+            
+            if ($request->has('end_time') && $request->end_time) {
+                // Convert milliseconds timestamp to datetime
+                $endTime = $request->end_time / 1000; // Convert from milliseconds to seconds
+                $updateData['end_time'] = date('Y-m-d H:i:s', $endTime);
+            }
+            
+            // Clear paused data when starting
+            $updateData['paused_at'] = null;
+            $updateData['paused_remaining_seconds'] = null;
         }
         
         // Handle paused status - store pause time and remaining seconds
@@ -246,8 +254,12 @@ class VehicleController extends Controller
                 $remainingSeconds = max(0, strtotime($vehicle->end_time) - time());
                 $updateData['paused_remaining_seconds'] = $remainingSeconds;
             }
-        } elseif ($request->status === 'running') {
-            // Clear paused data when resuming
+        }
+        
+        // Handle active status - reset all timing data
+        if ($request->status === 'active') {
+            $updateData['start_time'] = null;
+            $updateData['end_time'] = null;
             $updateData['paused_at'] = null;
             $updateData['paused_remaining_seconds'] = null;
         }

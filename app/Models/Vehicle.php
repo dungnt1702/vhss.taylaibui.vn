@@ -16,6 +16,7 @@ class Vehicle extends Model
         'power',
         'wheel_size',
         'status',
+        'start_time',
         'end_time',
         'paused_at',
         'paused_remaining_seconds',
@@ -33,6 +34,7 @@ class Vehicle extends Model
         'last_maintenance' => 'datetime',
         'next_maintenance' => 'datetime',
         'status_changed_at' => 'datetime',
+        'start_time' => 'datetime',
         'end_time' => 'datetime',
         'paused_at' => 'datetime',
         'paused_remaining_seconds' => 'integer',
@@ -40,7 +42,7 @@ class Vehicle extends Model
     ];
 
     // Status constants
-    const STATUS_ACTIVE = 'active';      // Xe ngoài bãi
+    const STATUS_ACTIVE = 'active';      // Xe sẵn sàng chạy (thay thế cho Xe ngoài bãi)
     const STATUS_INACTIVE = 'inactive';  // Xe trong xưởng
     const STATUS_RUNNING = 'running';    // Xe đang chạy
     const STATUS_WAITING = 'waiting';    // Xe đang chờ
@@ -65,7 +67,7 @@ class Vehicle extends Model
     public function getStatusDisplayNameAttribute()
     {
         return match($this->status) {
-            self::STATUS_ACTIVE => 'Xe ngoài bãi',
+            self::STATUS_ACTIVE => 'Xe sẵn sàng chạy',
             self::STATUS_INACTIVE => 'Xe trong xưởng',
             self::STATUS_RUNNING => 'Xe đang chạy',
             self::STATUS_WAITING => 'Xe đang chờ',
@@ -123,12 +125,6 @@ class Vehicle extends Model
         return $query->where('status', self::STATUS_RUNNING);
     }
 
-    // Scope for waiting vehicles
-    public function scopeWaiting($query)
-    {
-        return $query->where('status', self::STATUS_WAITING);
-    }
-
     // Scope for expired vehicles
     public function scopeExpired($query)
     {
@@ -153,25 +149,20 @@ class Vehicle extends Model
         return $query->where('status', self::STATUS_GROUP);
     }
 
-    // Scope for list view (grid display)
-    public function scopeListDisplay($query)
+    // Scope for vehicles that are not inactive (for Khách đoàn screen)
+    public function scopeNotInactive($query)
     {
-        return $query->whereIn('status', [
-            self::STATUS_ACTIVE,
-            self::STATUS_INACTIVE,
-            self::STATUS_RUNNING,
-            self::STATUS_WAITING,
-            self::STATUS_EXPIRED,
-            self::STATUS_PAUSED
-        ]);
+        return $query->where('status', '!=', self::STATUS_INACTIVE);
     }
 
-    // Scope for grid view (list display)
-    public function scopeGridDisplay($query)
+    // Scope for waiting vehicles (not running, paused, expired, route)
+    public function scopeWaiting($query)
     {
-        return $query->whereIn('status', [
-            self::STATUS_ROUTE,
-            self::STATUS_GROUP
+        return $query->whereNotIn('status', [
+            self::STATUS_RUNNING,
+            self::STATUS_PAUSED,
+            self::STATUS_EXPIRED,
+            self::STATUS_ROUTE
         ]);
     }
 }
