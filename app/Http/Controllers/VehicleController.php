@@ -19,32 +19,32 @@ class VehicleController extends Controller
         
         $vehicles = match($filter) {
             'vehicles_list' => Vehicle::latest()->paginate($perPage),
-            'active' => Vehicle::active()->latest()->paginate($perPage),
+            'active' => Vehicle::notInactive()->latest()->paginate($perPage), // Xe ngoài bãi (active, running, expired, paused, route)
             'inactive' => Vehicle::inactive()->latest()->paginate($perPage),
             'running' => Vehicle::running()->latest()->paginate($perPage),
             'waiting' => Vehicle::waiting()->latest()->paginate($perPage),
             'expired' => Vehicle::expired()->latest()->paginate($perPage),
             'paused' => Vehicle::paused()->latest()->paginate($perPage),
             'route' => Vehicle::route()->latest()->paginate($perPage),
-            'group' => Vehicle::notInactive()->latest()->paginate($perPage),
+            'attributes' => Vehicle::latest()->paginate($perPage), // Thuộc tính xe
             default => Vehicle::latest()->paginate($perPage)
         };
 
         $pageTitle = match($filter) {
             'vehicles_list' => 'Danh sách xe',
-            'active' => 'Xe sẵn sàng chạy',
+            'active' => 'Xe ngoài bãi',
             'inactive' => 'Xe trong xưởng',
             'running' => 'Xe đang chạy',
             'waiting' => 'Xe đang chờ',
             'expired' => 'Xe hết giờ',
             'paused' => 'Xe tạm dừng',
             'route' => 'Xe cung đường',
-            'group' => 'Xe ngoài bãi',
+            'attributes' => 'Thuộc tính xe',
             default => 'Danh sách xe'
         };
 
         // Get display mode based on filter
-        $displayMode = in_array($filter, ['route', 'group']) ? 'list' : 'grid';
+        $displayMode = in_array($filter, ['route', 'active', 'vehicles_list', 'attributes']) ? 'list' : 'grid';
 
         // Get vehicle attributes for modal
         $colors = VehicleAttribute::getColors();
@@ -52,10 +52,7 @@ class VehicleController extends Controller
         $powerOptions = VehicleAttribute::getPowerOptions();
         $wheelSizes = VehicleAttribute::getWheelSizes();
 
-        // Return different view for group
-        if ($filter === 'group') {
-            return view('vehicles.group', compact('vehicles', 'filter', 'pageTitle', 'colors', 'seats', 'powerOptions', 'wheelSizes'));
-        }
+
 
         return view('vehicles.index', compact('vehicles', 'filter', 'pageTitle', 'displayMode', 'colors', 'seats', 'powerOptions', 'wheelSizes'));
     }

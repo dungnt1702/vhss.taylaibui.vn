@@ -36,18 +36,21 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Filter Tabs -->
-            @if(in_array($filter, ['active', 'running', 'waiting', 'expired', 'paused']))
+            @if(in_array($filter, ['waiting', 'running', 'expired', 'paused']))
                 <!-- Grid Display for specific statuses -->
                 @include('vehicles.grid_display')
+            @elseif($filter === 'active')
+                <!-- Active Vehicles Display - Xe ngoài bãi -->
+                @include('vehicles.active_vehicles')
+            @elseif($filter === 'vehicles_list')
+                <!-- Vehicles List Display -->
+                @include('vehicles.vehicles_list')
+            @elseif($filter === 'attributes')
+                <!-- Vehicle Attributes Display -->
+                @include('vehicles.vehicle_attributes')
             @else
-                <!-- List Display for route and group -->
-                @if($filter === 'group')
-                    @include('vehicles.vehicles_list')
-                @elseif($filter === 'route')
-                    @include('vehicles.vehicle_attributes')
-                @else
-                    @include('vehicles.vehicles_list')
-                @endif
+                <!-- Default to active vehicles -->
+                @include('vehicles.active_vehicles')
             @endif
         </div>
     </div>

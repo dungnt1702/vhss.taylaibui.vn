@@ -559,7 +559,7 @@ class VehicleOperations {
         const currentFilter = new URLSearchParams(window.location.search).get('filter');
         
         // Don't hide from these screens (they show all vehicles)
-        if (currentFilter === 'group' || currentFilter === 'route') {
+        if (currentFilter === 'active' || currentFilter === 'route') {
             return;
         }
         
