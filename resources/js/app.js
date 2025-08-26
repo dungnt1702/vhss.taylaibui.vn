@@ -54,21 +54,29 @@ window.Alpine = Alpine;
 
 // Function to initialize the vehicle management system
 function initializeVehicleSystem() {
+    console.log('Initializing vehicle system...');
+    
     // Check if all required modules are loaded
     const requiredModules = ['vehicleManager', 'vehicleForms', 'vehicleOperations'];
     const missingModules = requiredModules.filter(module => !window[module]);
     
     if (missingModules.length > 0) {
+        console.log('Missing modules:', missingModules);
         return false;
     }
+    
+    console.log('All required modules loaded');
     
     // Check if all required functions are available
     const requiredFunctions = ['toggleVehicle', 'startVehicle', 'pauseVehicle', 'resumeVehicle'];
     const missingFunctions = requiredFunctions.filter(func => typeof window[func] === 'undefined');
     
     if (missingFunctions.length > 0) {
+        console.log('Missing functions:', missingFunctions);
         return false;
     }
+    
+    console.log('All required functions available');
     
     // Enhance the basic functions with full functionality when modules are available
     if (window.vehicleManager && window.vehicleManager.toggleVehicle) {
@@ -95,14 +103,27 @@ function initializeVehicleSystem() {
             };
         }
         
+        // Initialize countdown timers immediately
+        console.log('Initializing countdown timers...');
+        window.vehicleOperations.initializeCountdownTimers();
+        
         // Now that vehicleOperations is ready, load vehicle-wrappers.js
         if (!window.vehicleWrappersLoaded) {
             import('./vehicle-wrappers').then(() => {
                 window.vehicleWrappersLoaded = true;
+                console.log('Vehicle wrappers loaded');
+            });
+        }
+        
+        // Load test file in development mode
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            import('./test-countdown').then(() => {
+                console.log('Test countdown file loaded for debugging');
             });
         }
     }
     
+    console.log('Vehicle system initialization complete');
     return true;
 }
 

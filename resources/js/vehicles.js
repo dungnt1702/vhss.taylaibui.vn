@@ -11,7 +11,8 @@ let currentFilter = '';
 class VehicleManager {
     constructor() {
         this.initializeEventListeners();
-        this.initializeCountdownTimers();
+        // Countdown timers are now handled by vehicleOperations module
+        console.log('VehicleManager: Event listeners initialized');
     }
 
     initializeEventListeners() {
@@ -129,28 +130,10 @@ class VehicleManager {
         }
     }
 
-    // Countdown Timer Management
+    // Countdown Timer Management - This is now handled by vehicleOperations module
     initializeCountdownTimers() {
-        const vehicleCards = document.querySelectorAll('[data-end-time]');
-        
-        vehicleCards.forEach(card => {
-            const vehicleId = card.dataset.vehicleId;
-            const endTime = card.dataset.endTime;
-            const status = card.dataset.status;
-            
-            if (endTime && endTime !== '' && status === 'running') {
-                const endTimeMs = parseInt(endTime);
-                const now = new Date().getTime();
-                const timeLeft = endTimeMs - now;
-                
-                if (timeLeft > 0) {
-                    this.startCountdownTimer(vehicleId, endTimeMs);
-                } else {
-                    // Time has expired, update status
-                    this.updateVehicleStatus(vehicleId, 'expired');
-                }
-            }
-        });
+        console.log('VehicleManager: Countdown timers are now handled by vehicleOperations module');
+        // This function is kept for compatibility but actual initialization is done in vehicleOperations
     }
 
     startCountdownTimer(vehicleId, endTimeMs) {
@@ -649,6 +632,7 @@ class VehicleManager {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('VehicleManager: Initializing...');
     window.vehicleManager = new VehicleManager();
     
     // Update the global toggleVehicle function to use the vehicleManager when available
@@ -663,6 +647,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
     }
+    
+    console.log('VehicleManager: Initialization complete');
 });
 
 // Export for global access

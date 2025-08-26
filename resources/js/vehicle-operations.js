@@ -295,9 +295,12 @@ class VehicleOperations {
 
     // Countdown Timer Management
     startCountdownTimer(vehicleId, endTimeMs) {
+        console.log(`Starting countdown timer for vehicle ${vehicleId}, endTime: ${new Date(endTimeMs).toLocaleString()}`);
+        
         // Clear existing timer
         if (this.vehicleTimers[vehicleId]) {
             clearInterval(this.vehicleTimers[vehicleId]);
+            console.log(`Cleared existing timer for vehicle ${vehicleId}`);
         }
         
         // Start new timer
@@ -309,11 +312,14 @@ class VehicleOperations {
                 this.updateCountdownDisplay(vehicleId, timeLeft);
             } else {
                 // Time expired
+                console.log(`Timer expired for vehicle ${vehicleId}`);
                 clearInterval(this.vehicleTimers[vehicleId]);
                 delete this.vehicleTimers[vehicleId];
                 this.updateVehicleStatus(vehicleId, 'expired');
             }
         }, 1000);
+        
+        console.log(`Countdown timer started for vehicle ${vehicleId}`);
     }
 
     updateCountdownDisplay(vehicleId, timeLeft) {
@@ -490,34 +496,65 @@ class VehicleOperations {
 
     // Initialize countdown timers for vehicles with end_time
     initializeCountdownTimers() {
+        console.log('Initializing countdown timers...');
+        
         // Find all vehicle cards with end_time
-        const vehicleCards = document.querySelectorAll('[data-end-time]');
+        const vehicleCards = document.querySelectorAll('[data-vehicle-id]');
         
         vehicleCards.forEach(card => {
             const vehicleId = card.dataset.vehicleId;
             const endTime = card.dataset.endTime;
             const status = card.dataset.status;
             
-            if (endTime && endTime !== '' && status === 'running') {
+            console.log(`Vehicle ${vehicleId}: status=${status}, endTime=${endTime}`);
+            
+            if (endTime && endTime !== '' && (status === 'running' || status === 'paused')) {
                 const endTimeMs = parseInt(endTime);
                 const now = new Date().getTime();
                 const timeLeft = endTimeMs - now;
                 
+                console.log(`Vehicle ${vehicleId}: timeLeft=${timeLeft}ms (${Math.floor(timeLeft/1000)}s)`);
+                
                 if (timeLeft > 0) {
+                    // Start countdown timer
                     this.startCountdownTimer(vehicleId, endTimeMs);
+                    
+                    // Update countdown display immediately
+                    this.updateCountdownDisplay(vehicleId, timeLeft);
+                    
+                    console.log(`Started countdown timer for vehicle ${vehicleId}`);
                 } else {
                     // Time has expired, update status
+                    console.log(`Vehicle ${vehicleId} time expired, updating status`);
                     this.updateVehicleStatus(vehicleId, 'expired');
+                }
+            } else if (status === 'paused' && card.dataset.pausedRemainingSeconds) {
+                // Handle paused vehicles with remaining time
+                const pausedSeconds = parseInt(card.dataset.pausedRemainingSeconds);
+                if (pausedSeconds > 0) {
+                    console.log(`Vehicle ${vehicleId} is paused with ${pausedSeconds}s remaining`);
+                    
+                    // Update countdown display to show paused state
+                    const countdownElement = document.getElementById(`countdown-${vehicleId}`);
+                    if (countdownElement) {
+                        countdownElement.innerHTML = '<span class="text-yellow-600 font-bold">TẠM DỪNG</span>';
+                        countdownElement.classList.add('text-yellow-600');
+                    }
                 }
             }
         });
+        
+        console.log('Countdown timers initialization complete');
     }
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('VehicleOperations: Initializing...');
     window.vehicleOperations = new VehicleOperations();
-    window.vehicleOperations.initializeCountdownTimers();
+    
+    // Note: initializeCountdownTimers will be called from app.js after all modules are ready
+    console.log('VehicleOperations: Initialization complete');
 });
 
 // Export for global access
