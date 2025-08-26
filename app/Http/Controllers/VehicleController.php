@@ -97,8 +97,6 @@ class VehicleController extends Controller
             'seats' => 'required|in:1,2',
             'power' => 'required|string|max:50',
             'wheel_size' => 'required|string|max:50',
-            'driver_name' => 'nullable|string|max:100',
-            'driver_phone' => 'nullable|string|max:20',
             'current_location' => 'nullable|string|max:200',
             'notes' => 'nullable|string|max:500',
         ]);
@@ -117,8 +115,6 @@ class VehicleController extends Controller
             'power' => $request->power,
             'wheel_size' => $request->wheel_size,
             'status' => Vehicle::STATUS_ACTIVE,
-            'driver_name' => $request->driver_name,
-            'driver_phone' => $request->driver_phone,
             'current_location' => $request->current_location,
             'notes' => $request->notes,
             'status_changed_at' => now(),
@@ -175,8 +171,6 @@ class VehicleController extends Controller
             'seats' => 'required|in:1,2',
             'power' => 'required|string|max:50',
             'wheel_size' => 'required|string|max:50',
-            'driver_name' => 'nullable|string|max:100',
-            'driver_phone' => 'nullable|string|max:20',
             'current_location' => 'nullable|string|max:200',
             'notes' => 'nullable|string|max:500',
         ]);
@@ -194,8 +188,6 @@ class VehicleController extends Controller
             'seats' => $request->seats,
             'power' => $request->power,
             'wheel_size' => $request->wheel_size,
-            'driver_name' => $request->driver_name,
-            'driver_phone' => $request->driver_phone,
             'current_location' => $request->current_location,
             'notes' => $request->notes,
         ]);

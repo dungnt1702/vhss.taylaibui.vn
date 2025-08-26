@@ -88,29 +88,7 @@
                             </div>
                         </div>
                         
-                        <!-- Driver Information -->
-                        <div>
-                            <h3 class="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-4">Thông tin tài xế</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="driver_name" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                        Tên tài xế
-                                    </label>
-                                    <input type="text" id="driver_name" name="driver_name"
-                                           class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                                           placeholder="Nhập tên tài xế">
-                                </div>
-                                
-                                <div>
-                                    <label for="driver_phone" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                                        Số điện thoại tài xế
-                                    </label>
-                                    <input type="text" id="driver_phone" name="driver_phone"
-                                           class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                                           placeholder="VD: 0943036579">
-                                </div>
-                            </div>
-                        </div>
+
                         
                         <!-- Additional Information -->
                         <div>
@@ -178,8 +156,6 @@
                     seats: formData.get('seats'),
                     power: formData.get('power'),
                     wheel_size: formData.get('wheel_size'),
-                    driver_name: formData.get('driver_name'),
-                    driver_phone: formData.get('driver_phone'),
                     current_location: formData.get('current_location'),
                     notes: formData.get('notes')
                 })

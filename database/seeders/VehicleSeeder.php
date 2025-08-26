@@ -46,8 +46,6 @@ class VehicleSeeder extends Seeder
                 'power' => $power,
                 'wheel_size' => $wheelSize,
                 'status' => $status,
-                'driver_name' => 'Tài xế ' . $i,
-                'driver_phone' => '09' . str_pad(rand(10000000, 99999999), 8, '0'),
                 'current_location' => $this->getLocationByStatus($status),
                 'notes' => $this->getNotesByStatus($status, $i),
                 'route_number' => $status === Vehicle::STATUS_ROUTE ? rand(1, 10) : null,

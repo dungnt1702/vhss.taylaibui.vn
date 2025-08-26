@@ -285,9 +285,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                                             {{ $vehicle->wheel_size }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                                            {{ $vehicle->driver_name ?? 'N/A' }}
-                                        </td>
+
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                                             {{ $vehicle->current_location ?? 'N/A' }}
                                         </td>

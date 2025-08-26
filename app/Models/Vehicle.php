@@ -22,8 +22,6 @@ class Vehicle extends Model
         'paused_remaining_seconds',
         'notes',
         'current_location',
-        'driver_name',
-        'driver_phone',
         'last_maintenance',
         'next_maintenance',
         'route_number',
