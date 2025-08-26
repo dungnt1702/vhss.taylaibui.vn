@@ -12,7 +12,6 @@ class VehicleManager {
     constructor() {
         this.initializeEventListeners();
         // Countdown timers are now handled by vehicleOperations module
-        console.log('VehicleManager: Event listeners initialized');
     }
 
     initializeEventListeners() {
@@ -132,7 +131,6 @@ class VehicleManager {
 
     // Countdown Timer Management - This is now handled by vehicleOperations module
     initializeCountdownTimers() {
-        console.log('VehicleManager: Countdown timers are now handled by vehicleOperations module');
         // This function is kept for compatibility but actual initialization is done in vehicleOperations
     }
 
@@ -632,7 +630,6 @@ class VehicleManager {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('VehicleManager: Initializing...');
     window.vehicleManager = new VehicleManager();
     
     // Update the global toggleVehicle function to use the vehicleManager when available
@@ -647,8 +644,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
     }
-    
-    console.log('VehicleManager: Initialization complete');
 });
 
 // Export for global access
