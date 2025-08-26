@@ -4,22 +4,260 @@
  * This file serves as a bridge between HTML onclick events and the main modules
  */
 
-// Immediately export critical functions to global scope to prevent "not defined" errors
-window.toggleVehicle = function(vehicleId) {
-    // Fallback implementation if vehicleManager is not available yet
-    const content = document.getElementById(`content-${vehicleId}`);
-    const icon = document.getElementById(`icon-${vehicleId}`);
+// Simple function to toggle only the specific vehicle clicked
+function toggleVehicleById(vehicleId) {
+    const contentId = `content-${vehicleId}`;
+    const iconId = `icon-${vehicleId}`;
+    
+    const content = document.getElementById(contentId);
+    const icon = document.getElementById(iconId);
+    
+    if (!content || !icon) {
+        console.warn(`Vehicle elements not found: contentId=${contentId}, iconId=${iconId}`);
+        return;
+    }
+    
+    console.log(`Toggling vehicle ${vehicleId}: contentId=${contentId}, iconId=${iconId}`);
+    
+    const isHidden = content.classList.contains('hidden');
+    
+    if (isHidden) {
+        console.log(`Opening vehicle ${vehicleId}`);
+        // Close all other vehicles first
+        closeAllOtherVehiclesSimple(contentId);
+        
+        // Open the clicked vehicle
+        content.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+    } else {
+        console.log(`Closing vehicle ${vehicleId}`);
+        // Close the clicked vehicle
+        content.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+    }
+}
+
+// Function to close all other vehicles - only affects individual vehicle cards
+function closeAllOtherVehiclesSimple(currentContentId) {
+    console.log(`Closing all other vehicles except: ${currentContentId}`);
+    
+    // Get all vehicle content elements
+    const allContents = document.querySelectorAll('.vehicle-content');
+    console.log(`Found ${allContents.length} vehicle contents`);
+    
+    allContents.forEach((contentEl) => {
+        const contentId = contentEl.id;
+        
+        if (contentId !== currentContentId) {
+            console.log(`Closing: ${contentId}`);
+            // Close this specific content
+            contentEl.classList.add('hidden');
+            
+            // Get the vehicle ID from content ID and reset its icon
+            const vehicleId = contentId.replace('content-', '');
+            const icon = document.getElementById(`icon-${vehicleId}`);
+            
+            if (icon) {
+                icon.style.transform = 'rotate(0deg)';
+                console.log(`Reset icon for vehicle: ${vehicleId}`);
+            }
+        } else {
+            console.log(`Keeping open: ${contentId}`);
+        }
+    });
+}
+
+// Legacy functions - keeping for compatibility but not using
+// These can be removed later if not needed elsewhere
+
+// Test function to debug the issue - SIMPLE VERSION
+window.testToggleVehicle = function(vehicleId) {
+    console.log(`=== TESTING SIMPLE TOGGLE VEHICLE ${vehicleId} ===`);
+    
+    const contentId = `content-${vehicleId}`;
+    const iconId = `icon-${vehicleId}`;
+    
+    console.log(`Looking for elements:`);
+    console.log(`- Content ID: ${contentId}`);
+    console.log(`- Icon ID: ${iconId}`);
+    
+    const content = document.getElementById(contentId);
+    const icon = document.getElementById(iconId);
+    
+    console.log(`Found elements:`);
+    console.log(`- Content:`, content);
+    console.log(`- Icon:`, icon);
+    
+    if (content && icon) {
+        const isHidden = content.classList.contains('hidden');
+        console.log(`Content is hidden: ${isHidden}`);
+        
+        if (isHidden) {
+            console.log(`Opening vehicle ${vehicleId}`);
+            content.classList.remove('hidden');
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            console.log(`Closing vehicle ${vehicleId}`);
+            content.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
+        }
+    } else {
+        console.error(`Elements not found for vehicle ${vehicleId}`);
+    }
+    
+    console.log(`=== END TEST ===`);
+};
+
+// Test function to toggle only one vehicle without affecting others
+window.testToggleVehicleOnly = function(vehicleId) {
+    console.log(`=== TESTING TOGGLE ONLY VEHICLE ${vehicleId} ===`);
+    
+    const contentId = `content-${vehicleId}`;
+    const iconId = `icon-${vehicleId}`;
+    
+    const content = document.getElementById(contentId);
+    const icon = document.getElementById(iconId);
     
     if (content && icon) {
         const isHidden = content.classList.contains('hidden');
         
         if (isHidden) {
+            console.log(`Opening ONLY vehicle ${vehicleId}`);
             content.classList.remove('hidden');
             icon.style.transform = 'rotate(180deg)';
         } else {
+            console.log(`Closing ONLY vehicle ${vehicleId}`);
             content.classList.add('hidden');
             icon.style.transform = 'rotate(0deg)';
         }
+    }
+    
+            console.log(`=== END TEST ONLY ===`);
+};
+
+// Test function to check all vehicle cards and their IDs
+window.checkAllVehicleCards = function() {
+    console.log(`=== CHECKING ALL VEHICLE CARDS ===`);
+    
+    const allCards = document.querySelectorAll('.vehicle-card');
+    console.log(`Found ${allCards.length} vehicle cards`);
+    
+    allCards.forEach((card, index) => {
+        const vehicleId = card.dataset.vehicleId;
+        const contentId = `content-${vehicleId}`;
+        const iconId = `icon-${vehicleId}`;
+        
+        const content = document.getElementById(contentId);
+        const icon = document.getElementById(iconId);
+        
+        console.log(`Card ${index + 1}:`);
+        console.log(`  - Vehicle ID: ${vehicleId}`);
+        console.log(`  - Content ID: ${contentId}`);
+        console.log(`  - Icon ID: ${iconId}`);
+        console.log(`  - Content found: ${!!content}`);
+        console.log(`  - Icon found: ${!!icon}`);
+        console.log(`  - Content hidden: ${content ? content.classList.contains('hidden') : 'N/A'}`);
+        console.log(`  - Icon transform: ${icon ? icon.style.transform : 'N/A'}`);
+        console.log(`  ---`);
+    });
+    
+    console.log(`=== END CHECK ===`);
+};
+
+// Test function to check if there are duplicate IDs
+window.checkForDuplicateIds = function() {
+    console.log(`=== CHECKING FOR DUPLICATE IDs ===`);
+    
+    const allContents = document.querySelectorAll('.vehicle-content');
+    const allIcons = document.querySelectorAll('.vehicle-header svg');
+    
+    const contentIds = Array.from(allContents).map(el => el.id);
+    const iconIds = Array.from(allIcons).map(el => el.id);
+    
+    console.log(`Content IDs:`, contentIds);
+    console.log(`Icon IDs:`, iconIds);
+    
+    // Check for duplicates
+    const contentDuplicates = contentIds.filter((id, index) => contentIds.indexOf(id) !== index);
+    const iconDuplicates = iconIds.filter((id, index) => iconIds.indexOf(id) !== index);
+    
+    if (contentDuplicates.length > 0) {
+        console.warn(`Duplicate content IDs found:`, contentDuplicates);
+    } else {
+        console.log(`No duplicate content IDs found`);
+    }
+    
+    if (iconDuplicates.length > 0) {
+        console.warn(`Duplicate icon IDs found:`, iconDuplicates);
+    } else {
+        console.log(`No duplicate icon IDs found`);
+    }
+    
+    console.log(`=== END DUPLICATE CHECK ===`);
+};
+
+// Toggle function that only affects the specific vehicle card clicked
+window.toggleVehicle = function(vehicleId) {
+    console.log(`Global toggleVehicle called with vehicleId: ${vehicleId}`);
+    
+    // Find the specific vehicle card and its elements
+    const contentId = `content-${vehicleId}`;
+    const iconId = `icon-${vehicleId}`;
+    
+    const content = document.getElementById(contentId);
+    const icon = document.getElementById(iconId);
+    
+    if (!content || !icon) {
+        console.warn(`Vehicle elements not found: contentId=${contentId}, iconId=${iconId}`);
+        return;
+    }
+    
+    const isHidden = content.classList.contains('hidden');
+    
+    if (isHidden) {
+        console.log(`Opening vehicle ${vehicleId}`);
+        // Close all other vehicles first
+        closeAllOtherVehiclesSimple(contentId);
+        
+        // Open this specific vehicle
+        content.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+    } else {
+        console.log(`Closing vehicle ${vehicleId}`);
+        // Close this specific vehicle
+        content.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+    }
+};
+
+// Simple toggle function that only affects one vehicle - NO ACCORDION BEHAVIOR
+window.toggleVehicleSimple = function(vehicleId) {
+    console.log(`Simple toggleVehicle called with vehicleId: ${vehicleId}`);
+    
+    // Find the specific vehicle card and its elements
+    const contentId = `content-${vehicleId}`;
+    const iconId = `icon-${vehicleId}`;
+    
+    const content = document.getElementById(contentId);
+    const icon = document.getElementById(iconId);
+    
+    if (!content || !icon) {
+        console.warn(`Vehicle elements not found: contentId=${contentId}, iconId=${iconId}`);
+        return;
+    }
+    
+    const isHidden = content.classList.contains('hidden');
+    
+    if (isHidden) {
+        console.log(`Opening ONLY vehicle ${vehicleId}`);
+        // Open this specific vehicle ONLY
+        content.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+    } else {
+        console.log(`Closing ONLY vehicle ${vehicleId}`);
+        // Close this specific vehicle ONLY
+        content.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
     }
 };
 

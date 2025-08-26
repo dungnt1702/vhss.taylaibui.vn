@@ -19,7 +19,7 @@
                     </div>
                     
                     @if(auth()->user()->canManageVehicles() && !in_array($filter, ['active', 'running', 'waiting', 'expired', 'paused']))
-                    <button onclick="openVehicleModal()" class="inline-flex items-center p-2 bg-brand-500 hover:bg-brand-600 text-white rounded-md transition-colors duration-200" title="Thêm xe mới">
+                    <button onclick="openVehicleModal()" class="btn btn-success btn-sm" title="Thêm xe mới">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
@@ -42,7 +42,7 @@
                     @forelse($vehicles as $vehicle)
                         <div class="vehicle-card bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition-shadow duration-200" data-vehicle-id="{{ $vehicle->id }}" data-vehicle-name="{{ $vehicle->name }}" data-status="{{ $vehicle->status }}" data-start-time="{{ $vehicle->start_time ? strtotime($vehicle->start_time) * 1000 : '' }}" data-end-time="{{ $vehicle->end_time ? strtotime($vehicle->end_time) * 1000 : '' }}" data-paused-at="{{ $vehicle->paused_at ? strtotime($vehicle->paused_at) * 1000 : '' }}" data-paused-remaining-seconds="{{ $vehicle->paused_remaining_seconds ?? '' }}">
                             <!-- Vehicle Header - Clickable for collapse/expand -->
-                            <div class="vehicle-header cursor-pointer p-4 border-b border-neutral-200 hover:bg-neutral-50 transition-colors duration-200" onclick="toggleVehicle({{ $vehicle->id }})">
+                            <div class="vehicle-header cursor-pointer p-4 border-b border-neutral-200 hover:bg-neutral-50 transition-colors duration-200" onclick="toggleVehicleSimple({{ $vehicle->id }})">
                                 <div class="flex justify-between items-start mb-2">
                                     <h3 class="text-lg font-semibold text-neutral-900">
                                         Xe số {{ $vehicle->name }}
@@ -56,14 +56,14 @@
                                 </p>
                                 <!-- Expand/Collapse Icon -->
                                 <div class="flex justify-center mt-2">
-                                    <svg class="w-4 h-4 text-neutral-500 transform transition-transform" id="icon-{{ $vehicle->id }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-neutral-500 transform transition-transform {{ $filter === 'running' ? 'rotate-180' : '' }}" id="icon-{{ $vehicle->id }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </div>
                             </div>
 
                             <!-- Vehicle Details - Collapsible -->
-                            <div class="vehicle-content hidden p-4" id="content-{{ $vehicle->id }}">
+                            <div class="vehicle-content {{ $filter === 'running' ? '' : 'hidden' }} p-4" id="content-{{ $vehicle->id }}">
                                 <!-- Debug: Current vehicle status: {{ $vehicle->status }} -->
                                 
                                 <!-- Countdown Timer Display - ALWAYS ON TOP -->
@@ -161,59 +161,59 @@
                                 </div>
                                 
                                 @if($vehicle->status === 'waiting')
-                                    <!-- Waiting vehicles - Chạy 30p, Chạy 45p, Về xưởng -->
+                                    <!-- Waiting vehicles - 30p, 45p, Về xưởng -->
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                        <button onclick="startTimer({{ $vehicle->id }}, 30)" class="start-30-btn">
-                                            🚗 Chạy 30p
+                                        <button onclick="startTimer({{ $vehicle->id }}, 30)" class="btn btn-success btn-sm">
+                                            🚗 30p
                                         </button>
-                                        <button onclick="startTimer({{ $vehicle->id }}, 45)" class="start-45-btn">
-                                            🚙 Chạy 45p
+                                        <button onclick="startTimer({{ $vehicle->id }}, 45)" class="btn btn-primary btn-sm">
+                                            🚙 45p
                                         </button>
-                                        <button onclick="showWorkshopModal({{ $vehicle->id }})" class="workshop-btn">
+                                        <button onclick="showWorkshopModal({{ $vehicle->id }})" class="btn btn-secondary btn-sm">
                                             🔧 Về xưởng
                                         </button>
                                     </div>
                                 @elseif($vehicle->status === 'running')
-                                    <!-- Running vehicles - Thêm 10p, Tạm dừng, Về bãi -->
+                                    <!-- Running vehicles - +10p, Tạm dừng, Về bãi -->
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                        <button onclick="addTime({{ $vehicle->id }}, 10)" class="add-10-btn">
-                                            ⏰ Thêm 10p
+                                        <button onclick="addTime({{ $vehicle->id }}, 10)" class="btn btn-warning btn-sm">
+                                            ⏰ +10p
                                         </button>
-                                        <button onclick="pauseVehicle({{ $vehicle->id }})" class="pause-btn">
+                                        <button onclick="pauseVehicle({{ $vehicle->id }})" class="btn btn-info btn-sm">
                                             ⏸️ Tạm dừng
                                         </button>
-                                        <button onclick="returnToYard({{ $vehicle->id }})" class="return-btn">
+                                        <button onclick="returnToYard({{ $vehicle->id }})" class="btn btn-primary btn-sm">
                                             🏠 Về bãi
                                         </button>
                                     </div>
                                 @elseif($vehicle->status === 'expired')
-                                    <!-- Expired vehicles - Thêm 10p, Về bãi -->
+                                    <!-- Expired vehicles - +10p, Về bãi -->
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                        <button onclick="addTime({{ $vehicle->id }}, 10)" class="add-10-btn">
-                                            ⏰ Thêm 10p
+                                        <button onclick="addTime({{ $vehicle->id }}, 10)" class="btn btn-warning btn-sm">
+                                            ⏰ +10p
                                         </button>
-                                        <button onclick="returnToYard({{ $vehicle->id }})" class="return-btn">
+                                        <button onclick="returnToYard({{ $vehicle->id }})" class="btn btn-primary btn-sm">
                                             🏠 Về bãi
                                         </button>
                                     </div>
                                 @elseif($vehicle->status === 'paused')
                                     <!-- Paused vehicles - Tiếp tục, Về bãi -->
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                        <button onclick="resumeVehicle({{ $vehicle->id }})" class="resume-btn">
+                                        <button onclick="resumeVehicle({{ $vehicle->id }})" class="btn btn-success btn-sm">
                                             ▶️ Tiếp tục
                                         </button>
-                                        <button onclick="returnToYard({{ $vehicle->id }})" class="return-btn">
+                                        <button onclick="returnToYard({{ $vehicle->id }})" class="btn btn-primary btn-sm">
                                             🏠 Về bãi
                                         </button>
                                     </div>
                                 @else
-                                    <!-- Active vehicles (outside yard) - Chạy 30p, Chạy 45p -->
+                                    <!-- Active vehicles (outside yard) - 30p, 45p -->
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                        <button onclick="startTimer({{ $vehicle->id }}, 30)" class="start-30-btn">
-                                            🚗 Chạy 30p
+                                        <button onclick="startTimer({{ $vehicle->id }}, 30)" class="btn btn-success btn-sm">
+                                            🚗 30p
                                         </button>
-                                        <button onclick="startTimer({{ $vehicle->id }}, 45)" class="start-45-btn">
-                                            🚙 Chạy 45p
+                                        <button onclick="startTimer({{ $vehicle->id }}, 45)" class="btn btn-primary btn-sm">
+                                            🚙 45p
                                         </button>
                                     </div>
                                 @endif
@@ -235,7 +235,7 @@
                                 </p>
                                 @if(auth()->user()->canManageVehicles())
                                     <div class="mt-6">
-                                        <button onclick="openVehicleModal()" class="inline-flex items-center px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-lg transition-colors duration-200">
+                                        <button onclick="openVehicleModal()" class="btn btn-success">
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                             </svg>
@@ -539,10 +539,10 @@
                 <!-- Footer - Fixed at bottom -->
                 <div class="p-6 pt-4 border-t border-neutral-200 flex-shrink-0">
                     <div class="flex space-x-3">
-                        <button type="submit" form="vehicle-form" id="vehicle-submit-btn" class="flex-1 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-md transition-colors duration-200">
+                        <button type="submit" form="vehicle-form" id="vehicle-submit-btn" class="btn btn-primary flex-1">
                             Thêm xe
                         </button>
-                        <button type="button" onclick="closeVehicleModal()" class="flex-1 px-4 py-2 bg-neutral-300 hover:bg-neutral-400 text-neutral-700 font-semibold rounded-md transition-colors duration-200">
+                        <button type="button" onclick="closeVehicleModal()" class="btn btn-secondary flex-1">
                             Hủy
                         </button>
                     </div>
@@ -589,12 +589,12 @@
                         </div>
                         
                         <div class="flex space-x-3">
-                            <button type="submit" class="flex-1 px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-md transition-colors duration-200">
-                                Cập nhật
-                            </button>
-                            <button type="button" onclick="closeStatusModal()" class="flex-1 px-4 py-2 bg-neutral-300 hover:bg-neutral-400 text-neutral-700 font-semibold rounded-md transition-colors duration-200">
-                                Hủy
-                            </button>
+                                                    <button type="submit" class="btn btn-primary flex-1">
+                            Cập nhật
+                        </button>
+                        <button type="button" onclick="closeStatusModal()" class="btn btn-secondary flex-1">
+                            Hủy
+                        </button>
                         </div>
                     </form>
                 </div>
@@ -624,12 +624,12 @@
                         </div>
                         
                         <div class="flex space-x-3">
-                            <button type="submit" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition-colors duration-200">
-                                Chuyển về xưởng
-                            </button>
-                            <button type="button" onclick="closeWorkshopModal()" class="flex-1 px-4 py-2 bg-neutral-300 hover:bg-neutral-400 text-neutral-700 font-semibold rounded-md transition-colors duration-200">
-                                Hủy
-                            </button>
+                                                    <button type="submit" class="btn btn-danger flex-1">
+                            Chuyển về xưởng
+                        </button>
+                        <button type="button" onclick="closeWorkshopModal()" class="btn btn-secondary flex-1">
+                            Hủy
+                        </button>
                         </div>
                     </form>
                 </div>
@@ -646,5 +646,33 @@
          - vehicle-operations.js: Vehicle control operations
          - vehicle-wrappers.js: Wrapper functions for HTML onclick events
     -->
+    
+    <!-- Auto-expand all vehicle cards when filter is 'running' -->
+    @if($filter === 'running')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Use the global function to auto-expand all running vehicles
+            if (typeof window.autoExpandRunningVehicles === 'function') {
+                const expandedCount = window.autoExpandRunningVehicles();
+                console.log(`Auto-expanded ${expandedCount} vehicle cards for running filter`);
+            } else {
+                // Fallback if function is not available
+                console.warn('autoExpandRunningVehicles function not available, using fallback');
+                const allVehicleCards = document.querySelectorAll('.vehicle-card');
+                
+                allVehicleCards.forEach(function(card) {
+                    const vehicleId = card.dataset.vehicleId;
+                    const content = document.getElementById(`content-${vehicleId}`);
+                    const icon = document.getElementById(`icon-${vehicleId}`);
+                    
+                    if (content && icon) {
+                        content.classList.remove('hidden');
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            }
+        });
+    </script>
+    @endif
     @endpush
 </x-app-layout>

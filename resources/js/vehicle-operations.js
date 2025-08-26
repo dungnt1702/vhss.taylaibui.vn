@@ -288,16 +288,23 @@ class VehicleOperations {
         const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
         if (!vehicleCard) return;
         
-        // Get current end time or use current time
-        let currentEndTime = vehicleCard.dataset.endTime;
+        const currentStatus = vehicleCard.dataset.status;
         let newEndTime;
+        let startTimeMs;
         
-        if (currentEndTime && currentEndTime !== '') {
-            // Add to existing end time
-            newEndTime = parseInt(currentEndTime) + (additionalMinutes * 60 * 1000);
+        // Check if vehicle is expired or has no valid end time
+        if (currentStatus === 'expired' || !vehicleCard.dataset.endTime || vehicleCard.dataset.endTime === '') {
+            // Start new round with additionalMinutes
+            startTimeMs = this.getCurrentTimeMs();
+            newEndTime = startTimeMs + (additionalMinutes * 60 * 1000);
+            
+            // Update start time
+            vehicleCard.dataset.startTime = startTimeMs.toString();
         } else {
-            // Start from current time
-            newEndTime = this.getCurrentTimeMs() + (additionalMinutes * 60 * 1000);
+            // Add to existing end time (vehicle is still running)
+            const currentEndTime = parseInt(vehicleCard.dataset.endTime);
+            newEndTime = currentEndTime + (additionalMinutes * 60 * 1000);
+            startTimeMs = parseInt(vehicleCard.dataset.startTime) || this.getCurrentTimeMs();
         }
         
         // Update vehicle card
@@ -316,15 +323,16 @@ class VehicleOperations {
         
         // Send to server
         if (window.sendVehicleStatusToServer) {
-            window.sendVehicleStatusToServer(vehicleId, 'running', newEndTime);
+            window.sendVehicleStatusToServer(vehicleId, 'running', newEndTime, startTimeMs);
         }
-        this.updateVehicleStatus(vehicleId, 'running', newEndTime);
+        this.updateVehicleStatus(vehicleId, 'running', newEndTime, startTimeMs);
         
         // Hide vehicle from current screen (it's now running)
         this.hideVehicleFromCurrentScreen(vehicleId, 'running');
         
         // Speak notification
-        this.speakVietnamese(`Xe ${this.getVehicleName(vehicleId)} đã được thêm ${additionalMinutes} phút`);
+        const actionText = currentStatus === 'expired' ? 'bắt đầu lượt mới' : 'được thêm';
+        this.speakVietnamese(`Xe ${this.getVehicleName(vehicleId)} đã ${actionText} ${additionalMinutes} phút`);
     }
 
     // Countdown Timer Management
@@ -461,7 +469,7 @@ class VehicleOperations {
             case 'expired':
                 buttonHTML = `
                     <button onclick="vehicleOperations.addTime(${vehicleId}, 10)" class="add-time-btn">
-                        ⏰ Thêm 10p
+                        ⏰ +10p
                     </button>
                     <button onclick="vehicleOperations.returnToYard(${vehicleId})" class="return-btn">
                         🏠 Về bãi
@@ -471,10 +479,10 @@ class VehicleOperations {
             case 'active':
                 buttonHTML = `
                     <button onclick="vehicleOperations.startVehicle(${vehicleId}, 30)" class="start-30-btn">
-                        🚗 Chạy 30p
+                        🚗 30p
                     </button>
                     <button onclick="vehicleOperations.startVehicle(${vehicleId}, 45)" class="start-45-btn">
-                        🚙 Chạy 45p
+                        🚙 45p
                     </button>
                     <button onclick="vehicleForms.openWorkshopModal(${vehicleId})" class="workshop-btn">
                         🔧 Về xưởng
@@ -484,10 +492,10 @@ class VehicleOperations {
             case 'waiting':
                 buttonHTML = `
                     <button onclick="vehicleOperations.startVehicle(${vehicleId}, 30)" class="start-30-btn">
-                        🚗 Chạy 30p
+                        🚗 30p
                     </button>
                     <button onclick="vehicleOperations.startVehicle(${vehicleId}, 45)" class="start-45-btn">
-                        🚙 Chạy 45p
+                        🚙 45p
                     </button>
                     <button onclick="vehicleForms.openWorkshopModal(${vehicleId})" class="workshop-btn">
                         🔧 Về xưởng

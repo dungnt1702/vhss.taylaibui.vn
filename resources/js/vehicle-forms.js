@@ -209,45 +209,92 @@ class VehicleForms {
         document.getElementById('workshop-modal').classList.add('hidden');
     }
 
-    // Vehicle collapse/expand functionality
+    // Vehicle collapse/expand functionality using specific IDs
     toggleVehicle(vehicleId) {
-        const content = document.getElementById(`content-${vehicleId}`);
-        const icon = document.getElementById(`icon-${vehicleId}`);
+        // Use specific IDs to toggle the exact vehicle clicked
+        const contentId = `content-${vehicleId}`;
+        const iconId = `icon-${vehicleId}`;
+        
+        const content = document.getElementById(contentId);
+        const icon = document.getElementById(iconId);
         const card = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
         
-        if (content && icon && card) {
-            const isHidden = content.classList.contains('hidden');
-            
-            if (isHidden) {
-                // Expand
-                content.classList.remove('hidden');
-                icon.style.transform = 'rotate(180deg)';
-                this.expandedVehicles.add(vehicleId);
-                
-                // Add smooth animation
-                card.style.transition = 'all 0.3s ease-in-out';
-                card.style.transform = 'scale(1.02)';
-                
-                // Reset transform after animation
-                setTimeout(() => {
-                    card.style.transform = 'scale(1)';
-                }, 300);
-            } else {
-                // Collapse
-                content.classList.add('hidden');
-                icon.style.transform = 'rotate(0deg)';
-                this.expandedVehicles.delete(vehicleId);
-                
-                // Add smooth animation
-                card.style.transition = 'all 0.3s ease-in-out';
-                card.style.transform = 'scale(0.98)';
-                
-                // Reset transform after animation
-                setTimeout(() => {
-                    card.style.transform = 'scale(1)';
-                }, 300);
-            }
+        if (!content || !icon || !card) {
+            console.warn(`Vehicle elements not found: contentId=${contentId}, iconId=${iconId}, vehicleId=${vehicleId}`);
+            return;
         }
+        
+        const isHidden = content.classList.contains('hidden');
+        
+        if (isHidden) {
+            // Close all other vehicle contents first using their specific IDs
+            this.closeAllOtherVehicles(contentId);
+            
+            // Expand the clicked vehicle using its specific ID
+            this.openVehicle(content, icon, card, vehicleId);
+        } else {
+            // Collapse the clicked vehicle using its specific ID
+            this.closeVehicle(content, icon, card, vehicleId);
+        }
+    }
+    
+    // Helper function to close all other vehicles
+    closeAllOtherVehicles(currentContentId) {
+        // Only close other vehicles, not the current one
+        const allContents = document.querySelectorAll('.vehicle-content');
+        
+        allContents.forEach((contentEl) => {
+            const contentId = contentEl.id;
+            if (contentId !== currentContentId) {
+                // Close this content
+                contentEl.classList.add('hidden');
+                
+                // Find and reset the corresponding icon
+                const vehicleId = contentId.replace('content-', '');
+                const icon = document.getElementById(`icon-${vehicleId}`);
+                if (icon) {
+                    icon.style.transform = 'rotate(0deg)';
+                }
+                
+                // Find and reset the corresponding card
+                const card = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
+                if (card) {
+                    card.style.transform = 'scale(1)';
+                }
+            }
+        });
+    }
+    
+    // Helper function to open a specific vehicle
+    openVehicle(content, icon, card, vehicleId) {
+        content.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+        this.expandedVehicles.add(vehicleId);
+        
+        // Add smooth animation
+        card.style.transition = 'all 0.3s ease-in-out';
+        card.style.transform = 'scale(1.02)';
+        
+        // Reset transform after animation
+        setTimeout(() => {
+            card.style.transform = 'scale(1)';
+        }, 300);
+    }
+    
+    // Helper function to close a specific vehicle
+    closeVehicle(content, icon, card, vehicleId) {
+        content.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+        this.expandedVehicles.delete(vehicleId);
+        
+        // Add smooth animation
+        card.style.transition = 'all 0.3s ease-in-out';
+        card.style.transform = 'scale(0.98)';
+        
+        // Reset transform after animation
+        setTimeout(() => {
+            card.style.transform = 'scale(1)';
+        }, 300);
     }
 
     // Utility Functions

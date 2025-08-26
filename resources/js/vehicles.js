@@ -251,7 +251,7 @@ class VehicleManager {
             case 'expired':
                 buttonHTML = `
                     <button onclick="vehicleManager.addTime(${vehicleId}, 10)" class="add-time-btn">
-                        ⏰ Thêm 10p
+                        ⏰ +10p
                     </button>
                     <button onclick="vehicleManager.returnToYard(${vehicleId})" class="return-btn">
                         🏠 Về bãi
@@ -609,22 +609,65 @@ class VehicleManager {
         }
     }
 
-    // Toggle vehicle details
+    // Toggle vehicle details using specific IDs
     toggleVehicle(vehicleId) {
-        const content = document.getElementById(`content-${vehicleId}`);
-        const icon = document.getElementById(`icon-${vehicleId}`);
+        // Use specific IDs to toggle the exact vehicle clicked
+        const contentId = `content-${vehicleId}`;
+        const iconId = `icon-${vehicleId}`;
         
-        if (content && icon) {
-            const isHidden = content.classList.contains('hidden');
-            
-            if (isHidden) {
-                content.classList.remove('hidden');
-                icon.style.transform = 'rotate(180deg)';
-            } else {
-                content.classList.add('hidden');
-                icon.style.transform = 'rotate(0deg)';
-            }
+        const content = document.getElementById(contentId);
+        const icon = document.getElementById(iconId);
+        
+        if (!content || !icon) {
+            console.warn(`Vehicle elements not found: contentId=${contentId}, iconId=${iconId}`);
+            return;
         }
+        
+        const isHidden = content.classList.contains('hidden');
+        
+        if (isHidden) {
+            // Close all other vehicle contents first using their specific IDs
+            this.closeAllOtherVehicles(contentId);
+            
+            // Open the clicked vehicle using its specific ID
+            this.openVehicle(content, icon);
+        } else {
+            // Close the clicked vehicle using its specific ID
+            this.closeVehicle(content, icon);
+        }
+    }
+    
+    // Helper function to close all other vehicles
+    closeAllOtherVehicles(currentContentId) {
+        // Only close other vehicles, not the current one
+        const allContents = document.querySelectorAll('.vehicle-content');
+        
+        allContents.forEach((contentEl) => {
+            const contentId = contentEl.id;
+            if (contentId !== currentContentId) {
+                // Close this content
+                contentEl.classList.add('hidden');
+                
+                // Find and reset the corresponding icon
+                const vehicleId = contentId.replace('content-', '');
+                const icon = document.getElementById(`icon-${vehicleId}`);
+                if (icon) {
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            }
+        });
+    }
+    
+    // Helper function to open a specific vehicle
+    openVehicle(content, icon) {
+        content.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+    }
+    
+    // Helper function to close a specific vehicle
+    closeVehicle(content, icon) {
+        content.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
     }
 }
 

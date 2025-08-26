@@ -114,3 +114,83 @@ main {
         padding-top: 8rem; /* 4rem for nav + 4rem for header */
     }
 }
+
+/* Bootstrap-style Button Classes using Tailwind CSS */
+.btn {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+.btn-sm {
+    @apply px-3 py-1.5 text-xs;
+}
+
+.btn-lg {
+    @apply px-6 py-3 text-base;
+}
+
+.btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+}
+
+.btn-secondary {
+    @apply bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500;
+}
+
+.btn-success {
+    @apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
+}
+
+.btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+}
+
+.btn-warning {
+    @apply bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500;
+}
+
+.btn-info {
+    @apply bg-cyan-600 text-white hover:bg-cyan-700 focus:ring-cyan-500;
+}
+
+.btn-light {
+    @apply bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500;
+}
+
+.btn-dark {
+    @apply bg-gray-800 text-white hover:bg-gray-900 focus:ring-gray-500;
+}
+
+.btn-outline-primary {
+    @apply border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white focus:ring-blue-500;
+}
+
+.btn-outline-secondary {
+    @apply border border-gray-600 text-gray-600 hover:bg-gray-600 hover:text-white focus:ring-gray-500;
+}
+
+.btn-outline-success {
+    @apply border border-green-600 text-green-600 hover:bg-green-600 hover:text-white focus:ring-green-500;
+}
+
+.btn-outline-danger {
+    @apply border border-red-600 text-red-600 hover:bg-red-600 hover:text-white focus:ring-red-500;
+}
+
+.btn-outline-warning {
+    @apply border border-yellow-600 text-yellow-600 hover:bg-yellow-600 hover:text-white focus:ring-yellow-500;
+}
+
+.btn-outline-info {
+    @apply border border-cyan-600 text-cyan-600 hover:bg-cyan-600 hover:text-white focus:ring-cyan-500;
+}
+
+/* Button states */
+.btn:disabled,
+.btn[disabled] {
+    @apply opacity-50 cursor-not-allowed;
+}
+
+/* Button with flex-1 utility */
+.btn.flex-1 {
+    flex: 1 1 0%;
+}
