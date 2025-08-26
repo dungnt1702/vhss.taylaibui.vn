@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Khách đoàn') }}
+            {{ __('Xe ngoài bãi') }}
         </h2>
     </x-slot>
 
@@ -11,8 +11,8 @@
             <div class="mb-6">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Khách đoàn</h1>
-                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Quản lý xe khách đoàn theo thời gian và cung đường</p>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Xe ngoài bãi</h1>
+                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Quản lý xe ngoài bãi theo thời gian và cung đường</p>
                     </div>
                     <div class="mt-4 sm:mt-0 flex flex-wrap gap-2">
                         <button onclick="refreshPage()" class="px-3 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">

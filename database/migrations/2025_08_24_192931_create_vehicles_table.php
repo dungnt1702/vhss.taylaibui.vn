@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('seats', ['1', '2']); // Số chỗ ngồi
             $table->enum('power', ['48V-1000W', '60V-1200W']); // Công suất
             $table->enum('wheel_size', ['7inch', '8inch']); // Kích cỡ bánh
-            $table->string('status')->default('active'); // Trạng thái: active, inactive, running, waiting, expired, paused, route, group
+            $table->string('status')->default('active'); // Trạng thái: active, inactive, running, waiting, expired, paused, route, group (group = xe ngoài bãi)
             $table->text('notes')->nullable(); // Ghi chú
             $table->string('current_location')->nullable(); // Vị trí hiện tại
             $table->string('driver_name')->nullable(); // Tên tài xế

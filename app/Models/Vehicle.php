@@ -47,7 +47,7 @@ class Vehicle extends Model
     const STATUS_EXPIRED = 'expired';    // Xe hết giờ
     const STATUS_PAUSED = 'paused';     // Xe tạm dừng
     const STATUS_ROUTE = 'route';        // Xe cung đường
-    const STATUS_GROUP = 'group';        // Xe khách đoàn
+    const STATUS_GROUP = 'group';        // Xe ngoài bãi
 
     // Color options
     const COLORS = ['Xanh biển', 'Xanh cây', 'Cam', 'Đỏ', 'Vàng', 'Đen'];
@@ -72,7 +72,7 @@ class Vehicle extends Model
             self::STATUS_EXPIRED => 'Xe hết giờ',
             self::STATUS_PAUSED => 'Xe tạm dừng',
             self::STATUS_ROUTE => 'Xe cung đường',
-            self::STATUS_GROUP => 'Xe khách đoàn',
+            self::STATUS_GROUP => 'Xe ngoài bãi',
             default => 'Không xác định'
         };
     }
@@ -147,7 +147,7 @@ class Vehicle extends Model
         return $query->where('status', self::STATUS_GROUP);
     }
 
-    // Scope for vehicles that are not inactive (for Khách đoàn screen)
+    // Scope for vehicles that are not inactive (for Xe ngoài bãi screen)
     public function scopeNotInactive($query)
     {
         return $query->where('status', '!=', self::STATUS_INACTIVE);

@@ -64,7 +64,7 @@ class VehicleSeeder extends Seeder
             Vehicle::STATUS_EXPIRED => 'Bãi xe phụ',
             Vehicle::STATUS_PAUSED => 'Bãi xe chính',
             Vehicle::STATUS_ROUTE => 'Tuyến cố định',
-            Vehicle::STATUS_GROUP => 'Khu vực khách đoàn',
+            Vehicle::STATUS_GROUP => 'Khu vực xe ngoài bãi',
             default => 'Bãi xe chính'
         };
     }
@@ -79,7 +79,7 @@ class VehicleSeeder extends Seeder
             Vehicle::STATUS_EXPIRED => "Xe Gokart số {$vehicleNumber} cần bảo dưỡng gấp",
             Vehicle::STATUS_PAUSED => "Xe Gokart số {$vehicleNumber} tạm dừng hoạt động",
             Vehicle::STATUS_ROUTE => "Xe Gokart số {$vehicleNumber} chạy tuyến cố định",
-            Vehicle::STATUS_GROUP => "Xe Gokart số {$vehicleNumber} phục vụ khách đoàn",
+            Vehicle::STATUS_GROUP => "Xe Gokart số {$vehicleNumber} phục vụ xe ngoài bãi",
             default => "Xe Gokart số {$vehicleNumber}"
         };
     }

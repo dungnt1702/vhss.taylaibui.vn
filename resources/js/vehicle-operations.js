@@ -35,6 +35,9 @@ class VehicleOperations {
         this.updateCountdownDisplay(vehicleId, minutes * 60 * 1000);
         
         // Send to server with start_time and end_time
+        if (window.sendVehicleStatusToServer) {
+            window.sendVehicleStatusToServer(vehicleId, 'running', endTimeMs, startTimeMs);
+        }
         this.updateVehicleStatus(vehicleId, 'running', endTimeMs, startTimeMs);
         
         // Speak notification
@@ -98,6 +101,9 @@ class VehicleOperations {
         const vehicleName = this.getVehicleName(vehicleId);
         this.speakVietnamese(`Xe ${vehicleName} đã được tạm dừng`);
         
+        if (window.sendVehicleStatusToServer) {
+            window.sendVehicleStatusToServer(vehicleId, 'paused');
+        }
         this.updateVehicleStatus(vehicleId, 'paused');
         
         // Show navigation hint to user
@@ -198,6 +204,9 @@ class VehicleOperations {
         const vehicleName = this.getVehicleName(vehicleId);
         this.speakVietnamese(`Xe ${vehicleName} đã được tiếp tục`);
         
+        if (window.sendVehicleStatusToServer) {
+            window.sendVehicleStatusToServer(vehicleId, 'running');
+        }
         this.updateVehicleStatus(vehicleId, 'running');
     }
 
@@ -253,6 +262,9 @@ class VehicleOperations {
         }
         
         // Update vehicle status to active and clear all timing data
+        if (window.sendVehicleStatusToServer) {
+            window.sendVehicleStatusToServer(vehicleId, 'active', null, null);
+        }
         this.updateVehicleStatus(vehicleId, 'active', null, null);
         
         // Show navigation hint to user
@@ -290,6 +302,9 @@ class VehicleOperations {
         this.updateCountdownDisplay(vehicleId, additionalMinutes * 60 * 1000);
         
         // Send to server
+        if (window.sendVehicleStatusToServer) {
+            window.sendVehicleStatusToServer(vehicleId, 'running', newEndTime);
+        }
         this.updateVehicleStatus(vehicleId, 'running', newEndTime);
         
         // Speak notification
@@ -314,6 +329,9 @@ class VehicleOperations {
                 // Time expired
                 clearInterval(this.vehicleTimers[vehicleId]);
                 delete this.vehicleTimers[vehicleId];
+                if (window.sendVehicleStatusToServer) {
+                    window.sendVehicleStatusToServer(vehicleId, 'expired');
+                }
                 this.updateVehicleStatus(vehicleId, 'expired');
             }
         }, 1000);
@@ -522,15 +540,10 @@ class VehicleOperations {
         // Find all vehicle cards
         const vehicleCards = document.querySelectorAll('[data-vehicle-id]');
         
-        // Debug: Log what we found
-        console.log(`Found ${vehicleCards.length} vehicle cards`);
-        
         vehicleCards.forEach(card => {
             const vehicleId = card.dataset.vehicleId;
             const endTime = card.dataset.endTime;
             const status = card.dataset.status;
-            
-            console.log(`Vehicle ${vehicleId}: status=${status}, endTime=${endTime}`);
             
             // Only process vehicles with end_time and running status
             if (endTime && endTime !== '' && status === 'running') {
@@ -538,25 +551,21 @@ class VehicleOperations {
                 const now = new Date().getTime();
                 const timeLeft = endTimeMs - now;
                 
-                console.log(`Vehicle ${vehicleId}: timeLeft=${timeLeft}ms (${Math.floor(timeLeft/1000)}s)`);
-                
                 if (timeLeft > 0) {
                     // Start countdown timer
                     this.startCountdownTimer(vehicleId, endTimeMs);
                     
                     // Update countdown display immediately
                     this.updateCountdownDisplay(vehicleId, timeLeft);
-                    
-                    console.log(`Started countdown timer for vehicle ${vehicleId}`);
                 } else {
                     // Time has expired, update status
-                    console.log(`Vehicle ${vehicleId} time expired, updating status`);
+                    if (window.sendVehicleStatusToServer) {
+                        window.sendVehicleStatusToServer(vehicleId, 'expired');
+                    }
                     this.updateVehicleStatus(vehicleId, 'expired');
                 }
             }
         });
-        
-        console.log('Countdown timers initialization complete');
     }
 }
 

@@ -154,6 +154,41 @@ function updateVehicleStatus(vehicleId, status, endTime = null) {
     }
 }
 
+// Send vehicle status to server via API
+function sendVehicleStatusToServer(vehicleId, status, endTime = null, startTime = null) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (!csrfToken) {
+        console.error('CSRF token not found');
+        return;
+    }
+
+    const data = {
+        status: status,
+        end_time: endTime,
+        start_time: startTime
+    };
+
+    fetch(`/vehicles/${vehicleId}/status`, {
+        method: 'PATCH',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log(`Vehicle ${vehicleId} status updated to ${status}`);
+        } else {
+            console.error('Failed to update vehicle status:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error updating vehicle status:', error);
+    });
+}
+
 // Countdown Timer Functions
 function startCountdownTimer(vehicleId, endTime) {
     if (window.vehicleOperations) {
@@ -231,6 +266,7 @@ window.speakVietnamese = speakVietnamese;
 window.getVehicleName = getVehicleName;
 window.startTimer = startTimer;
 window.updateVehicleStatus = updateVehicleStatus;
+window.sendVehicleStatusToServer = sendVehicleStatusToServer;
 window.startCountdownTimer = startCountdownTimer;
 window.updateCountdownDisplay = updateCountdownDisplay;
 window.updateGridLayout = updateGridLayout;
@@ -260,8 +296,9 @@ document.addEventListener('DOMContentLoaded', function() {
     window.speakVietnamese = speakVietnamese;
     window.getVehicleName = getVehicleName;
     window.startTimer = startTimer;
-    window.updateVehicleStatus = updateVehicleStatus;
-    window.startCountdownTimer = startCountdownTimer;
+window.updateVehicleStatus = updateVehicleStatus;
+window.sendVehicleStatusToServer = sendVehicleStatusToServer;
+window.startCountdownTimer = startCountdownTimer;
     window.updateCountdownDisplay = updateCountdownDisplay;
     window.updateGridLayout = updateGridLayout;
     window.refreshAllCountdowns = refreshAllCountdowns;

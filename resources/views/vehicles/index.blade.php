@@ -577,7 +577,7 @@
                                 <option value="expired">Xe hết giờ</option>
                                 <option value="paused">Xe tạm dừng</option>
                                 <option value="route">Xe cung đường</option>
-                                <option value="group">Xe khách đoàn</option>
+                                <option value="group">Xe ngoài bãi</option>
                             </select>
                         </div>
                         
