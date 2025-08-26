@@ -123,104 +123,107 @@ class VehicleOperations {
     resumeVehicle(vehicleId) {
         // Get the current end time from the vehicle card
         const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
-        if (vehicleCard) {
-            vehicleCard.dataset.status = 'running';
-            
-            // Get the paused remaining time or calculate from end time
-            let timeLeft = 0;
-            let endTimeMs = 0;
-            
-            // Check if we have paused remaining time
-            if (vehicleCard.dataset.pausedRemainingSeconds) {
-                const pausedSeconds = parseInt(vehicleCard.dataset.pausedRemainingSeconds);
-                if (pausedSeconds > 0) {
-                                    // Calculate new end time based on paused remaining time
+        if (!vehicleCard) return;
+        
+        // Get the paused remaining time
+        let timeLeft = 0;
+        let endTimeMs = 0;
+        let startTimeMs = 0;
+        
+        // Check if we have paused remaining time
+        if (vehicleCard.dataset.pausedRemainingSeconds) {
+            const pausedSeconds = parseInt(vehicleCard.dataset.pausedRemainingSeconds);
+            if (pausedSeconds > 0) {
+                // Calculate new end time based on paused remaining time
                 const now = this.getCurrentTimeMs();
                 endTimeMs = now + (pausedSeconds * 1000);
+                timeLeft = pausedSeconds * 1000;
+                
+                // Calculate start time to maintain the original duration
+                const originalEndTime = parseInt(vehicleCard.dataset.endTime) || 0;
+                const originalStartTime = parseInt(vehicleCard.dataset.startTime) || 0;
+                if (originalStartTime > 0 && originalEndTime > 0) {
+                    // Use original start time to maintain duration consistency
+                    startTimeMs = originalStartTime;
+                    // Recalculate end time based on original start time + remaining time
+                    const totalDuration = originalEndTime - originalStartTime;
+                    const remainingDuration = pausedSeconds * 1000;
+                    endTimeMs = startTimeMs + remainingDuration;
+                    timeLeft = remainingDuration;
+                } else {
+                    // Fallback: use current time as start
+                    startTimeMs = now;
+                    endTimeMs = now + (pausedSeconds * 1000);
                     timeLeft = pausedSeconds * 1000;
-                    
-                    // Update the end time in data attribute
-                    vehicleCard.dataset.endTime = endTimeMs.toString();
-                    
-                    // Clear paused data
-                    delete vehicleCard.dataset.pausedRemainingSeconds;
-                } else {
-                    // Paused time is 0 or invalid, set to expired
-                    vehicleCard.dataset.status = 'expired';
-                    this.updateStatusText(vehicleId, 'expired', null);
-                    this.updateVehicleButtons(vehicleId, 'expired');
-                    return; // Exit early
                 }
+                
+                // Update the end time in data attribute
+                vehicleCard.dataset.endTime = endTimeMs.toString();
+                vehicleCard.dataset.startTime = startTimeMs.toString();
+                
+                // Clear paused data
+                delete vehicleCard.dataset.pausedRemainingSeconds;
             } else {
-                // No paused data, check if we can calculate from end time
-                const endTime = vehicleCard.dataset.endTime;
-                if (endTime && endTime !== '') {
-                    endTimeMs = parseInt(endTime);
-                    const now = this.getCurrentTimeMs();
-                    timeLeft = endTimeMs - now;
-                    
-                    // If time has already expired, don't allow resume
-                    if (timeLeft <= 0) {
-                        vehicleCard.dataset.status = 'expired';
-                        this.updateStatusText(vehicleId, 'expired', null);
-                        this.updateVehicleButtons(vehicleId, 'expired');
-                        return; // Exit early
-                    }
-                } else {
-                    // No end time data, can't resume
-                    vehicleCard.dataset.status = 'waiting';
-                    this.updateStatusText(vehicleId, 'waiting', null);
-                    this.updateVehicleButtons(vehicleId, 'waiting');
-                    return; // Exit early
-                }
-            }
-            
-            // At this point, timeLeft should be > 0 and valid
-            if (timeLeft > 0) {
-                // Update countdown display to show remaining time
-                const countdownElement = document.getElementById(`countdown-${vehicleId}`);
-                if (countdownElement) {
-                    countdownElement.classList.remove('text-yellow-600');
-                    
-                    const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                    const secondsLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                    
-                    const minutesDisplay = minutesLeft.toString().padStart(2, '0');
-                    const secondsDisplay = secondsLeft.toString().padStart(2, '0');
-                    
-                    countdownElement.innerHTML = `<span class="countdown-minutes">${minutesDisplay}</span>:<span class="countdown-seconds">${secondsDisplay}</span>`;
-                }
-                
-                // Restart countdown timer with the exact remaining time from database
-                this.startCountdownTimer(vehicleId, endTimeMs);
-                
-                // Update status text to show remaining time
-                this.updateStatusText(vehicleId, 'running', Math.floor(timeLeft / (1000 * 60)));
-                
-                // Update button display to show running buttons
-                this.updateVehicleButtons(vehicleId, 'running');
-                
-
-            } else {
-                // This should not happen with the new logic above, but just in case
-
+                // Paused time is 0 or invalid, set to expired
                 vehicleCard.dataset.status = 'expired';
                 this.updateStatusText(vehicleId, 'expired', null);
                 this.updateVehicleButtons(vehicleId, 'expired');
+                return; // Exit early
             }
+        } else {
+            // No paused data, can't resume
+                    vehicleCard.dataset.status = 'active';
+        this.updateStatusText(vehicleId, 'active', null);
+            this.updateVehicleButtons(vehicleId, 'active');
+            return; // Exit early
         }
         
-        // Speak notification
-        const vehicleName = this.getVehicleName(vehicleId);
-        this.speakVietnamese(`Xe ${vehicleName} đã được tiếp tục`);
-        
-        if (window.sendVehicleStatusToServer) {
-            window.sendVehicleStatusToServer(vehicleId, 'running');
+        // At this point, timeLeft should be > 0 and valid
+        if (timeLeft > 0) {
+            // Update vehicle status to running
+            vehicleCard.dataset.status = 'running';
+            
+            // Update countdown display to show remaining time
+            const countdownElement = document.getElementById(`countdown-${vehicleId}`);
+            if (countdownElement) {
+                countdownElement.classList.remove('text-yellow-600');
+                
+                const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const secondsLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                
+                const minutesDisplay = minutesLeft.toString().padStart(2, '0');
+                const secondsDisplay = secondsLeft.toString().padStart(2, '0');
+                
+                countdownElement.innerHTML = `<span class="countdown-minutes">${minutesDisplay}</span>:<span class="countdown-seconds">${secondsDisplay}</span>`;
+            }
+            
+            // Restart countdown timer with the exact remaining time
+            this.startCountdownTimer(vehicleId, endTimeMs);
+            
+            // Update status text to show remaining time
+            this.updateStatusText(vehicleId, 'running', Math.floor(timeLeft / (1000 * 60)));
+            
+            // Update button display to show running buttons
+            this.updateVehicleButtons(vehicleId, 'running');
+            
+            // Speak notification
+            const vehicleName = this.getVehicleName(vehicleId);
+            this.speakVietnamese(`Xe ${vehicleName} đã được tiếp tục`);
+            
+            // Send to server
+            if (window.sendVehicleStatusToServer) {
+                window.sendVehicleStatusToServer(vehicleId, 'running', endTimeMs, startTimeMs);
+            }
+            this.updateVehicleStatus(vehicleId, 'running', endTimeMs, startTimeMs);
+            
+            // Hide vehicle from current screen (it's now running)
+            this.hideVehicleFromCurrentScreen(vehicleId, 'running');
+        } else {
+            // This should not happen with the new logic above, but just in case
+            vehicleCard.dataset.status = 'expired';
+            this.updateStatusText(vehicleId, 'expired', null);
+            this.updateVehicleButtons(vehicleId, 'expired');
         }
-        this.updateVehicleStatus(vehicleId, 'running');
-        
-        // Hide vehicle from current screen (it's now running)
-        this.hideVehicleFromCurrentScreen(vehicleId, 'running');
     }
 
     returnToYard(vehicleId) {
@@ -447,56 +450,56 @@ class VehicleOperations {
         switch (status) {
             case 'running':
                 buttonHTML = `
-                    <button onclick="vehicleOperations.pauseVehicle(${vehicleId})" class="pause-btn">
+                    <button onclick="vehicleOperations.pauseVehicle(${vehicleId})" class="btn btn-info btn-sm">
                         ⏸️ Tạm dừng
                     </button>
-                    <button onclick="vehicleOperations.returnToYard(${vehicleId})" class="return-btn">
+                    <button onclick="vehicleOperations.returnToYard(${vehicleId})" class="btn btn-primary btn-sm">
                         🏠 Về bãi
                     </button>
                 `;
                 break;
             case 'paused':
                 buttonHTML = `
-                    <button onclick="vehicleOperations.resumeVehicle(${vehicleId})" class="resume-btn">
+                    <button onclick="vehicleOperations.resumeVehicle(${vehicleId})" class="btn btn-success btn-sm">
                         ▶️ Tiếp tục
                     </button>
-                    <button onclick="vehicleOperations.returnToYard(${vehicleId})" class="return-btn">
+                    <button onclick="vehicleOperations.returnToYard(${vehicleId})" class="btn btn-primary btn-sm">
                         🏠 Về bãi
                     </button>
                 `;
                 break;
             case 'expired':
                 buttonHTML = `
-                    <button onclick="vehicleOperations.addTime(${vehicleId}, 10)" class="add-time-btn">
+                    <button onclick="vehicleOperations.addTime(${vehicleId}, 10)" class="btn btn-warning btn-sm">
                         ⏰ +10p
                     </button>
-                    <button onclick="vehicleOperations.returnToYard(${vehicleId})" class="return-btn">
+                    <button onclick="vehicleOperations.returnToYard(${vehicleId})" class="btn btn-primary btn-sm">
                         🏠 Về bãi
                     </button>
                 `;
                 break;
             case 'active':
                 buttonHTML = `
-                    <button onclick="vehicleOperations.startVehicle(${vehicleId}, 30)" class="start-30-btn">
+                    <button onclick="vehicleOperations.startVehicle(${vehicleId}, 30)" class="btn btn-success btn-sm">
                         🚗 30p
                     </button>
-                    <button onclick="vehicleOperations.startVehicle(${vehicleId}, 45)" class="start-45-btn">
+                    <button onclick="vehicleOperations.startVehicle(${vehicleId}, 45)" class="btn btn-primary btn-sm">
                         🚙 45p
                     </button>
-                    <button onclick="vehicleForms.openWorkshopModal(${vehicleId})" class="workshop-btn">
+                    <button onclick="vehicleForms.openWorkshopModal(${vehicleId})" class="btn btn-secondary btn-sm">
                         🔧 Về xưởng
                     </button>
                 `;
                 break;
-            case 'waiting':
+            case 'active':
                 buttonHTML = `
-                    <button onclick="vehicleOperations.startVehicle(${vehicleId}, 30)" class="start-30-btn">
+                    <button onclick="vehicleOperations.startVehicle(${vehicleId}, 30)" class="btn btn-success btn-sm">
                         🚗 30p
                     </button>
-                    <button onclick="vehicleOperations.startVehicle(${vehicleId}, 45)" class="start-45-btn">
+                    <button onclick="vehicleOperations.startVehicle(${vehicleId}, 45)" class="btn btn-primary btn-sm">
                         🚙 45p
                     </button>
-                    <button onclick="vehicleForms.openWorkshopModal(${vehicleId})" class="workshop-btn">
+                    <button onclick="vehicleForms.openWorkshopModal(${vehicleId})" class="btn btn-secondary btn-sm">
                         🔧 Về xưởng
                     </button>
                 `;
@@ -588,9 +591,9 @@ class VehicleOperations {
                 // Hide when status changes from active
                 return newStatus !== 'active';
                 
-            case 'waiting': // Xe đang chờ
-                // Hide when status changes from waiting
-                return newStatus !== 'waiting';
+                          case 'active': // Xe đang chờ (active status)
+                        // Hide when status changes from active
+        return newStatus !== 'active';
                 
             case 'running': // Xe đang chạy
                 // Hide when status changes from running

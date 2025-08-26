@@ -230,40 +230,40 @@ class VehicleManager {
         switch (status) {
             case 'running':
                 buttonHTML = `
-                    <button onclick="vehicleManager.pauseVehicle(${vehicleId})" class="pause-btn">
+                    <button onclick="vehicleManager.pauseVehicle(${vehicleId})" class="btn btn-info btn-sm">
                         ⏸️ Tạm dừng
                     </button>
-                    <button onclick="vehicleManager.returnToYard(${vehicleId})" class="return-btn">
+                    <button onclick="vehicleManager.returnToYard(${vehicleId})" class="btn btn-primary btn-sm">
                         🏠 Về bãi
                     </button>
                 `;
                 break;
             case 'paused':
                 buttonHTML = `
-                    <button onclick="vehicleManager.resumeVehicle(${vehicleId})" class="resume-btn">
+                    <button onclick="vehicleManager.resumeVehicle(${vehicleId})" class="btn btn-success btn-sm">
                         ▶️ Tiếp tục
                     </button>
-                    <button onclick="vehicleManager.returnToYard(${vehicleId})" class="return-btn">
+                    <button onclick="vehicleManager.returnToYard(${vehicleId})" class="btn btn-primary btn-sm">
                         🏠 Về bãi
                     </button>
                 `;
                 break;
             case 'expired':
                 buttonHTML = `
-                    <button onclick="vehicleManager.addTime(${vehicleId}, 10)" class="add-time-btn">
+                    <button onclick="vehicleManager.addTime(${vehicleId}, 10)" class="btn btn-warning btn-sm">
                         ⏰ +10p
                     </button>
-                    <button onclick="vehicleManager.returnToYard(${vehicleId})" class="return-btn">
+                    <button onclick="vehicleManager.returnToYard(${vehicleId})" class="btn btn-primary btn-sm">
                         🏠 Về bãi
                     </button>
                 `;
                 break;
-            case 'waiting':
+            case 'active':
                 buttonHTML = `
-                    <button onclick="vehicleManager.startVehicle(${vehicleId}, 30)" class="start-btn">
+                    <button onclick="vehicleManager.startVehicle(${vehicleId}, 30)" class="btn btn-success btn-sm">
                         🚀 Xuất bãi
                     </button>
-                    <button onclick="vehicleManager.openWorkshopModal(${vehicleId})" class="workshop-btn">
+                    <button onclick="vehicleManager.openWorkshopModal(${vehicleId})" class="btn btn-secondary btn-sm">
                         🔧 Về xưởng
                     </button>
                 `;
@@ -414,9 +414,9 @@ class VehicleManager {
                     }
                 } else {
                     // No end time data, can't resume
-                    vehicleCard.dataset.status = 'waiting';
-                    this.updateStatusText(vehicleId, 'waiting', null);
-                    this.updateVehicleButtons(vehicleId, 'waiting');
+                            vehicleCard.dataset.status = 'active';
+        this.updateStatusText(vehicleId, 'active', null);
+                    this.updateVehicleButtons(vehicleId, 'active');
                     return; // Exit early
                 }
             }
@@ -477,14 +477,14 @@ class VehicleManager {
         const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
         if (vehicleCard) {
             vehicleCard.dataset.endTime = '';
-            vehicleCard.dataset.status = 'waiting';
+            vehicleCard.dataset.status = 'active';
         }
         
-        // Update status text to show waiting status
-        this.updateStatusText(vehicleId, 'waiting', null);
+        // Update status text to show active status
+        this.updateStatusText(vehicleId, 'active', null);
         
-        // Update button display to show waiting buttons
-        this.updateVehicleButtons(vehicleId, 'waiting');
+        // Update button display to show active buttons
+        this.updateVehicleButtons(vehicleId, 'active');
         
         // Speak notification
         const vehicleName = this.getVehicleName(vehicleId);
@@ -510,8 +510,8 @@ class VehicleManager {
             }, 500);
         }
         
-        // Update vehicle status to waiting and clear end_time
-        this.updateVehicleStatus(vehicleId, 'waiting', null);
+        // Update vehicle status to active and clear end_time
+        this.updateVehicleStatus(vehicleId, 'active', null);
         
         // Show navigation hint to user
         this.showNavigationHint(vehicleId, 'waiting');
