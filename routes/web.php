@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/vehicles/grid', [GridDisplayController::class, 'getVehiclesForGrid'])->name('api.vehicles.grid');
     Route::get('/api/vehicles/attributes', [VehicleAttributesController::class, 'getAllAttributes'])->name('api.vehicles.attributes');
     Route::get('/api/vehicles/attributes/{type}', [VehicleAttributesController::class, 'getAttributesByType'])->name('api.vehicles.attributes.type');
+    Route::get('/api/vehicles/{id}/data', [VehicleManagementController::class, 'getVehicleData'])->name('api.vehicles.data');
     
     // Active Vehicles API
     Route::post('/api/active-vehicles/start-timer', [ActiveVehiclesController::class, 'startTimer'])->name('api.active-vehicles.start-timer');

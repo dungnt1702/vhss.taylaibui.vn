@@ -350,4 +350,36 @@ class VehicleManagementController extends Controller
             'vehicle' => $vehicle
         ]);
     }
+
+    /**
+     * Get vehicle data by ID for modal (API endpoint)
+     */
+    public function getVehicleData($id)
+    {
+        try {
+            $vehicle = Vehicle::findOrFail($id);
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $vehicle->id,
+                    'name' => $vehicle->name,
+                    'color' => $vehicle->color,
+                    'seats' => $vehicle->seats,
+                    'power' => $vehicle->power,
+                    'wheel_size' => $vehicle->wheel_size,
+                    'current_location' => $vehicle->current_location,
+                    'notes' => $vehicle->notes,
+                    'status' => $vehicle->status,
+                    'status_display_name' => $vehicle->status_display_name,
+                    'status_color_class' => $vehicle->status_color_class,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể lấy thông tin xe: ' . $e->getMessage()
+            ], 404);
+        }
+    }
 }

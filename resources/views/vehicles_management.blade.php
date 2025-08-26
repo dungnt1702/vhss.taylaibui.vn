@@ -463,43 +463,29 @@
         function loadVehicleData(vehicleId) {
             console.log('=== loadVehicleData called with vehicleId:', vehicleId, '===');
             
-            // Try to get vehicle data from the table row first
-            let vehicleRow = document.querySelector(`tr[data-vehicle-id="${vehicleId}"]`);
-            console.log('Looking for table row with data-vehicle-id:', vehicleId);
-            console.log('Found table row:', vehicleRow);
-            
-            if (!vehicleRow) {
-                // If not found in table, try to get from grid view
-                vehicleRow = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
-                console.log('Vehicle row not found in table, trying grid view:', vehicleRow);
-            }
-            
-            if (vehicleRow) {
-                console.log('Found vehicle row:', vehicleRow);
-                console.log('Vehicle row HTML:', vehicleRow.outerHTML);
-                
-                // Get data from data attributes
-                const nameElement = vehicleRow.querySelector('[data-vehicle-name]');
-                const colorElement = vehicleRow.querySelector('[data-vehicle-color]');
-                const seatsElement = vehicleRow.querySelector('[data-vehicle-seats]');
-                const powerElement = vehicleRow.querySelector('[data-vehicle-power]');
-                const wheelSizeElement = vehicleRow.querySelector('[data-vehicle-wheel-size]');
-                
-                console.log('Found elements:', {
-                    nameElement,
-                    colorElement,
-                    seatsElement,
-                    powerElement,
-                    wheelSizeElement
+            // Call API to get vehicle data from database
+            fetch(`/api/vehicles/${vehicleId}/data`)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        const vehicleData = result.data;
+                        console.log('Vehicle data from API:', vehicleData);
+                        
+                        // Populate form fields with data from API
+                        populateVehicleForm(vehicleData);
+                    } else {
+                        console.error('Failed to get vehicle data:', result.message);
+                        alert('Không thể lấy thông tin xe: ' + result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching vehicle data:', error);
+                    alert('Lỗi khi lấy thông tin xe: ' + error.message);
                 });
-                
-                const name = nameElement?.dataset.vehicleName || vehicleRow.dataset.vehicleName || '';
-                const color = colorElement?.dataset.vehicleColor || vehicleRow.dataset.vehicleColor || '#808080';
-                const seats = seatsElement?.dataset.vehicleSeats || vehicleRow.dataset.vehicleSeats || '';
-                const power = powerElement?.dataset.vehiclePower || vehicleRow.dataset.vehiclePower || '';
-                const wheelSize = wheelSizeElement?.dataset.vehicleWheelSize || vehicleRow.dataset.vehicleWheelSize || '';
-                
-                console.log('Extracted data:', { name, color, seats, power, wheelSize });
+        }
+        
+        function populateVehicleForm(vehicleData) {
+            console.log('=== populateVehicleForm called with:', vehicleData, '===');
                 
                 // Populate form fields
                 const nameField = document.getElementById('vehicle-name');
@@ -521,30 +507,30 @@
                 });
                 
                 if (nameField) {
-                    nameField.value = name;
-                    console.log('Set name field to:', name);
+                    nameField.value = vehicleData.name || '';
+                    console.log('Set name field to:', vehicleData.name);
                 }
                 if (colorField) {
-                    colorField.value = color;
-                    console.log('Set color field to:', color);
+                    colorField.value = vehicleData.color || '#808080';
+                    console.log('Set color field to:', vehicleData.color);
                 }
                 if (seatsField) {
-                    seatsField.value = seats;
-                    console.log('Set seats field to:', seats);
+                    seatsField.value = vehicleData.seats || '';
+                    console.log('Set seats field to:', vehicleData.seats);
                 }
                 if (powerField) {
-                    powerField.value = power;
-                    console.log('Set power field to:', power);
+                    powerField.value = vehicleData.power || '';
+                    console.log('Set power field to:', vehicleData.power);
                 }
                 if (wheelSizeField) {
-                    wheelSizeField.value = wheelSize;
-                    console.log('Set wheel size field to:', wheelSize);
+                    wheelSizeField.value = vehicleData.wheel_size || '';
+                    console.log('Set wheel size field to:', vehicleData.wheel_size);
                 }
                 
                 // Update color preview
                 if (colorPreview) {
-                    colorPreview.style.backgroundColor = color;
-                    console.log('Updated color preview to:', color);
+                    colorPreview.style.backgroundColor = vehicleData.color || '#808080';
+                    console.log('Updated color preview to:', vehicleData.color);
                 }
                 
                 // Find color name for display
@@ -565,16 +551,11 @@
                 };
                 
                 if (colorName) {
-                    colorName.textContent = colorOptions[color] || 'Không xác định';
-                    console.log('Updated color name to:', colorOptions[color] || 'Không xác định');
+                    colorName.textContent = colorOptions[vehicleData.color] || 'Không xác định';
+                    console.log('Updated color name to:', colorOptions[vehicleData.color] || 'Không xác định');
                 }
                 
                 console.log('=== Form populated successfully ===');
-            } else {
-                console.error('Vehicle row not found for ID:', vehicleId);
-                console.log('Available vehicle rows:', document.querySelectorAll('[data-vehicle-id]'));
-                console.log('All data-vehicle-id elements:', document.querySelectorAll('[data-vehicle-id]'));
-            }
         }
         
         // Color picker functions
