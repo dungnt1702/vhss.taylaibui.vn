@@ -97,28 +97,116 @@ class VehicleForms {
             const method = isEdit ? 'PUT' : 'POST';
             
             // Create form data for submission
+            // Get form element
+            const form = document.getElementById('vehicle-form');
+            if (!form) {
+                console.error('Vehicle form not found!');
+                alert('Không tìm thấy form xe!');
+                return;
+            }
+            
+            // Create FormData manually
             const submitData = new FormData();
+            
+            // Get field values directly
+            const nameField = document.getElementById('vehicle-name');
+            const colorField = document.getElementById('vehicle-color');
+            const seatsField = document.getElementById('vehicle-seats');
+            const powerField = document.getElementById('vehicle-power');
+            const wheelSizeField = document.getElementById('vehicle-wheel-size');
+            const notesField = document.getElementById('vehicle-notes');
+            
+            // Log field elements for debugging
+            console.log('=== Field Elements ===');
+            console.log('Name field:', nameField);
+            console.log('Color field:', colorField);
+            console.log('Seats field:', seatsField);
+            console.log('Power field:', powerField);
+            console.log('Wheel size field:', wheelSizeField);
+            console.log('Notes field:', notesField);
+            
+            // Get values and validate
+            const name = nameField?.value || '';
+            const color = colorField?.value || '';
+            const seats = seatsField?.value || '';
+            const power = powerField?.value || '';
+            const wheelSize = wheelSizeField?.value || '';
+            const notes = notesField?.value || '';
+            
+            console.log('=== Field Values ===');
+            console.log('Name value:', name);
+            console.log('Color value:', color);
+            console.log('Seats value:', seats);
+            console.log('Power value:', power);
+            console.log('Wheel size value:', wheelSize);
+            console.log('Notes value:', notes);
+            
+            // Check if form is populated (for edit mode)
+            const isEditMode = document.getElementById('vehicle-edit-id')?.value;
+            if (isEditMode && (!name || !color || !seats || !power || !wheelSize)) {
+                console.warn('Form fields are empty in edit mode. Waiting for data population...');
+                
+                // Wait a bit more for form population
+                setTimeout(() => {
+                    console.log('Retrying form submission after delay...');
+                    this.handleVehicleFormSubmit(event);
+                }, 500);
+                return;
+            }
+            
+            // Validate required fields
+            if (!name || !color || !seats || !power || !wheelSize) {
+                alert('Vui lòng điền đầy đủ các trường bắt buộc!\n\n' +
+                      'Name: ' + (name || 'THIẾU') + '\n' +
+                      'Color: ' + (color || 'THIẾU') + '\n' +
+                      'Seats: ' + (seats || 'THIẾU') + '\n' +
+                      'Power: ' + (power || 'THIẾU') + '\n' +
+                      'Wheel Size: ' + (wheelSize || 'THIẾU'));
+                return;
+            }
+            
+            // Add values to FormData
             submitData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-            submitData.append('name', document.getElementById('vehicle-name').value);
-            submitData.append('color', document.getElementById('vehicle-color').value);
-            submitData.append('seats', document.getElementById('vehicle-seats').value);
-            submitData.append('power', document.getElementById('vehicle-power').value);
-            submitData.append('wheel_size', document.getElementById('vehicle-wheel-size').value);
-            submitData.append('notes', document.getElementById('vehicle-notes').value);
+            submitData.append('name', name);
+            submitData.append('color', color);
+            submitData.append('seats', seats);
+            submitData.append('power', power);
+            submitData.append('wheel_size', wheelSize);
+            submitData.append('notes', notes);
+            
+            console.log('=== Final FormData ===');
+            for (let [key, value] of submitData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
             
             fetch(url, {
                 method: method,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
                 body: submitData
             })
             .then(response => {
+                console.log('=== Response Status ===', response.status);
                 return response.json();
             })
             .then(data => {
+                console.log('=== Response Data ===', data);
                 if (data.success) {
                     this.closeVehicleModal();
                     location.reload();
                 } else {
-                    alert('Có lỗi xảy ra: ' + data.message);
+                    if (data.errors) {
+                        // Show validation errors in detail
+                        console.log('=== Validation Errors ===', data.errors);
+                        let errorMessages = 'Lỗi validation:\n';
+                        for (const [field, messages] of Object.entries(data.errors)) {
+                            errorMessages += `\n${field}: ${messages.join(', ')}`;
+                        }
+                        alert(errorMessages);
+                    } else {
+                        alert('Có lỗi xảy ra: ' + (data.message || 'Không xác định'));
+                    }
                 }
             })
             .catch(error => {

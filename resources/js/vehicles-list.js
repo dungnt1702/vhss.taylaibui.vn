@@ -178,19 +178,108 @@ function populateEditVehicleForm(vehicleData) {
     const colorPreview = document.getElementById('color-preview');
     const colorName = document.getElementById('color-name');
     
-    if (nameField) nameField.value = vehicleData.name || '';
-    if (colorField) colorField.value = vehicleData.color || '';
-    if (seatsField) seatsField.value = vehicleData.seats || '';
-    if (powerField) powerField.value = vehicleData.power || '';
-    if (wheelSizeField) wheelSizeField.value = vehicleData.wheel_size || '';
-    if (notesField) notesField.value = vehicleData.notes || '';
+    console.log('=== Form Fields Found ===');
+    console.log('Name field:', nameField);
+    console.log('Color field:', colorField);
+    console.log('Seats field:', seatsField);
+    console.log('Power field:', powerField);
+    console.log('Wheel size field:', wheelSizeField);
+    console.log('Notes field:', notesField);
+    
+    // Populate fields with validation and proper event triggering
+    if (nameField) {
+        nameField.value = vehicleData.name || '';
+        nameField.setAttribute('value', vehicleData.name || '');
+        nameField.dispatchEvent(new Event('input', { bubbles: true }));
+        nameField.dispatchEvent(new Event('change', { bubbles: true }));
+        console.log('Set name field to:', nameField.value);
+    } else {
+        console.error('Name field not found!');
+    }
+    
+    if (colorField) {
+        colorField.value = vehicleData.color || '';
+        colorField.setAttribute('value', vehicleData.color || '');
+        colorField.dispatchEvent(new Event('input', { bubbles: true }));
+        colorField.dispatchEvent(new Event('change', { bubbles: true }));
+        console.log('Set color field to:', colorField.value);
+    } else {
+        console.error('Color field not found!');
+    }
+    
+    if (seatsField) {
+        seatsField.value = vehicleData.seats || '';
+        seatsField.setAttribute('value', vehicleData.seats || '');
+        seatsField.dispatchEvent(new Event('input', { bubbles: true }));
+        seatsField.dispatchEvent(new Event('change', { bubbles: true }));
+        console.log('Set seats field to:', seatsField.value);
+    } else {
+        console.error('Seats field not found!');
+    }
+    
+    if (powerField) {
+        powerField.value = vehicleData.power || '';
+        powerField.setAttribute('value', vehicleData.power || '');
+        powerField.dispatchEvent(new Event('input', { bubbles: true }));
+        powerField.dispatchEvent(new Event('change', { bubbles: true }));
+        console.log('Set power field to:', powerField.value);
+    } else {
+        console.error('Power field not found!');
+    }
+    
+    if (wheelSizeField) {
+        wheelSizeField.value = vehicleData.wheel_size || '';
+        wheelSizeField.setAttribute('value', vehicleData.wheel_size || '');
+        wheelSizeField.dispatchEvent(new Event('input', { bubbles: true }));
+        wheelSizeField.dispatchEvent(new Event('change', { bubbles: true }));
+        console.log('Set wheel size field to:', wheelSizeField.value);
+    } else {
+        console.error('Wheel size field not found!');
+    }
+    
+    if (notesField) {
+        notesField.value = vehicleData.notes || '';
+        notesField.setAttribute('value', vehicleData.notes || '');
+        notesField.dispatchEvent(new Event('input', { bubbles: true }));
+        notesField.dispatchEvent(new Event('change', { bubbles: true }));
+        console.log('Set notes field to:', notesField.value);
+    } else {
+        console.error('Notes field not found!');
+    }
     
     // Update color preview
     if (colorPreview) {
         colorPreview.style.backgroundColor = vehicleData.color || '#ffffff';
         colorPreview.style.borderColor = vehicleData.color || '#d1d5db';
+        console.log('Updated color preview to:', vehicleData.color);
     }
-    if (colorName) colorName.textContent = vehicleData.color || 'Chọn màu';
+    if (colorName) {
+        colorName.textContent = vehicleData.color || 'Chọn màu';
+        console.log('Updated color name to:', vehicleData.color);
+    }
+    
+    // Verify form data after population
+    setTimeout(() => {
+        console.log('=== Form Data Verification ===');
+        console.log('Name field value:', document.getElementById('vehicle-name')?.value);
+        console.log('Color field value:', document.getElementById('vehicle-color')?.value);
+        console.log('Seats field value:', document.getElementById('vehicle-seats')?.value);
+        console.log('Power field value:', document.getElementById('vehicle-power')?.value);
+        console.log('Wheel size field value:', document.getElementById('vehicle-wheel-size')?.value);
+        console.log('Notes field value:', document.getElementById('vehicle-notes')?.value);
+        
+        // Additional verification - check if form data is accessible via FormData
+        const form = document.getElementById('vehicle-form');
+        if (form) {
+            const formData = new FormData(form);
+            console.log('=== FormData Verification ===');
+            for (let [key, value] of formData.entries()) {
+                console.log(`FormData ${key}: ${value}`);
+            }
+        }
+        
+        console.log('=== Form Population Complete ===');
+    }, 300);
 }
 
 // Function to clear edit form
