@@ -225,7 +225,13 @@ class VehicleController extends Controller
 
         // Handle running status - set start_time and end_time
         if ($request->status === 'running') {
-            $updateData['start_time'] = now();
+            if ($request->has('start_time') && $request->start_time) {
+                // Convert milliseconds timestamp to datetime
+                $startTime = $request->start_time / 1000; // Convert from milliseconds to seconds
+                $updateData['start_time'] = date('Y-m-d H:i:s', $startTime);
+            } else {
+                $updateData['start_time'] = now();
+            }
             
             if ($request->has('end_time') && $request->end_time) {
                 // Convert milliseconds timestamp to datetime

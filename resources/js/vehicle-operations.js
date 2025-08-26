@@ -9,15 +9,19 @@ class VehicleOperations {
         this.currentFilter = '';
     }
 
+    // Helper function to get current time in milliseconds (local timezone)
+    getCurrentTimeMs() {
+        return new Date().getTime();
+    }
+
     // Vehicle Control Functions
     startVehicle(vehicleId, minutes = 30) {
         const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
         if (!vehicleCard) return;
         
-        // Calculate start and end time
-        const now = new Date().getTime();
-        const startTimeMs = now;
-        const endTimeMs = now + (minutes * 60 * 1000);
+        // Calculate start and end time using local timezone
+        const startTimeMs = this.getCurrentTimeMs();
+        const endTimeMs = startTimeMs + (minutes * 60 * 1000);
         
         // Update vehicle card
         vehicleCard.dataset.startTime = startTimeMs.toString();
@@ -69,7 +73,7 @@ class VehicleOperations {
         let remainingSeconds = 0;
         if (vehicleCard.dataset.endTime && vehicleCard.dataset.endTime !== '') {
             const endTimeMs = parseInt(vehicleCard.dataset.endTime);
-            const now = new Date().getTime();
+            const now = this.getCurrentTimeMs();
             const timeLeft = endTimeMs - now;
             
             if (timeLeft > 0) {
@@ -124,9 +128,9 @@ class VehicleOperations {
             if (vehicleCard.dataset.pausedRemainingSeconds) {
                 const pausedSeconds = parseInt(vehicleCard.dataset.pausedRemainingSeconds);
                 if (pausedSeconds > 0) {
-                    // Calculate new end time based on paused remaining time
-                    const now = new Date().getTime();
-                    endTimeMs = now + (pausedSeconds * 1000);
+                                    // Calculate new end time based on paused remaining time
+                const now = this.getCurrentTimeMs();
+                endTimeMs = now + (pausedSeconds * 1000);
                     timeLeft = pausedSeconds * 1000;
                     
                     // Update the end time in data attribute
@@ -146,7 +150,7 @@ class VehicleOperations {
                 const endTime = vehicleCard.dataset.endTime;
                 if (endTime && endTime !== '') {
                     endTimeMs = parseInt(endTime);
-                    const now = new Date().getTime();
+                    const now = this.getCurrentTimeMs();
                     timeLeft = endTimeMs - now;
                     
                     // If time has already expired, don't allow resume
@@ -284,7 +288,7 @@ class VehicleOperations {
             newEndTime = parseInt(currentEndTime) + (additionalMinutes * 60 * 1000);
         } else {
             // Start from current time
-            newEndTime = new Date().getTime() + (additionalMinutes * 60 * 1000);
+            newEndTime = this.getCurrentTimeMs() + (additionalMinutes * 60 * 1000);
         }
         
         // Update vehicle card
@@ -320,7 +324,7 @@ class VehicleOperations {
         
         // Start new timer
         this.vehicleTimers[vehicleId] = setInterval(() => {
-            const now = new Date().getTime();
+            const now = this.getCurrentTimeMs();
             const timeLeft = endTimeMs - now;
             
             if (timeLeft > 0) {
@@ -548,7 +552,7 @@ class VehicleOperations {
             // Only process vehicles with end_time and running status
             if (endTime && endTime !== '' && status === 'running') {
                 const endTimeMs = parseInt(endTime);
-                const now = new Date().getTime();
+                const now = this.getCurrentTimeMs();
                 const timeLeft = endTimeMs - now;
                 
                 if (timeLeft > 0) {
