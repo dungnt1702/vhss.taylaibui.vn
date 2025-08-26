@@ -331,8 +331,7 @@ class VehicleOperations {
         this.hideVehicleFromCurrentScreen(vehicleId, 'running');
         
         // Speak notification
-        const actionText = currentStatus === 'expired' ? 'bắt đầu lượt mới' : 'được thêm';
-        this.speakVietnamese(`Xe ${this.getVehicleName(vehicleId)} đã ${actionText} ${additionalMinutes} phút`);
+        this.speakVietnamese(`Xe ${this.getVehicleName(vehicleId)} đã được thêm ${additionalMinutes} phút`);
     }
 
     // Countdown Timer Management
