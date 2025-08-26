@@ -48,6 +48,7 @@ class Vehicle extends Model
     const STATUS_PAUSED = 'paused';     // Xe tạm dừng
 
     const STATUS_GROUP = 'group';        // Xe ngoài bãi
+    const STATUS_ROUTE = 'group';        // Alias cho STATUS_GROUP (để tương thích)
 
     // Color options
     const COLORS = ['Xanh biển', 'Xanh cây', 'Cam', 'Đỏ', 'Vàng', 'Đen'];
@@ -64,33 +65,13 @@ class Vehicle extends Model
     // Get status display name
     public function getStatusDisplayNameAttribute()
     {
-        return match($this->status) {
-            self::STATUS_ACTIVE => 'Xe sẵn sàng chạy',
-            self::STATUS_INACTIVE => 'Xe trong xưởng',
-            self::STATUS_RUNNING => 'Xe đang chạy',
-            self::STATUS_WAITING => 'Xe đang chờ',
-            self::STATUS_EXPIRED => 'Xe hết giờ',
-            self::STATUS_PAUSED => 'Xe tạm dừng',
-
-            self::STATUS_GROUP => 'Xe ngoài bãi',
-            default => 'Không xác định'
-        };
+        return \App\Models\vehicles\VehicleStatus::getDisplayName($this->status);
     }
 
     // Get status color class
     public function getStatusColorClassAttribute()
     {
-        return match($this->status) {
-            self::STATUS_ACTIVE => 'bg-green-100 text-green-800',
-            self::STATUS_INACTIVE => 'bg-red-100 text-red-800',
-            self::STATUS_RUNNING => 'bg-blue-100 text-blue-800',
-            self::STATUS_WAITING => 'bg-yellow-100 text-yellow-800',
-            self::STATUS_EXPIRED => 'bg-orange-100 text-orange-800',
-            self::STATUS_PAUSED => 'bg-gray-100 text-gray-800',
-
-            self::STATUS_GROUP => 'bg-indigo-100 text-indigo-800',
-            default => 'bg-gray-100 text-gray-800'
-        };
+        return \App\Models\vehicles\VehicleStatus::getColorClass($this->status);
     }
 
     // Check if vehicle can be managed by user
@@ -137,8 +118,14 @@ class Vehicle extends Model
 
 
 
-    // Scope for group vehicles
+    // Scope for group vehicles (alias for route)
     public function scopeGroup($query)
+    {
+        return $query->where('status', self::STATUS_ROUTE);
+    }
+
+    // Scope for route vehicles (alias for group)
+    public function scopeRoute($query)
     {
         return $query->where('status', self::STATUS_GROUP);
     }
