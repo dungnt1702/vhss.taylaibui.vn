@@ -93,7 +93,7 @@ class VehicleController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|unique:vehicles,name|max:50',
-            'color' => 'required|string|max:50',
+            'color' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/|max:7',
             'seats' => 'required|in:1,2',
             'power' => 'required|string|max:50',
             'wheel_size' => 'required|string|max:50',
@@ -167,7 +167,7 @@ class VehicleController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:50|unique:vehicles,name,' . $vehicle->id,
-            'color' => 'required|string|max:50',
+            'color' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/|max:7',
             'seats' => 'required|in:1,2',
             'power' => 'required|string|max:50',
             'wheel_size' => 'required|string|max:50',

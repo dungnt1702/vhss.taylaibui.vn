@@ -40,7 +40,36 @@ class VehicleAttribute extends Model
     // Get all colors
     public static function getColors()
     {
-        return static::getActiveByType(self::TYPE_COLOR);
+        $colors = static::getActiveByType(self::TYPE_COLOR);
+        
+        // If no colors in database, return default hex color palette
+        if (empty($colors)) {
+            return [
+                '#FF0000' => 'Đỏ',
+                '#FF4500' => 'Cam đỏ',
+                '#FF8C00' => 'Cam',
+                '#FFD700' => 'Vàng',
+                '#32CD32' => 'Xanh lá',
+                '#00CED1' => 'Xanh dương',
+                '#4169E1' => 'Xanh hoàng gia',
+                '#8A2BE2' => 'Xanh tím',
+                '#FF69B4' => 'Hồng',
+                '#FF1493' => 'Hồng đậm',
+                '#FF6347' => 'Cà chua',
+                '#20B2AA' => 'Xanh biển nhạt',
+                '#228B22' => 'Xanh rừng',
+                '#DC143C' => 'Đỏ đậm',
+                '#000000' => 'Đen',
+                '#FFFFFF' => 'Trắng',
+                '#808080' => 'Xám',
+                '#C0C0C0' => 'Bạc',
+                '#D2691E' => 'Nâu',
+                '#4B0082' => 'Tím',
+                '#FF00FF' => 'Magenta'
+            ];
+        }
+        
+        return $colors;
     }
 
     // Get all seat options

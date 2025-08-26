@@ -45,17 +45,12 @@
                             <!-- DEBUG: Vehicle {{ $vehicle->id }} - Status: "{{ $vehicle->status }}" (Type: {{ gettype($vehicle->status) }}) -->
                             <!-- Vehicle Header - Clickable for collapse/expand -->
                             <div class="vehicle-header cursor-pointer p-4 border-b border-neutral-200 hover:bg-neutral-50 transition-colors duration-200" onclick="toggleVehicleSimple({{ $vehicle->id }})">
-                                <div class="flex justify-between items-start mb-2">
+                                <div class="flex justify-between items-center">
                                     <h3 class="text-lg font-semibold text-neutral-900">
                                         Xe số {{ $vehicle->name }}
                                     </h3>
-                                    <span class="px-2 py-1 text-xs font-medium rounded-full {{ $vehicle->status_color_class }}">
-                                        {{ $vehicle->status_display_name }}
-                                    </span>
+                                    <div class="w-4 h-4 rounded border border-neutral-300 dark:border-neutral-600" style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}"></div>
                                 </div>
-                                <p class="text-sm text-neutral-600">
-                                    {{ $vehicle->color }} - {{ $vehicle->seats }} chỗ
-                                </p>
                                 <!-- Expand/Collapse Icon -->
                                 <div class="flex justify-center mt-2">
                                     <svg class="w-4 h-4 text-neutral-500 transform transition-transform {{ $filter === 'running' ? 'rotate-180' : '' }}" id="icon-{{ $vehicle->id }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,13 +61,11 @@
 
                             <!-- Vehicle Details - Collapsible -->
                             <div class="vehicle-content {{ $filter === 'running' ? '' : 'hidden' }} p-4" id="content-{{ $vehicle->id }}">
-                                <!-- Debug: Current vehicle status: {{ $vehicle->status }} -->
-                                
                                 <!-- Countdown Timer Display - ALWAYS ON TOP -->
-                                <div class="text-center mb-4">
-                                    <div class="countdown-display text-4xl font-bold {{ $vehicle->status === 'expired' ? 'text-red-600' : 'text-blue-600' }}" id="countdown-{{ $vehicle->id }}">
+                                <div class="text-center mb-6">
+                                    <div class="countdown-display text-6xl font-black {{ $vehicle->status === 'expired' ? 'text-red-600' : 'text-blue-600' }} drop-shadow-lg" id="countdown-{{ $vehicle->id }}">
                                         @if($vehicle->status === 'expired')
-                                            <span class="text-red-600 font-bold">HẾT GIỜ</span>
+                                            <span class="text-red-600 font-black text-6xl drop-shadow-lg">HẾT GIỜ</span>
                                         @elseif($vehicle->end_time)
                                             <!-- Show actual time if vehicle has end_time -->
                                             @php
@@ -90,74 +83,9 @@
                                                     $secondsDisplay = '00';
                                                 }
                                             @endphp
-                                            <span class="countdown-minutes">{{ $minutesDisplay }}</span>:<span class="countdown-seconds">{{ $secondsDisplay }}</span>
+                                            <span class="countdown-minutes text-6xl font-black drop-shadow-lg">{{ $minutesDisplay }}</span><span class="text-6xl font-black drop-shadow-lg">:</span><span class="countdown-seconds text-6xl font-black drop-shadow-lg">{{ $secondsDisplay }}</span>
                                         @else
-                                            <span class="countdown-minutes">00</span>:<span class="countdown-seconds">00</span>
-                                        @endif
-                                    </div>
-                                    <div class="text-sm text-neutral-500 mt-2" id="status-text-{{ $vehicle->id }}">
-                                        @if($vehicle->status === 'running')
-                                            @if($vehicle->end_time)
-                                                @php
-                                                    $endTime = strtotime($vehicle->end_time);
-                                                    $now = time();
-                                                    $timeLeft = $endTime - $now;
-                                                @endphp
-                                                @if($timeLeft > 0)
-                                                    Xe chạy {{ floor($timeLeft / 60) }}p
-                                                @else
-                                                    Hết giờ
-                                                @endif
-                                            @else
-                                                Đang chạy
-                                            @endif
-                                        @elseif($vehicle->status === 'expired')
-                                            Hết giờ
-                                        @elseif($vehicle->status === 'paused')
-                                            @if($vehicle->end_time)
-                                                @php
-                                                    $endTime = strtotime($vehicle->end_time);
-                                                    $now = time();
-                                                    $timeLeft = $endTime - $now;
-                                                @endphp
-                                                @if($timeLeft > 0)
-                                                    Xe tạm dừng {{ floor($timeLeft / 60) }}p
-                                                @else
-                                                    Hết giờ
-                                                @endif
-                                            @else
-                                                Tạm dừng
-                                            @endif
-                                        @elseif($vehicle->status === 'active')
-                                            @if($vehicle->end_time)
-                                                @php
-                                                    $endTime = strtotime($vehicle->end_time);
-                                                    $now = time();
-                                                    $timeLeft = $endTime - $now;
-                                                @endphp
-                                                @if($timeLeft > 0)
-                                                    Xe chạy {{ floor($timeLeft / 60) }}p
-                                                @else
-                                                    Ngoài bãi
-                                                @endif
-                                            @else
-                                                Ngoài bãi
-                                            @endif
-                                        @elseif($vehicle->status === 'waiting')
-                                            @if($vehicle->end_time)
-                                                @php
-                                                    $endTime = strtotime($vehicle->end_time);
-                                                    $now = time();
-                                                    $timeLeft = $endTime - $now;
-                                                @endphp
-                                                @if($timeLeft > 0)
-                                                    Xe chạy {{ floor($timeLeft / 60) }}p
-                                                @else
-                                                    Đang chờ
-                                                @endif
-                                            @else
-                                                Đang chờ
-                                            @endif
+                                            <span class="countdown-minutes text-6xl font-black drop-shadow-lg">00</span><span class="text-6xl font-black drop-shadow-lg">:</span><span class="countdown-seconds text-6xl font-black drop-shadow-lg">00</span>
                                         @endif
                                     </div>
                                 </div>
@@ -261,8 +189,7 @@
 <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Màu sắc</th>
 <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Chỗ ngồi</th>
 <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Công suất</th>
-<th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Bánh xe</th>
-<th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Tài xế</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Bánh xe</th>
 <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Vị trí</th>
 <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Trạng thái</th>
 <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Thao tác</th>
@@ -272,20 +199,20 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-neutral-200">
                                 @forelse($vehicles as $vehicle)
-                                    <tr class="hover:bg-neutral-50">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">
+                                    <tr class="hover:bg-neutral-50" data-vehicle-id="{{ $vehicle->id }}">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900" data-vehicle-name="{{ $vehicle->name }}">
                                             {{ $vehicle->name }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                                            {{ $vehicle->color }}
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500" data-vehicle-color="{{ $vehicle->color }}">
+                                            <div class="w-6 h-6 rounded border border-neutral-300 dark:border-neutral-600" style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}"></div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500" data-vehicle-seats="{{ $vehicle->seats }}">
                                             {{ $vehicle->seats }} chỗ
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500" data-vehicle-power="{{ $vehicle->power }}">
                                             {{ $vehicle->power }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500" data-vehicle-wheel-size="{{ $vehicle->wheel_size }}">
                                             {{ $vehicle->wheel_size }}
                                         </td>
 
@@ -322,7 +249,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="px-6 py-4 text-center text-sm text-neutral-500">
+                                        <td colspan="8" class="px-6 py-4 text-center text-sm text-neutral-500">
                                             Không có xe nào
                                         </td>
                                     </tr>
@@ -455,22 +382,16 @@
                                 <label for="vehicle-color" class="block text-sm font-medium text-neutral-700 mb-2">
                                     Màu sắc <span class="text-red-500">*</span>
                                 </label>
-                                <select id="vehicle-color" name="color" required
-                                        class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
-                                    <option value="">Chọn màu sắc</option>
-                                    @if($colors && count($colors) > 0)
-                                        @foreach($colors as $color)
-                                            <option value="{{ $color }}">{{ $color }}</option>
-                                        @endforeach
-                                    @else
-                                        <option value="Xanh biển">Xanh biển</option>
-                                        <option value="Xanh cây">Xanh cây</option>
-                                        <option value="Cam">Cam</option>
-                                        <option value="Đỏ">Đỏ</option>
-                                        <option value="Vàng">Vàng</option>
-                                        <option value="Đen">Đen</option>
-                                    @endif
-                                </select>
+                                <div class="flex items-center space-x-3">
+                                    <button type="button" onclick="openColorPicker()" class="px-4 py-2 border border-neutral-300 rounded-md bg-white text-neutral-700 hover:bg-neutral-50 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                        Chọn màu
+                                    </button>
+                                    <div id="selected-color-display" class="flex items-center space-x-2">
+                                        <div id="color-preview" class="w-6 h-6 rounded border border-neutral-300" style="background-color: #808080;"></div>
+                                        <span id="color-name" class="text-sm text-neutral-600">Chưa chọn màu</span>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="vehicle-color" name="color" value="#808080" required>
                             </div>
                             
                             <div>
@@ -640,6 +561,90 @@
         </div>
     </div>
 
+    <!-- Color Picker Modal -->
+    <div id="color-picker-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-neutral-900">
+                            Chọn màu xe
+                        </h3>
+                        <button onclick="closeColorPicker()" class="text-neutral-400 hover:text-neutral-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="max-h-96 overflow-y-auto">
+                        <div class="grid grid-cols-6 gap-3 mb-4">
+                            @php
+                                $colorOptions = [
+                                    '#FF0000' => 'Đỏ',
+                                    '#FF4500' => 'Cam đỏ',
+                                    '#FF8C00' => 'Cam',
+                                    '#FFD700' => 'Vàng',
+                                    '#32CD32' => 'Xanh lá',
+                                    '#00CED1' => 'Xanh dương',
+                                    '#4169E1' => 'Xanh hoàng gia',
+                                    '#8A2BE2' => 'Xanh tím',
+                                    '#FF69B4' => 'Hồng',
+                                    '#FF1493' => 'Hồng đậm',
+                                    '#FF6347' => 'Cà chua',
+                                    '#20B2AA' => 'Xanh biển nhạt',
+                                    '#228B22' => 'Xanh rừng',
+                                    '#DC143C' => 'Đỏ đậm',
+                                    '#000000' => 'Đen',
+                                    '#FFFFFF' => 'Trắng',
+                                    '#808080' => 'Xám',
+                                    '#C0C0C0' => 'Bạc',
+                                    '#D2691E' => 'Nâu',
+                                    '#4B0082' => 'Tím',
+                                    '#FF00FF' => 'Magenta',
+                                    '#FF6B6B' => 'Hồng san hô',
+                                    '#4ECDC4' => 'Xanh ngọc',
+                                    '#45B7D1' => 'Xanh dương nhạt',
+                                    '#96CEB4' => 'Xanh mint',
+                                    '#FFEAA7' => 'Vàng kem',
+                                    '#DDA0DD' => 'Tím nhạt',
+                                    '#98D8C8' => 'Xanh lá nhạt',
+                                    '#F7DC6F' => 'Vàng đậm',
+                                    '#BB8FCE' => 'Tím lavender',
+                                    '#85C1E9' => 'Xanh dương bầu trời',
+                                    '#F8C471' => 'Cam nhạt',
+                                    '#82E0AA' => 'Xanh lá tươi',
+                                    '#F1948A' => 'Hồng đào',
+                                    '#85C1E9' => 'Xanh dương nhạt',
+                                    '#D7BDE2' => 'Tím nhạt',
+                                    '#FAD7A0' => 'Cam kem',
+                                    '#A9DFBF' => 'Xanh lá nhạt',
+                                    '#F9E79F' => 'Vàng nhạt',
+                                    '#D5A6BD' => 'Hồng nhạt',
+                                    '#A3E4D7' => 'Xanh ngọc nhạt',
+                                    '#F8C471' => 'Cam kem',
+                                    '#D2B4DE' => 'Tím lavender nhạt'
+                                ];
+                            @endphp
+                            @foreach($colorOptions as $hex => $name)
+                                <div class="color-option cursor-pointer text-center" data-color="{{ $hex }}" data-name="{{ $name }}" onclick="selectColor('{{ $hex }}', '{{ $name }}')" title="{{ $name }}">
+                                    <div class="w-10 h-10 rounded-lg border-2 border-neutral-300 hover:border-brand-500 transition-all hover:scale-110 mx-auto mb-1" style="background-color: {{ $hex }};"></div>
+                                    <div class="text-xs text-neutral-600">{{ $name }}</div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <button onclick="closeColorPicker()" class="px-4 py-2 border border-neutral-300 rounded-md bg-white text-neutral-700 hover:bg-neutral-50">
+                            Hủy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     
     @push('scripts')
@@ -649,6 +654,259 @@
          - vehicle-operations.js: Vehicle control operations
          - vehicle-wrappers.js: Wrapper functions for HTML onclick events
     -->
+    
+    <!-- Vehicle modal and color picker functionality -->
+    <style>
+        /* Color picker modal styles */
+        #color-picker-modal .max-h-96 {
+            max-height: 24rem;
+        }
+        
+        .color-option {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.05);
+        }
+        
+        .color-option:active {
+            transform: scale(0.95);
+        }
+        
+        /* Custom scrollbar for color grid */
+        #color-picker-modal .overflow-y-auto::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #color-picker-modal .overflow-y-auto::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        #color-picker-modal .overflow-y-auto::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        #color-picker-modal .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+    
+    <script>
+        // Vehicle modal functions
+        function openVehicleModal(vehicleId = null) {
+            console.log('=== openVehicleModal called with vehicleId:', vehicleId, '===');
+            
+            const modal = document.getElementById('vehicle-modal');
+            const modalTitle = document.getElementById('vehicle-modal-title');
+            const form = document.getElementById('vehicle-form');
+            const editIdInput = document.getElementById('vehicle-edit-id');
+            
+            console.log('Modal elements found:', { modal, modalTitle, form, editIdInput });
+            
+            if (vehicleId) {
+                // Edit mode
+                modalTitle.textContent = 'Sửa thông tin xe';
+                editIdInput.value = vehicleId;
+                
+                console.log('Edit mode - loading data for vehicle:', vehicleId);
+                
+                // Debug: Check all data attributes in the table
+                const allRows = document.querySelectorAll('tr[data-vehicle-id]');
+                console.log('All table rows with data-vehicle-id:', allRows);
+                
+                allRows.forEach((row, index) => {
+                    const rowId = row.dataset.vehicleId;
+                    const name = row.querySelector('[data-vehicle-name]')?.dataset.vehicleName;
+                    const color = row.querySelector('[data-vehicle-color]')?.dataset.vehicleColor;
+                    console.log(`Row ${index}: ID=${rowId}, Name=${name}, Color=${color}`);
+                });
+                
+                // Load vehicle data
+                loadVehicleData(vehicleId);
+            } else {
+                // Add mode
+                modalTitle.textContent = 'Thêm xe mới';
+                editIdInput.value = '';
+                form.reset();
+                
+                // Reset color picker
+                document.getElementById('vehicle-color').value = '#808080';
+                document.getElementById('color-preview').style.backgroundColor = '#808080';
+                document.getElementById('color-name').textContent = 'Chưa chọn màu';
+                
+                console.log('Add mode - form reset');
+            }
+            
+            modal.classList.remove('hidden');
+            console.log('Modal opened');
+        }
+        
+        function closeVehicleModal() {
+            document.getElementById('vehicle-modal').classList.add('hidden');
+        }
+        
+        function loadVehicleData(vehicleId) {
+            console.log('=== loadVehicleData called with vehicleId:', vehicleId, '===');
+            
+            // Try to get vehicle data from the table row first
+            let vehicleRow = document.querySelector(`tr[data-vehicle-id="${vehicleId}"]`);
+            console.log('Looking for table row with data-vehicle-id:', vehicleId);
+            console.log('Found table row:', vehicleRow);
+            
+            if (!vehicleRow) {
+                // If not found in table, try to get from grid view
+                vehicleRow = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
+                console.log('Vehicle row not found in table, trying grid view:', vehicleRow);
+            }
+            
+            if (vehicleRow) {
+                console.log('Found vehicle row:', vehicleRow);
+                console.log('Vehicle row HTML:', vehicleRow.outerHTML);
+                
+                // Get data from data attributes
+                const nameElement = vehicleRow.querySelector('[data-vehicle-name]');
+                const colorElement = vehicleRow.querySelector('[data-vehicle-color]');
+                const seatsElement = vehicleRow.querySelector('[data-vehicle-seats]');
+                const powerElement = vehicleRow.querySelector('[data-vehicle-power]');
+                const wheelSizeElement = vehicleRow.querySelector('[data-vehicle-wheel-size]');
+                
+                console.log('Found elements:', {
+                    nameElement,
+                    colorElement,
+                    seatsElement,
+                    powerElement,
+                    wheelSizeElement
+                });
+                
+                const name = nameElement?.dataset.vehicleName || vehicleRow.dataset.vehicleName || '';
+                const color = colorElement?.dataset.vehicleColor || vehicleRow.dataset.vehicleColor || '#808080';
+                const seats = seatsElement?.dataset.vehicleSeats || vehicleRow.dataset.vehicleSeats || '';
+                const power = powerElement?.dataset.vehiclePower || vehicleRow.dataset.vehiclePower || '';
+                const wheelSize = wheelSizeElement?.dataset.vehicleWheelSize || vehicleRow.dataset.vehicleWheelSize || '';
+                
+                console.log('Extracted data:', { name, color, seats, power, wheelSize });
+                
+                // Populate form fields
+                const nameField = document.getElementById('vehicle-name');
+                const colorField = document.getElementById('vehicle-color');
+                const seatsField = document.getElementById('vehicle-seats');
+                const powerField = document.getElementById('vehicle-power');
+                const wheelSizeField = document.getElementById('vehicle-wheel-size');
+                const colorPreview = document.getElementById('color-preview');
+                const colorName = document.getElementById('color-name');
+                
+                console.log('Form fields found:', {
+                    nameField,
+                    colorField,
+                    seatsField,
+                    powerField,
+                    wheelSizeField,
+                    colorPreview,
+                    colorName
+                });
+                
+                if (nameField) {
+                    nameField.value = name;
+                    console.log('Set name field to:', name);
+                }
+                if (colorField) {
+                    colorField.value = color;
+                    console.log('Set color field to:', color);
+                }
+                if (seatsField) {
+                    seatsField.value = seats;
+                    console.log('Set seats field to:', seats);
+                }
+                if (powerField) {
+                    powerField.value = power;
+                    console.log('Set power field to:', power);
+                }
+                if (wheelSizeField) {
+                    wheelSizeField.value = wheelSize;
+                    console.log('Set wheel size field to:', wheelSize);
+                }
+                
+                // Update color preview
+                if (colorPreview) {
+                    colorPreview.style.backgroundColor = color;
+                    console.log('Updated color preview to:', color);
+                }
+                
+                // Find color name for display
+                const colorOptions = {
+                    '#FF0000': 'Đỏ', '#FF4500': 'Cam đỏ', '#FF8C00': 'Cam', '#FFD700': 'Vàng',
+                    '#32CD32': 'Xanh lá', '#00CED1': 'Xanh dương', '#4169E1': 'Xanh hoàng gia',
+                    '#8A2BE2': 'Xanh tím', '#FF69B4': 'Hồng', '#FF1493': 'Hồng đậm',
+                    '#FF6347': 'Cà chua', '#20B2AA': 'Xanh biển nhạt', '#228B22': 'Xanh rừng',
+                    '#DC143C': 'Đỏ đậm', '#000000': 'Đen', '#FFFFFF': 'Trắng', '#808080': 'Xám',
+                    '#C0C0C0': 'Bạc', '#D2691E': 'Nâu', '#4B0082': 'Tím', '#FF00FF': 'Magenta',
+                    '#FF6B6B': 'Hồng san hô', '#4ECDC4': 'Xanh ngọc', '#45B7D1': 'Xanh dương nhạt',
+                    '#96CEB4': 'Xanh mint', '#FFEAA7': 'Vàng kem', '#DDA0DD': 'Tím nhạt',
+                    '#98D8C8': 'Xanh lá nhạt', '#F7DC6F': 'Vàng đậm', '#BB8FCE': 'Tím lavender',
+                    '#85C1E9': 'Xanh dương bầu trời', '#F8C471': 'Cam nhạt', '#82E0AA': 'Xanh lá tươi',
+                    '#F1948A': 'Hồng đào', '#D7BDE2': 'Tím nhạt', '#FAD7A0': 'Cam kem',
+                    '#A9DFBF': 'Xanh lá nhạt', '#F9E79F': 'Vàng nhạt', '#D5A6BD': 'Hồng nhạt',
+                    '#A3E4D7': 'Xanh ngọc nhạt', '#D2B4DE': 'Tím lavender nhạt'
+                };
+                
+                if (colorName) {
+                    colorName.textContent = colorOptions[color] || 'Không xác định';
+                    console.log('Updated color name to:', colorOptions[color] || 'Không xác định');
+                }
+                
+                console.log('=== Form populated successfully ===');
+            } else {
+                console.error('Vehicle row not found for ID:', vehicleId);
+                console.log('Available vehicle rows:', document.querySelectorAll('[data-vehicle-id]'));
+                console.log('All data-vehicle-id elements:', document.querySelectorAll('[data-vehicle-id]'));
+            }
+        }
+        
+        // Color picker functions
+        function openColorPicker() {
+            document.getElementById('color-picker-modal').classList.remove('hidden');
+        }
+        
+        function closeColorPicker() {
+            document.getElementById('color-picker-modal').classList.add('hidden');
+        }
+        
+        function selectColor(hex, name) {
+            // Update hidden input
+            document.getElementById('vehicle-color').value = hex;
+            
+            // Update color preview
+            document.getElementById('color-preview').style.backgroundColor = hex;
+            document.getElementById('color-name').textContent = name;
+            
+            // Close modal
+            closeColorPicker();
+        }
+        
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeColorPicker();
+                closeVehicleModal();
+            }
+        });
+        
+        // Close modals when clicking outside
+        document.getElementById('color-picker-modal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeColorPicker();
+            }
+        });
+        
+        document.getElementById('vehicle-modal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeVehicleModal();
+            }
+        });
+    </script>
     
     <!-- Auto-expand all vehicle cards when filter is 'running' -->
     @if($filter === 'running')
