@@ -8,7 +8,9 @@ export default defineConfig({
                 'resources/css/app.css', 
                 'resources/js/app.js',
                 'resources/css/active-vehicles.css',
-                'resources/js/active-vehicles.js'
+                'resources/js/active-vehicles.js',
+                'resources/css/vehicles-list.css',
+                'resources/js/vehicles-list.js'
             ],
             refresh: true,
         }),

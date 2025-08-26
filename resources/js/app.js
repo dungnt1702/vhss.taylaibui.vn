@@ -231,6 +231,9 @@ import './vehicle-operations';
 // Import active vehicles specific functionality
 import './active-vehicles';
 
+// Import vehicles list functionality
+import './vehicles-list';
+
 window.Alpine = Alpine;
 
 // Function to initialize the vehicle management system

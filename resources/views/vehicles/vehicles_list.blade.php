@@ -59,7 +59,7 @@
                                 
                                 <!-- Nút Sửa thông tin xe - Chỉ Admin mới thấy được -->
                                 @if(auth()->user()->canManageVehicles())
-                                    <button onclick="openVehicleModal({{ $vehicle->id }})" 
+                                    <button onclick="openEditVehicleModal({{ $vehicle->id }})" 
                                             class="text-blue-600 hover:text-blue-900 transition-colors duration-200 p-1 rounded hover:bg-blue-50"
                                             title="Sửa thông tin xe">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,7 +140,7 @@
                                     
                                     <!-- Nút Sửa thông tin xe - Chỉ Admin mới thấy được -->
                                     @if(auth()->user()->canManageVehicles())
-                                        <button onclick="openVehicleModal({{ $vehicle->id }})" 
+                                        <button onclick="openEditVehicleModal({{ $vehicle->id }})" 
                                                 class="text-blue-600 hover:text-blue-900 transition-colors duration-200 p-1 rounded hover:bg-blue-50"
                                                 title="Sửa thông tin xe">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -244,116 +244,10 @@
     </div>
 </div>
 
-<style>
-    .vehicle-table {
-        table-layout: fixed;
-    }
-    
-    @media (max-width: 767px) {
-        .vehicle-table {
-            table-layout: auto;
-        }
-    }
-</style>
+@push('styles')
+    @vite(['resources/css/vehicles-list.css'])
+@endpush
 
-<script>
-// Functions để xử lý modal chi tiết xe
-function openVehicleDetailModal(vehicleId) {
-    // Call API to get vehicle data from database
-    fetch(`/api/vehicles/${vehicleId}/data`)
-        .then(response => response.json())
-        .then(result => {
-            if (result.success) {
-                const vehicleData = result.data;
-                console.log('Vehicle data for detail modal:', vehicleData);
-                
-                // Tạo nội dung HTML từ dữ liệu API
-                const content = `
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-2 gap-6">
-                            <div>
-                                <h4 class="text-sm font-medium text-neutral-500 uppercase tracking-wider mb-2">Thông tin cơ bản</h4>
-                                <div class="space-y-3">
-                                    <div>
-                                        <span class="text-sm font-medium text-neutral-700">Xe số:</span>
-                                        <span class="ml-2 text-sm text-neutral-900">${vehicleData.name}</span>
-                                    </div>
-                                    <div>
-                                        <span class="text-sm font-medium text-neutral-700">Màu sắc:</span>
-                                        <div class="ml-2 flex items-center space-x-2">
-                                            <div class="w-6 h-6 rounded border border-neutral-300" style="background-color: ${vehicleData.color};"></div>
-                                            <span class="text-sm text-neutral-900">${vehicleData.color}</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <span class="text-sm font-medium text-neutral-700">Số chỗ ngồi:</span>
-                                        <span class="ml-2 text-sm text-neutral-900">${vehicleData.seats}</span>
-                                    </div>
-                                    <div>
-                                        <span class="text-sm font-medium text-neutral-700">Công suất:</span>
-                                        <span class="ml-2 text-sm text-neutral-900">${vehicleData.power}</span>
-                                    </div>
-                                    <div>
-                                        <span class="text-sm font-medium text-neutral-700">Kích cỡ bánh:</span>
-                                        <span class="ml-2 text-sm text-neutral-900">${vehicleData.wheel_size}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-medium text-neutral-500 uppercase tracking-wider mb-2">Trạng thái & Ghi chú</h4>
-                                <div class="space-y-3">
-                                    <div>
-                                        <span class="text-sm font-medium text-neutral-700">Trạng thái:</span>
-                                        <span class="ml-2 text-sm text-neutral-900">${vehicleData.status_display_name}</span>
-                                    </div>
-                                    <div>
-                                        <span class="text-sm font-medium text-neutral-700">Ghi chú:</span>
-                                        <div class="ml-2 mt-1 p-3 bg-neutral-50 rounded-lg">
-                                            <span class="text-sm text-neutral-900">${vehicleData.notes || 'Không có ghi chú'}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                // Hiển thị nội dung
-                document.getElementById('vehicle-detail-content').innerHTML = content;
-                
-                // Hiển thị modal
-                document.getElementById('vehicle-detail-modal').classList.remove('hidden');
-            } else {
-                console.error('Failed to get vehicle data:', result.message);
-                alert('Không thể lấy thông tin xe: ' + result.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching vehicle data:', error);
-            alert('Lỗi khi lấy thông tin xe: ' + error.message);
-        });
-}
-
-function closeVehicleDetailModal() {
-    document.getElementById('vehicle-detail-modal').classList.add('hidden');
-}
-
-// Đóng modal khi click bên ngoài
-document.addEventListener('click', function(event) {
-    const modal = document.getElementById('vehicle-detail-modal');
-    if (event.target === modal) {
-        closeVehicleDetailModal();
-    }
-});
-
-// Đóng modal khi nhấn phím Escape
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeVehicleDetailModal();
-    }
-});
-
-// Export functions to global scope
-window.openVehicleDetailModal = openVehicleDetailModal;
-window.closeVehicleDetailModal = closeVehicleDetailModal;
-</script>
+@push('scripts')
+    @vite(['resources/js/vehicles-list.js'])
+@endpush

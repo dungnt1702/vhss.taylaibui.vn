@@ -19,7 +19,7 @@
                     </div>
                     
                     @if(auth()->user()->canManageVehicles() && !in_array($filter, ['active', 'running', 'waiting', 'expired', 'paused']))
-                    <button onclick="openVehicleModal()" class="btn btn-success btn-sm" title="Thêm xe mới">
+                    <button onclick="openEditVehicleModal()" class="btn btn-success btn-sm" title="Thêm xe mới">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
@@ -408,8 +408,8 @@
     
     <script>
         // Vehicle modal functions
-        function openVehicleModal(vehicleId = null) {
-            console.log('=== openVehicleModal called with vehicleId:', vehicleId, '===');
+        function openEditVehicleModal(vehicleId = null) {
+    console.log('=== openEditVehicleModal called with vehicleId:', vehicleId, '===');
             
             const modal = document.getElementById('vehicle-modal');
             const modalTitle = document.getElementById('vehicle-modal-title');
