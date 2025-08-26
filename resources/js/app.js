@@ -228,6 +228,9 @@ import './vehicle-forms';
 import './vehicle-operations';
 // vehicle-wrappers.js will be loaded after vehicleOperations is initialized
 
+// Import active vehicles specific functionality
+import './active-vehicles';
+
 window.Alpine = Alpine;
 
 // Function to initialize the vehicle management system
