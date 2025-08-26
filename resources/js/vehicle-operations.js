@@ -44,6 +44,9 @@ class VehicleOperations {
         }
         this.updateVehicleStatus(vehicleId, 'running', endTimeMs, startTimeMs);
         
+        // Hide vehicle from current screen (it's now running)
+        this.hideVehicleFromCurrentScreen(vehicleId, 'running');
+        
         // Speak notification
         this.speakVietnamese(`Xe ${this.getVehicleName(vehicleId)} đã xuất bãi với ${minutes} phút`);
     }
@@ -109,6 +112,9 @@ class VehicleOperations {
             window.sendVehicleStatusToServer(vehicleId, 'paused');
         }
         this.updateVehicleStatus(vehicleId, 'paused');
+        
+        // Hide vehicle from current screen (it's now paused)
+        this.hideVehicleFromCurrentScreen(vehicleId, 'paused');
         
         // Show navigation hint to user
         this.showNavigationHint(vehicleId, 'paused');
@@ -212,6 +218,9 @@ class VehicleOperations {
             window.sendVehicleStatusToServer(vehicleId, 'running');
         }
         this.updateVehicleStatus(vehicleId, 'running');
+        
+        // Hide vehicle from current screen (it's now running)
+        this.hideVehicleFromCurrentScreen(vehicleId, 'running');
     }
 
     returnToYard(vehicleId) {
@@ -311,6 +320,9 @@ class VehicleOperations {
         }
         this.updateVehicleStatus(vehicleId, 'running', newEndTime);
         
+        // Hide vehicle from current screen (it's now running)
+        this.hideVehicleFromCurrentScreen(vehicleId, 'running');
+        
         // Speak notification
         this.speakVietnamese(`Xe ${this.getVehicleName(vehicleId)} đã được thêm ${additionalMinutes} phút`);
     }
@@ -337,6 +349,9 @@ class VehicleOperations {
                     window.sendVehicleStatusToServer(vehicleId, 'expired');
                 }
                 this.updateVehicleStatus(vehicleId, 'expired');
+                
+                // Hide vehicle from current screen (it's now expired)
+                this.hideVehicleFromCurrentScreen(vehicleId, 'expired');
             }
         }, 1000);
     }
@@ -529,6 +544,64 @@ class VehicleOperations {
         }
     }
 
+    // Hide vehicle from current screen when status changes
+    hideVehicleFromCurrentScreen(vehicleId, newStatus) {
+        const currentFilter = new URLSearchParams(window.location.search).get('filter');
+        
+        // Don't hide from these screens (they show all vehicles)
+        if (currentFilter === 'group' || currentFilter === 'route') {
+            return;
+        }
+        
+        // Hide vehicle based on current filter and new status
+        const shouldHide = this.shouldHideVehicle(currentFilter, newStatus);
+        
+        if (shouldHide) {
+            const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
+            if (vehicleCard) {
+                // Add fade-out animation
+                vehicleCard.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+                vehicleCard.style.opacity = '0';
+                vehicleCard.style.transform = 'scale(0.95)';
+                
+                // Remove from DOM after animation
+                setTimeout(() => {
+                    vehicleCard.remove();
+                    // Update grid layout
+                    this.updateGridLayout();
+                }, 500);
+            }
+        }
+    }
+
+    // Determine if vehicle should be hidden from current screen
+    shouldHideVehicle(currentFilter, newStatus) {
+        switch (currentFilter) {
+            case 'active': // Xe sẵn sàng chạy
+                // Hide when status changes from active
+                return newStatus !== 'active';
+                
+            case 'waiting': // Xe đang chờ
+                // Hide when status changes from waiting
+                return newStatus !== 'waiting';
+                
+            case 'running': // Xe đang chạy
+                // Hide when status changes from running
+                return newStatus !== 'running';
+                
+            case 'paused': // Xe tạm dừng
+                // Hide when status changes from paused
+                return newStatus !== 'paused';
+                
+            case 'expired': // Xe hết giờ
+                // Hide when status changes from expired
+                return newStatus !== 'expired';
+                
+            default:
+                return false;
+        }
+    }
+
     updateGridLayout() {
         // Trigger a reflow to update the grid layout
         const vehicleList = document.getElementById('vehicle-list');
@@ -567,6 +640,9 @@ class VehicleOperations {
                         window.sendVehicleStatusToServer(vehicleId, 'expired');
                     }
                     this.updateVehicleStatus(vehicleId, 'expired');
+                    
+                    // Hide vehicle from current screen (it's now expired)
+                    this.hideVehicleFromCurrentScreen(vehicleId, 'expired');
                 }
             }
         });
