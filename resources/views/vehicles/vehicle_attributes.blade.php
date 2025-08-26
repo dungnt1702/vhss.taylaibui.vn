@@ -1,4 +1,4 @@
-<!-- List Display for Xe cung đường (route filter) -->
+
 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
     <div class="p-6">
         <div class="overflow-x-auto">

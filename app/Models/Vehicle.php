@@ -46,7 +46,7 @@ class Vehicle extends Model
     const STATUS_WAITING = 'waiting';    // Xe đang chờ
     const STATUS_EXPIRED = 'expired';    // Xe hết giờ
     const STATUS_PAUSED = 'paused';     // Xe tạm dừng
-    const STATUS_ROUTE = 'route';        // Xe cung đường
+
     const STATUS_GROUP = 'group';        // Xe ngoài bãi
 
     // Color options
@@ -71,7 +71,7 @@ class Vehicle extends Model
             self::STATUS_WAITING => 'Xe đang chờ',
             self::STATUS_EXPIRED => 'Xe hết giờ',
             self::STATUS_PAUSED => 'Xe tạm dừng',
-            self::STATUS_ROUTE => 'Xe cung đường',
+
             self::STATUS_GROUP => 'Xe ngoài bãi',
             default => 'Không xác định'
         };
@@ -87,7 +87,7 @@ class Vehicle extends Model
             self::STATUS_WAITING => 'bg-yellow-100 text-yellow-800',
             self::STATUS_EXPIRED => 'bg-orange-100 text-orange-800',
             self::STATUS_PAUSED => 'bg-gray-100 text-gray-800',
-            self::STATUS_ROUTE => 'bg-purple-100 text-purple-800',
+
             self::STATUS_GROUP => 'bg-indigo-100 text-indigo-800',
             default => 'bg-gray-100 text-gray-800'
         };
@@ -135,11 +135,7 @@ class Vehicle extends Model
         return $query->where('status', self::STATUS_PAUSED);
     }
 
-    // Scope for route vehicles
-    public function scopeRoute($query)
-    {
-        return $query->where('status', self::STATUS_ROUTE);
-    }
+
 
     // Scope for group vehicles
     public function scopeGroup($query)

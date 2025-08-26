@@ -123,14 +123,7 @@
                                         Xe hết giờ
                                     </div>
                                 </a>
-                                <a href="{{ route('vehicles.index', ['filter' => 'route']) }}" class="block px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors duration-150">
-                                    <div class="flex items-center">
-                                        <svg class="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7" />
-                                        </svg>
-                                        Xe cung đường
-                                    </div>
-                                </a>
+
                                 
                                 
                             </div>
@@ -390,12 +383,7 @@
                                 Xe hết giờ
                             </a>
 
-                            <a href="{{ route('vehicles.index', ['filter' => 'route']) }}" class="flex items-center px-3 py-2 text-sm font-medium text-neutral-600 rounded-md hover:bg-neutral-100 hover:text-neutral-900 transition-all duration-200">
-                                <svg class="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7" />
-                                </svg>
-                                Xe cung đường
-                            </a>
+
                             
                             @if(auth()->user()->canManageVehicleAttributes())
                             <div class="border-t border-neutral-200 my-2"></div>

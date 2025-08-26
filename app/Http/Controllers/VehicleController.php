@@ -38,13 +38,12 @@ class VehicleController extends Controller
             'waiting' => 'Xe đang chờ',
             'expired' => 'Xe hết giờ',
             'paused' => 'Xe tạm dừng',
-            'route' => 'Xe cung đường',
             'attributes' => 'Thuộc tính xe',
             default => 'Danh sách xe'
         };
 
         // Get display mode based on filter
-        $displayMode = in_array($filter, ['route', 'active', 'vehicles_list', 'attributes']) ? 'list' : 'grid';
+        $displayMode = in_array($filter, ['active', 'vehicles_list', 'attributes']) ? 'list' : 'grid';
 
         // Get vehicle attributes for modal
         $colors = VehicleAttribute::getColors();
