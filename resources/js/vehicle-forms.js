@@ -96,57 +96,28 @@ class VehicleForms {
             const url = isEdit ? `/vehicles/${vehicleId}` : '/vehicles';
             const method = isEdit ? 'PUT' : 'POST';
             
-            // Create form data for submission
-            // Get form element
-            const form = document.getElementById('vehicle-form');
-            if (!form) {
-                console.error('Vehicle form not found!');
-                alert('Không tìm thấy form xe!');
-                return;
-            }
+            // Get values directly from DOM elements
+            const name = document.getElementById('vehicle-name')?.value || '';
+            const color = document.getElementById('vehicle-color')?.value || '';
+            const seats = document.getElementById('vehicle-seats')?.value || '';
+            const power = document.getElementById('vehicle-power')?.value || '';
+            const wheelSize = document.getElementById('vehicle-wheel-size')?.value || '';
+            const notes = document.getElementById('vehicle-notes')?.value || '';
             
-            // Create FormData manually
-            const submitData = new FormData();
-            
-            // Get field values directly
-            const nameField = document.getElementById('vehicle-name');
-            const colorField = document.getElementById('vehicle-color');
-            const seatsField = document.getElementById('vehicle-seats');
-            const powerField = document.getElementById('vehicle-power');
-            const wheelSizeField = document.getElementById('vehicle-wheel-size');
-            const notesField = document.getElementById('vehicle-notes');
-            
-            // Log field elements for debugging
-            console.log('=== Field Elements ===');
-            console.log('Name field:', nameField);
-            console.log('Color field:', colorField);
-            console.log('Seats field:', seatsField);
-            console.log('Power field:', powerField);
-            console.log('Wheel size field:', wheelSizeField);
-            console.log('Notes field:', notesField);
-            
-            // Get values and validate
-            const name = nameField?.value || '';
-            const color = colorField?.value || '';
-            const seats = seatsField?.value || '';
-            const power = powerField?.value || '';
-            const wheelSize = wheelSizeField?.value || '';
-            const notes = notesField?.value || '';
-            
-            console.log('=== Field Values ===');
-            console.log('Name value:', name);
-            console.log('Color value:', color);
-            console.log('Seats value:', seats);
-            console.log('Power value:', power);
-            console.log('Wheel size value:', wheelSize);
-            console.log('Notes value:', notes);
+            console.log('=== Field Values from DOM ===');
+            console.log('Name:', name);
+            console.log('Color:', color);
+            console.log('Seats:', seats);
+            console.log('Power:', power);
+            console.log('Wheel Size:', wheelSize);
+            console.log('Notes:', notes);
             
             // Check if form is populated (for edit mode)
             const isEditMode = document.getElementById('vehicle-edit-id')?.value;
             if (isEditMode && (!name || !color || !seats || !power || !wheelSize)) {
                 console.warn('Form fields are empty in edit mode. Waiting for data population...');
                 
-                // Wait a bit more for form population
+                // Wait a bit more for form population and retry
                 setTimeout(() => {
                     console.log('Retrying form submission after delay...');
                     this.handleVehicleFormSubmit(event);
@@ -165,26 +136,44 @@ class VehicleForms {
                 return;
             }
             
-            // Add values to FormData
-            submitData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-            submitData.append('name', name);
-            submitData.append('color', color);
-            submitData.append('seats', seats);
-            submitData.append('power', power);
-            submitData.append('wheel_size', wheelSize);
-            submitData.append('notes', notes);
+            // Create JSON payload instead of FormData
+            const payload = {
+                _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                name: name,
+                color: color,
+                seats: seats,
+                power: power,
+                wheel_size: wheelSize,
+                notes: notes
+            };
             
-            console.log('=== Final FormData ===');
-            for (let [key, value] of submitData.entries()) {
-                console.log(`${key}: ${value}`);
+            // Add vehicle_id for edit mode
+            if (isEdit) {
+                payload.vehicle_id = vehicleId;
             }
+            
+            console.log('=== JSON Payload Created ===');
+            console.log('Payload object:', payload);
+            console.log('Payload keys:', Object.keys(payload));
+            console.log('Payload size:', Object.keys(payload).length);
+            
+            const headers = {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            };
+            
+            console.log('=== Request Details ===');
+            console.log('URL:', url);
+            console.log('Method:', method);
+            console.log('Headers:', headers);
+            console.log('Body type:', typeof payload);
+            console.log('Body constructor:', payload.constructor.name);
             
             fetch(url, {
                 method: method,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-                body: submitData
+                headers: headers,
+                body: JSON.stringify(payload)
             })
             .then(response => {
                 console.log('=== Response Status ===', response.status);
@@ -199,10 +188,20 @@ class VehicleForms {
                     if (data.errors) {
                         // Show validation errors in detail
                         console.log('=== Validation Errors ===', data.errors);
+                        console.log('=== Debug Info ===', data.debug_info);
+                        
                         let errorMessages = 'Lỗi validation:\n';
                         for (const [field, messages] of Object.entries(data.errors)) {
                             errorMessages += `\n${field}: ${messages.join(', ')}`;
                         }
+                        
+                        // Add debug info if available
+                        if (data.debug_info) {
+                            errorMessages += '\n\n=== Debug Info ===';
+                            errorMessages += `\nRequest Data: ${JSON.stringify(data.debug_info.request_data, null, 2)}`;
+                            errorMessages += `\nValidation Rules: ${JSON.stringify(data.debug_info.validation_rules, null, 2)}`;
+                        }
+                        
                         alert(errorMessages);
                     } else {
                         alert('Có lỗi xảy ra: ' + (data.message || 'Không xác định'));
@@ -252,14 +251,22 @@ class VehicleForms {
         event.preventDefault();
         
         const vehicleId = document.getElementById('workshop-vehicle-id').value;
-        const formData = new FormData(event.target);
+        
+        // Get form values directly instead of FormData
+        const status = document.getElementById('workshop-status')?.value || '';
+        const notes = document.getElementById('workshop-notes')?.value || '';
         
         fetch(`/vehicles/${vehicleId}/workshop`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
-            body: formData
+            body: JSON.stringify({
+                status: status,
+                notes: notes
+            })
         })
         .then(response => response.json())
         .then(data => {

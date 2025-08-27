@@ -96,7 +96,7 @@ class VehicleManagementController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|unique:vehicles,name|max:50',
             'color' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/|max:7',
-            'seats' => 'required|in:1,2',
+            'seats' => 'required|in:1,2,"1","2"',  // Chấp nhận cả integer và string
             'power' => 'required|string|max:50',
             'wheel_size' => 'required|string|max:50',
             'current_location' => 'nullable|string|max:200',
@@ -170,7 +170,7 @@ class VehicleManagementController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:50|unique:vehicles,name,' . $vehicle->id,
             'color' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/|max:7',
-            'seats' => 'required|in:1,2',
+            'seats' => 'required|in:1,2,"1","2"',  // Chấp nhận cả integer và string
             'power' => 'required|string|max:50',
             'wheel_size' => 'required|string|max:50',
             'current_location' => 'nullable|string|max:200',
@@ -178,9 +178,28 @@ class VehicleManagementController extends Controller
         ]);
 
         if ($validator->fails()) {
+            // Log validation errors for debugging
+            \Log::error('Vehicle update validation failed', [
+                'vehicle_id' => $vehicle->id,
+                'request_data' => $request->all(),
+                'validation_errors' => $validator->errors()->toArray()
+            ]);
+            
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
+                'debug_info' => [
+                    'request_data' => $request->all(),
+                    'validation_rules' => [
+                        'name' => 'required|string|max:50|unique:vehicles,name,' . $vehicle->id,
+                        'color' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/|max:7',
+                        'seats' => 'required|in:1,2,"1","2"',
+                        'power' => 'required|string|max:50',
+                        'wheel_size' => 'required|string|max:50',
+                        'current_location' => 'nullable|string|max:200',
+                        'notes' => 'nullable|string|max:500',
+                    ]
+                ]
             ], 422);
         }
 

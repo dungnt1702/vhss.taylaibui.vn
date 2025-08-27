@@ -59,9 +59,9 @@
     <div id="vehicle-modal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black bg-opacity-50"></div>
         <div class="relative min-h-screen flex items-center justify-center p-2 sm:p-4">
-            <div class="bg-white rounded-lg shadow-xl w-full max-w-sm sm:max-w-md md:max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-sm sm:max-w-md md:max-w-6xl lg:max-w-7xl xl:max-w-8xl max-h-[90vh] flex flex-col">
                 <!-- Header -->
-                <div class="p-6 pb-4 border-b border-neutral-200 flex-shrink-0">
+                <div class="p-8 pb-6 border-b border-neutral-200 flex-shrink-0">
                     <div class="flex justify-between items-center">
                         <h3 id="vehicle-modal-title" class="text-lg font-semibold text-neutral-900">
                             Thêm xe mới
@@ -75,14 +75,14 @@
                 </div>
                 
                 <!-- Form Content with Scroll -->
-                <div class="flex-1 overflow-y-auto p-6 modal-scroll">
+                <div class="flex-1 overflow-y-auto p-8 modal-scroll">
                     <form id="vehicle-form">
                         @csrf
                         <input type="hidden" id="vehicle-edit-id" name="vehicle_id">
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
-                                <label for="vehicle-name" class="block text-sm font-medium text-neutral-700 mb-2">
+                                <label for="vehicle-name" class="block text-sm font-medium text-neutral-700 mb-3">
                                     Xe số <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" id="vehicle-name" name="name" required
@@ -91,7 +91,7 @@
                             </div>
                             
                             <div>
-                                <label for="vehicle-color" class="block text-sm font-medium text-neutral-700 mb-2">
+                                <label for="vehicle-color" class="block text-sm font-medium text-neutral-700 mb-3">
                                     Màu sắc <span class="text-red-500">*</span>
                                 </label>
                                 <div class="flex items-center space-x-3">
@@ -99,69 +99,73 @@
                                         Chọn màu
                                     </button>
                                     <div id="selected-color-display" class="flex items-center space-x-2">
-                                        <div id="color-preview" class="w-6 h-6 rounded border border-neutral-300" style="background-color: #808080;"></div>
-                                        <span id="color-name" class="text-sm text-neutral-600">Chưa chọn màu</span>
+                                        <div id="color-preview" class="w-8 h-8 rounded border-2 border-neutral-300 shadow-sm" style="background-color: #808080;"></div>
                                     </div>
                                 </div>
                                 <input type="hidden" id="vehicle-color" name="color" value="#808080" required>
                             </div>
                             
-                            <div>
-                                <label for="vehicle-seats" class="block text-sm font-medium text-neutral-700 mb-2">
-                                    Số chỗ ngồi <span class="text-red-500">*</span>
-                                </label>
-                                <select id="vehicle-seats" name="seats" required
-                                        class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
-                                    <option value="">Chọn số chỗ</option>
-                                    @if($seats && count($seats) > 0)
-                                        @foreach($seats as $seat)
-                                            <option value="{{ $seat }}">{{ $seat }}</option>
-                                        @endforeach
-                                    @else
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                    @endif
-                                </select>
-                            </div>
-                            
-                            <div>
-                                <label for="vehicle-power" class="block text-sm font-medium text-neutral-700 mb-2">
-                                    Công suất <span class="text-red-500">*</span>
-                                </label>
-                                <select id="vehicle-power" name="power" required
-                                        class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
-                                    <option value="">Chọn công suất</option>
-                                    @if($powerOptions && count($powerOptions) > 0)
-                                        @foreach($powerOptions as $power)
-                                            <option value="{{ $power }}">{{ $power }}</option>
-                                        @endforeach
-                                    @else
-                                        <option value="48V-1000W">48V-1000W</option>
-                                        <option value="60V-1200W">60V-1200W</option>
-                                    @endif
-                                </select>
-                            </div>
-                            
-                            <div>
-                                <label for="vehicle-wheel-size" class="block text-sm font-medium text-neutral-700 mb-2">
-                                    Kích cỡ bánh <span class="text-red-500">*</span>
-                                </label>
-                                <select id="vehicle-wheel-size" name="wheel_size" required
-                                        class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
-                                    <option value="">Chọn kích cỡ bánh</option>
-                                    @if($wheelSizes && count($wheelSizes) > 0)
-                                        @foreach($wheelSizes as $wheelSize)
-                                            <option value="{{ $wheelSize }}">{{ $wheelSize }}</option>
-                                        @endforeach
-                                    @else
-                                        <option value="7inch">7inch</option>
-                                        <option value="8inch">8inch</option>
-                                    @endif
-                                </select>
+                            <!-- Dòng 2: Số chỗ ngồi, Công suất, Kích cỡ bánh -->
+                            <div class="md:col-span-2">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div>
+                                        <label for="vehicle-seats" class="block text-sm font-medium text-neutral-700 mb-3">
+                                            Số chỗ ngồi <span class="text-red-500">*</span>
+                                        </label>
+                                        <select id="vehicle-seats" name="seats" required
+                                                class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                            <option value="">Chọn số chỗ</option>
+                                            @if($seats && count($seats) > 0)
+                                                @foreach($seats as $seat)
+                                                    <option value="{{ $seat }}">{{ $seat }}</option>
+                                                @endforeach
+                                            @else
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                            @endif
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="vehicle-power" class="block text-sm font-medium text-neutral-700 mb-3">
+                                            Công suất <span class="text-red-500">*</span>
+                                        </label>
+                                        <select id="vehicle-power" name="power" required
+                                                class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                            <option value="">Chọn công suất</option>
+                                            @if($powerOptions && count($powerOptions) > 0)
+                                                @foreach($powerOptions as $power)
+                                                    <option value="{{ $power }}">{{ $power }}</option>
+                                                @endforeach
+                                            @else
+                                                <option value="48V-1000W">48V-1000W</option>
+                                                <option value="60V-1200W">60V-1200W</option>
+                                            @endif
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="vehicle-wheel-size" class="block text-sm font-medium text-neutral-700 mb-3">
+                                            Kích cỡ bánh <span class="text-red-500">*</span>
+                                        </label>
+                                        <select id="vehicle-wheel-size" name="wheel_size" required
+                                                class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                            <option value="">Chọn kích cỡ bánh</option>
+                                            @if($wheelSizes && count($wheelSizes) > 0)
+                                                @foreach($wheelSizes as $wheelSize)
+                                                    <option value="{{ $wheelSize }}">{{ $wheelSize }}</option>
+                                                @endforeach
+                                            @else
+                                                <option value="7inch">7inch</option>
+                                                <option value="8inch">8inch</option>
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                             
                             <div class="md:col-span-2">
-                                <label for="vehicle-notes" class="block text-sm font-medium text-neutral-700 mb-2">
+                                <label for="vehicle-notes" class="block text-sm font-medium text-neutral-700 mb-3">
                                     Ghi chú
                                 </label>
                                 <textarea id="vehicle-notes" name="notes" rows="3"
@@ -173,7 +177,7 @@
                 </div>
                 
                 <!-- Footer - Fixed at bottom -->
-                <div class="p-6 pt-4 border-t border-neutral-200 flex-shrink-0">
+                <div class="p-8 pt-6 border-t border-neutral-200 flex-shrink-0">
                     <div class="flex space-x-3">
                         <button type="submit" form="vehicle-form" id="vehicle-submit-btn" class="btn btn-primary flex-1">
                             Thêm xe
@@ -494,7 +498,6 @@
                 const powerField = document.getElementById('vehicle-power');
                 const wheelSizeField = document.getElementById('vehicle-wheel-size');
                 const colorPreview = document.getElementById('color-preview');
-                const colorName = document.getElementById('color-name');
                 
                 console.log('Form fields found:', {
                     nameField,
@@ -502,8 +505,7 @@
                     seatsField,
                     powerField,
                     wheelSizeField,
-                    colorPreview,
-                    colorName
+                    colorPreview
                 });
                 
                 if (nameField) {
@@ -533,27 +535,7 @@
                     console.log('Updated color preview to:', vehicleData.color);
                 }
                 
-                // Find color name for display
-                const colorOptions = {
-                    '#FF0000': 'Đỏ', '#FF4500': 'Cam đỏ', '#FF8C00': 'Cam', '#FFD700': 'Vàng',
-                    '#32CD32': 'Xanh lá', '#00CED1': 'Xanh dương', '#4169E1': 'Xanh hoàng gia',
-                    '#8A2BE2': 'Xanh tím', '#FF69B4': 'Hồng', '#FF1493': 'Hồng đậm',
-                    '#FF6347': 'Cà chua', '#20B2AA': 'Xanh biển nhạt', '#228B22': 'Xanh rừng',
-                    '#DC143C': 'Đỏ đậm', '#000000': 'Đen', '#FFFFFF': 'Trắng', '#808080': 'Xám',
-                    '#C0C0C0': 'Bạc', '#D2691E': 'Nâu', '#4B0082': 'Tím', '#FF00FF': 'Magenta',
-                    '#FF6B6B': 'Hồng san hô', '#4ECDC4': 'Xanh ngọc', '#45B7D1': 'Xanh dương nhạt',
-                    '#96CEB4': 'Xanh mint', '#FFEAA7': 'Vàng kem', '#DDA0DD': 'Tím nhạt',
-                    '#98D8C8': 'Xanh lá nhạt', '#F7DC6F': 'Vàng đậm', '#BB8FCE': 'Tím lavender',
-                    '#85C1E9': 'Xanh dương bầu trời', '#F8C471': 'Cam nhạt', '#82E0AA': 'Xanh lá tươi',
-                    '#F1948A': 'Hồng đào', '#D7BDE2': 'Tím nhạt', '#FAD7A0': 'Cam kem',
-                    '#A9DFBF': 'Xanh lá nhạt', '#F9E79F': 'Vàng nhạt', '#D5A6BD': 'Hồng nhạt',
-                    '#A3E4D7': 'Xanh ngọc nhạt', '#D2B4DE': 'Tím lavender nhạt'
-                };
-                
-                if (colorName) {
-                    colorName.textContent = colorOptions[vehicleData.color] || 'Không xác định';
-                    console.log('Updated color name to:', colorOptions[vehicleData.color] || 'Không xác định');
-                }
+                // Color preview updated successfully
                 
                 console.log('=== Form populated successfully ===');
         }
@@ -573,7 +555,6 @@
             
             // Update color preview
             document.getElementById('color-preview').style.backgroundColor = hex;
-            document.getElementById('color-name').textContent = name;
             
             // Close modal
             closeColorPicker();

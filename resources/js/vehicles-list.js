@@ -189,6 +189,7 @@ function populateEditVehicleForm(vehicleData) {
     // Populate fields with validation and proper event triggering
     if (nameField) {
         nameField.value = vehicleData.name || '';
+        nameField.defaultValue = vehicleData.name || '';  // Thêm defaultValue
         nameField.setAttribute('value', vehicleData.name || '');
         nameField.dispatchEvent(new Event('input', { bubbles: true }));
         nameField.dispatchEvent(new Event('change', { bubbles: true }));
@@ -199,6 +200,7 @@ function populateEditVehicleForm(vehicleData) {
     
     if (colorField) {
         colorField.value = vehicleData.color || '';
+        colorField.defaultValue = vehicleData.color || '';  // Thêm defaultValue
         colorField.setAttribute('value', vehicleData.color || '');
         colorField.dispatchEvent(new Event('input', { bubbles: true }));
         colorField.dispatchEvent(new Event('change', { bubbles: true }));
@@ -209,6 +211,7 @@ function populateEditVehicleForm(vehicleData) {
     
     if (seatsField) {
         seatsField.value = vehicleData.seats || '';
+        seatsField.defaultValue = vehicleData.seats || '';  // Thêm defaultValue
         seatsField.setAttribute('value', vehicleData.seats || '');
         seatsField.dispatchEvent(new Event('input', { bubbles: true }));
         seatsField.dispatchEvent(new Event('change', { bubbles: true }));
@@ -219,6 +222,7 @@ function populateEditVehicleForm(vehicleData) {
     
     if (powerField) {
         powerField.value = vehicleData.power || '';
+        powerField.defaultValue = vehicleData.power || '';  // Thêm defaultValue
         powerField.setAttribute('value', vehicleData.power || '');
         powerField.dispatchEvent(new Event('input', { bubbles: true }));
         powerField.dispatchEvent(new Event('change', { bubbles: true }));
@@ -229,6 +233,7 @@ function populateEditVehicleForm(vehicleData) {
     
     if (wheelSizeField) {
         wheelSizeField.value = vehicleData.wheel_size || '';
+        wheelSizeField.defaultValue = vehicleData.wheel_size || '';  // Thêm defaultValue
         wheelSizeField.setAttribute('value', vehicleData.wheel_size || '');
         wheelSizeField.dispatchEvent(new Event('input', { bubbles: true }));
         wheelSizeField.dispatchEvent(new Event('change', { bubbles: true }));
@@ -239,6 +244,7 @@ function populateEditVehicleForm(vehicleData) {
     
     if (notesField) {
         notesField.value = vehicleData.notes || '';
+        notesField.defaultValue = vehicleData.notes || '';  // Thêm defaultValue
         notesField.setAttribute('value', vehicleData.notes || '');
         notesField.dispatchEvent(new Event('input', { bubbles: true }));
         notesField.dispatchEvent(new Event('change', { bubbles: true }));
@@ -252,10 +258,6 @@ function populateEditVehicleForm(vehicleData) {
         colorPreview.style.backgroundColor = vehicleData.color || '#ffffff';
         colorPreview.style.borderColor = vehicleData.color || '#d1d5db';
         console.log('Updated color preview to:', vehicleData.color);
-    }
-    if (colorName) {
-        colorName.textContent = vehicleData.color || 'Chọn màu';
-        console.log('Updated color name to:', vehicleData.color);
     }
     
     // Verify form data after population
@@ -294,53 +296,91 @@ function clearEditVehicleForm() {
         
         // Reset color preview
         const colorPreview = document.getElementById('color-preview');
-        const colorName = document.getElementById('color-name');
         if (colorPreview) {
-            colorPreview.style.backgroundColor = '#ffffff';
+            colorPreview.style.backgroundColor = '#808080';
             colorPreview.style.borderColor = '#d1d5db';
         }
-        if (colorName) colorName.textContent = 'Chọn màu';
     }
 }
 
 window.closeVehicleModal = function() {
-    if (window.vehicleForms) {
-        window.vehicleForms.closeVehicleModal();
+    const modal = document.getElementById('vehicle-modal');
+    if (modal) {
+        modal.classList.add('hidden');
     }
 };
 
 window.loadVehicleData = function(vehicleId) {
-    if (window.vehicleForms) {
-        window.vehicleForms.loadVehicleData(vehicleId);
-    }
+    // This function is handled by openEditVehicleModal now
+    openEditVehicleModal(vehicleId);
 };
 
 window.openStatusModal = function(vehicleId, currentStatus, currentNotes) {
-    if (window.vehicleForms) {
-        window.vehicleForms.openStatusModal(vehicleId, currentStatus, currentNotes);
+    const modal = document.getElementById('status-modal');
+    if (modal) {
+        // Set vehicle ID
+        const vehicleIdField = document.getElementById('vehicle-id');
+        if (vehicleIdField) vehicleIdField.value = vehicleId;
+        
+        // Set current status
+        const statusSelect = document.getElementById('status-select');
+        if (statusSelect) statusSelect.value = currentStatus;
+        
+        // Set current notes
+        const notesField = document.getElementById('status-notes');
+        if (notesField) notesField.value = currentNotes || '';
+        
+        // Show modal
+        modal.classList.remove('hidden');
     }
 };
 
 window.closeStatusModal = function() {
-    if (window.vehicleForms) {
-        window.vehicleForms.closeStatusModal();
+    const modal = document.getElementById('status-modal');
+    if (modal) {
+        modal.classList.add('hidden');
     }
 };
 
 window.showWorkshopModal = function(vehicleId) {
-    if (window.vehicleForms) {
-        window.vehicleForms.openWorkshopModal(vehicleId);
+    const modal = document.getElementById('workshop-modal');
+    if (modal) {
+        // Set vehicle ID
+        const vehicleIdField = document.getElementById('workshop-vehicle-id');
+        if (vehicleIdField) vehicleIdField.value = vehicleId;
+        
+        // Show modal
+        modal.classList.remove('hidden');
     }
 };
 
 window.closeWorkshopModal = function() {
-    if (window.vehicleForms) {
-        window.vehicleForms.closeWorkshopModal();
+    const modal = document.getElementById('workshop-modal');
+    if (modal) {
+        modal.classList.add('hidden');
     }
 };
 
 window.deleteVehicle = function(vehicleId) {
-    if (window.vehicleManager) {
-        window.vehicleManager.deleteVehicle(vehicleId);
+    if (confirm('Bạn có chắc chắn muốn xóa xe này?')) {
+        fetch(`/vehicles/${vehicleId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                // Reload page to refresh vehicle list
+                window.location.reload();
+            } else {
+                alert('Có lỗi xảy ra khi xóa xe');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting vehicle:', error);
+            alert('Có lỗi xảy ra khi xóa xe');
+        });
     }
 };
