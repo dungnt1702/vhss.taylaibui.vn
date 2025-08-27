@@ -147,15 +147,11 @@
 <div id="popup-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
 
 @push('scripts')
-    <!-- Only load active-vehicles.js if the file exists -->
-    @if(file_exists(public_path('js/active-vehicles.js')))
-        <script src="{{ asset('js/active-vehicles.js') }}"></script>
-    @endif
+    <!-- Load active-vehicles.js -->
+    <script type="module" src="{{ asset('build/assets/active-vehicles-8BipxnE-.js') }}"></script>
 @endpush
 
 @push('styles')
-    <!-- Only load active-vehicles.css if the file exists -->
-    @if(file_exists(public_path('css/active-vehicles.css')))
-        <link rel="stylesheet" href="{{ asset('css/active-vehicles.css') }}">
-    @endif
+    <!-- Load active-vehicles.css -->
+    <link rel="stylesheet" href="{{ asset('build/assets/active-vehicles-CvjbaTot.css') }}">
 @endpush

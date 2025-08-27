@@ -3,6 +3,9 @@ let waitingVehicles = [];
 let timerVehicles = [];
 let routeVehicles = {};
 
+// Debug: Log when script loads
+console.log('🚀 active-vehicles.js loaded successfully');
+
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing...');

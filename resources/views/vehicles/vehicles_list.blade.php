@@ -245,9 +245,9 @@
 </div>
 
 @push('styles')
-    @vite(['resources/css/vehicles-list.css'])
+    <link rel="stylesheet" href="{{ asset('build/assets/vehicles-list-DYuZdIXw.css') }}">
 @endpush
 
 @push('scripts')
-    @vite(['resources/js/vehicles-list.js'])
+    <script type="module" src="{{ asset('build/assets/vehicles-list-ClFuefiU.js') }}"></script>
 @endpush
