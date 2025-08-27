@@ -8,7 +8,7 @@
                     <h3 class="text-lg font-semibold text-neutral-900">
                         Xe số {{ $vehicle->name }}
                     </h3>
-                    <div class="w-4 h-4 rounded border border-neutral-300 dark:border-neutral-600" style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}"></div>
+                    <div class="w-4 h-4 rounded border border-neutral-300 " style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}"></div>
                 </div>
                 <!-- Expand/Collapse Icon -->
                 <div class="flex justify-center mt-2">

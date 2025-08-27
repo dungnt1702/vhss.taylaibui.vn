@@ -26,7 +26,7 @@
                             {{ $vehicle->name }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                            <div class="w-6 h-6 rounded border border-neutral-300 dark:border-neutral-600" style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}"></div>
+                            <div class="w-6 h-6 rounded border border-neutral-300 " style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}"></div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="px-2 py-1 text-xs font-medium rounded-full {{ $vehicle->status_color_class }}">
@@ -94,7 +94,7 @@
                             {{ $vehicle->name }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                            <div class="w-6 h-6 rounded border border-neutral-300 dark:border-neutral-600" style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}"></div>
+                            <div class="w-6 h-6 rounded border border-neutral-300 " style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}"></div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="px-2 py-1 text-xs font-medium rounded-full {{ $vehicle->status_color_class }}">

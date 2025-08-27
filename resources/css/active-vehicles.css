@@ -10,6 +10,21 @@
     }
 }
 
+/* Button group general styles */
+.flex select {
+    border-right: none !important;
+}
+
+.flex button {
+    border-left: 1px solid transparent !important;
+}
+
+/* Ensure proper border connection */
+.flex select:focus + button,
+.flex select:hover + button {
+    border-left-color: #d1d5db !important;
+}
+
 @media (max-width: 640px) {
     .p-6 {
         padding: 1rem !important;
@@ -29,25 +44,29 @@
         line-height: 1.75rem !important;
     }
     
-    /* Button group responsive */
-    div[style*="display: flex"] {
+    /* Button group responsive - ensure buttons stack vertically on mobile */
+    .flex.flex-col.sm\:flex-row {
         flex-direction: column !important;
-        gap: 12px !important;
+        gap: 1rem !important;
     }
     
-    /* Button group styling */
-    div[style*="display: flex"] {
-        gap: 0 !important;
+    /* Make button groups full width on mobile */
+    .w-full.sm\:w-auto {
+        width: 100% !important;
     }
     
-    /* Button group border radius on mobile */
-    select[style*="border-radius: 6px 0 0 6px"] {
-        border-radius: 6px !important;
-        border-right: 1px solid #d1d5db !important;
+    /* Ensure proper spacing between button groups on mobile */
+    .gap-4 {
+        gap: 1rem !important;
     }
     
-    button[style*="border-radius: 0 6px 6px 0"] {
-        border-radius: 6px !important;
+    /* Make sure select and button elements work well on mobile */
+    .flex.w-full.sm\:w-auto {
+        width: 100% !important;
+    }
+    
+    .flex-1.sm\:flex-none {
+        flex: 1 !important;
     }
     
     /* Popup responsive */

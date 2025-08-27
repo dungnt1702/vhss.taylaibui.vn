@@ -71,7 +71,7 @@ function startTimer() {
     console.log('startTimer called');
     const selectedVehicles = getSelectedWaitingVehicles();
     if (selectedVehicles.length === 0) {
-        showNotification('Bạn phải chọn xe rồi mới Bấm giờ');
+        showNotification('Bạn hãy chọn xe');
         return;
     }
 
@@ -107,13 +107,13 @@ function assignRoute() {
     console.log('assignRoute called');
     const selectedVehicles = getSelectedWaitingVehicles();
     if (selectedVehicles.length === 0) {
-        showNotification('Bạn phải chọn xe rồi mới Chạy');
+        showNotification('Bạn hãy chọn xe');
         return;
     }
 
     const routeNumber = document.getElementById('route-select').value;
     if (!routeNumber) {
-        alert('Vui lòng chọn cung đường');
+        alert('Vui lòng chọn đường');
         return;
     }
 
@@ -223,15 +223,15 @@ function updateWaitingTable() {
     
     waitingVehicles.forEach(vehicle => {
         const row = `
-            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <tr class="hover:bg-gray-50 ">
                 <td class="px-3 py-2">
                     <input type="checkbox" value="${vehicle.id}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                 </td>
-                <td class="px-3 py-2 text-sm text-gray-900 dark:text-gray-100">${vehicle.name}</td>
-                <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">${vehicle.color}</td>
-                <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">${vehicle.seats}</td>
+                <td class="px-3 py-2 text-sm text-gray-900 ">${vehicle.name}</td>
+                <td class="px-3 py-2 text-sm text-gray-500 ">${vehicle.color}</td>
+                <td class="px-3 py-2 text-sm text-gray-500 ">${vehicle.seats}</td>
                 <td class="px-3 py-2">
-                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800  ">
                         Ngoài bãi
                     </span>
                 </td>
@@ -254,16 +254,16 @@ function updateTimerTable() {
         const endTimeStr = vehicle.endTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
         
         const row = `
-            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <tr class="hover:bg-gray-50 ">
                 <td class="px-3 py-2">
                     <input type="checkbox" value="${vehicle.id}" class="timer-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                 </td>
-                <td class="px-3 py-2 text-sm text-gray-900 dark:text-gray-100">${vehicle.name}</td>
-                <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">${vehicle.color}</td>
-                <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">${vehicle.seats}</td>
-                <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">${startTimeStr}</td>
-                <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">${endTimeStr}</td>
-                <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                <td class="px-3 py-2 text-sm text-gray-900 ">${vehicle.name}</td>
+                <td class="px-3 py-2 text-sm text-gray-500 ">${vehicle.color}</td>
+                <td class="px-3 py-2 text-sm text-gray-500 ">${vehicle.seats}</td>
+                <td class="px-3 py-2 text-sm text-gray-500 ">${startTimeStr}</td>
+                <td class="px-3 py-2 text-sm text-gray-500 ">${endTimeStr}</td>
+                <td class="px-3 py-2 text-sm text-gray-500 ">
                     <span class="countdown" data-end="${vehicle.endTime.getTime()}">--:--</span>
                 </td>
             </tr>
@@ -284,33 +284,33 @@ function updateRouteTable() {
         const vehicles = routeVehicles[routeNumber];
         if (vehicles.length > 0) {
             const routeGroup = `
-                <div class="border border-gray-200 dark:border-gray-600 rounded-lg" data-route="${routeNumber}">
-                    <div class="px-3 py-2 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">Cung đường ${routeNumber}</h3>
+                <div class="border border-gray-200  rounded-lg" data-route="${routeNumber}">
+                    <div class="px-3 py-2 bg-gray-50  border-b border-gray-200 ">
+                        <h3 class="text-sm font-medium text-gray-900 ">Đường ${routeNumber}</h3>
                     </div>
                     <div class="p-3">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <table class="min-w-full divide-y divide-gray-200 ">
                             <thead>
                                 <tr>
                                     <th class="px-2 py-1 text-left">
                                         <input type="checkbox" class="route-select-all rounded border-gray-300 text-brand-600 focus:ring-brand-500" onchange="toggleRouteCheckboxes(${routeNumber}, this.checked)">
                                     </th>
-                                    <th class="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Xe số</th>
-                                    <th class="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Màu sắc</th>
-                                    <th class="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Chỗ ngồi</th>
-                                    <th class="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Thời gian bắt đầu</th>
+                                    <th class="px-2 py-1 text-left text-xs font-medium text-gray-500 ">Xe số</th>
+                                    <th class="px-2 py-1 text-left text-xs font-medium text-gray-500 ">Màu sắc</th>
+                                    <th class="px-2 py-1 text-left text-xs font-medium text-gray-500 ">Chỗ ngồi</th>
+                                    <th class="px-2 py-1 text-left text-xs font-medium text-gray-500 ">Thời gian bắt đầu</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody class="divide-y divide-gray-200 ">
                                 ${vehicles.map(vehicle => `
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <tr class="hover:bg-gray-50 ">
                                         <td class="px-2 py-1">
                                             <input type="checkbox" value="${vehicle.id}" class="route-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                         </td>
-                                        <td class="px-2 py-1 text-xs text-gray-900 dark:text-gray-100">${vehicle.name}</td>
-                                        <td class="px-2 py-1 text-xs text-gray-500 dark:text-gray-400">${vehicle.color}</td>
-                                        <td class="px-2 py-1 text-xs text-gray-500 dark:text-gray-400">${vehicle.seats}</td>
-                                        <td class="px-2 py-1 text-xs text-gray-500 dark:text-gray-400">${vehicle.startTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</td>
+                                        <td class="px-2 py-1 text-xs text-gray-900 ">${vehicle.name}</td>
+                                        <td class="px-2 py-1 text-xs text-gray-500 ">${vehicle.color}</td>
+                                        <td class="px-2 py-1 text-xs text-gray-500 ">${vehicle.seats}</td>
+                                        <td class="px-2 py-1 text-xs text-gray-500 ">${vehicle.startTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
