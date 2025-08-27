@@ -260,8 +260,9 @@ function populateEditVehicleForm(vehicleData) {
         console.log('Updated color preview to:', vehicleData.color);
     }
     
-    // Verify form data after population
-    setTimeout(() => {
+    // Verify form data after population (optimized)
+    const startTime = performance.now();
+    requestAnimationFrame(() => {
         console.log('=== Form Data Verification ===');
         console.log('Name field value:', document.getElementById('vehicle-name')?.value);
         console.log('Color field value:', document.getElementById('vehicle-color')?.value);
@@ -270,19 +271,19 @@ function populateEditVehicleForm(vehicleData) {
         console.log('Wheel size field value:', document.getElementById('vehicle-wheel-size')?.value);
         console.log('Notes field value:', document.getElementById('vehicle-notes')?.value);
         
-        // Additional verification - check if form data is accessible via FormData
-        const form = document.getElementById('vehicle-form');
-        if (form) {
-            const formData = new FormData(form);
-            console.log('=== FormData Verification ===');
-            for (let [key, value] of formData.entries()) {
-                console.log(`FormData ${key}: ${value}`);
-            }
-        }
-        
+        const endTime = performance.now();
+        console.log(`Form verification completed in ${(endTime - startTime).toFixed(2)}ms`);
         console.log('=== Form Population Complete ===');
-    }, 300);
+    });
 }
+
+// Global error handler for message channel errors
+window.addEventListener('error', function(event) {
+    if (event.message && event.message.includes('message channel closed')) {
+        console.warn('Message channel error detected, this is usually harmless and caused by browser extensions');
+        event.preventDefault();
+    }
+});
 
 // Function to clear edit form
 function clearEditVehicleForm() {

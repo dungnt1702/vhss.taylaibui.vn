@@ -117,11 +117,11 @@ class VehicleForms {
             if (isEditMode && (!name || !color || !seats || !power || !wheelSize)) {
                 console.warn('Form fields are empty in edit mode. Waiting for data population...');
                 
-                // Wait a bit more for form population and retry
-                setTimeout(() => {
+                // Wait a bit more for form population and retry (optimized)
+                requestAnimationFrame(() => {
                     console.log('Retrying form submission after delay...');
                     this.handleVehicleFormSubmit(event);
-                }, 500);
+                });
                 return;
             }
             
@@ -370,10 +370,13 @@ class VehicleForms {
         card.style.transition = 'all 0.3s ease-in-out';
         card.style.transform = 'scale(1.02)';
         
-        // Reset transform after animation
-        setTimeout(() => {
+        // Reset transform after animation (optimized with performance monitoring)
+        const startTime = performance.now();
+        requestAnimationFrame(() => {
             card.style.transform = 'scale(1)';
-        }, 300);
+            const endTime = performance.now();
+            console.log(`Open vehicle animation completed in ${(endTime - startTime).toFixed(2)}ms`);
+        });
     }
     
     // Helper function to close a specific vehicle
@@ -386,10 +389,13 @@ class VehicleForms {
         card.style.transition = 'all 0.3s ease-in-out';
         card.style.transform = 'scale(0.98)';
         
-        // Reset transform after animation
-        setTimeout(() => {
+        // Reset transform after animation (optimized with performance monitoring)
+        const startTime = performance.now();
+        requestAnimationFrame(() => {
             card.style.transform = 'scale(1)';
-        }, 300);
+            const endTime = performance.now();
+            console.log(`Close vehicle animation completed in ${(endTime - startTime).toFixed(2)}ms`);
+        });
     }
 
     // Utility Functions

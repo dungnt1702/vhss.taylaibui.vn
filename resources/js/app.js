@@ -306,10 +306,13 @@ function initializeVehicleSystem() {
 document.addEventListener('DOMContentLoaded', function() {
     // Try to initialize immediately
     if (!initializeVehicleSystem()) {
-        // If initialization fails, try again after a short delay
-        setTimeout(() => {
-            initializeVehicleSystem();
-        }, 100);
+            // If initialization fails, try again after a short delay (optimized)
+    const startTime = performance.now();
+    requestAnimationFrame(() => {
+        initializeVehicleSystem();
+        const endTime = performance.now();
+        console.log(`Vehicle system initialization retry completed in ${(endTime - startTime).toFixed(2)}ms`);
+    });
     }
 });
 
