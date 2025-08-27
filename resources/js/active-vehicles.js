@@ -74,7 +74,7 @@ function startTimer() {
     console.log('startTimer called');
     const selectedVehicles = getSelectedWaitingVehicles();
     if (selectedVehicles.length === 0) {
-        showNotification('Bạn hãy chọn xe');
+        showNotification('Bạn hãy chọn xe trước khi bấm giờ!');
         return;
     }
 
@@ -110,7 +110,7 @@ function assignRoute() {
     console.log('assignRoute called');
     const selectedVehicles = getSelectedWaitingVehicles();
     if (selectedVehicles.length === 0) {
-        showNotification('Bạn hãy chọn xe');
+        showNotification('Bạn hãy chọn xe trước khi vào cung đường');
         return;
     }
 

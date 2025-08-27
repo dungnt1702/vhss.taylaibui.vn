@@ -19,7 +19,7 @@
                                 <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Xe số</th>
                                 <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Màu sắc</th>
                                 <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Chỗ ngồi</th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Trạng thái</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Tình trạng</th>
                             </tr>
                         </thead>
                         <tbody id="waiting-vehicles" class="divide-y divide-gray-200">
@@ -34,9 +34,15 @@
                                     </td>
                                     <td class="px-3 py-2 text-sm text-gray-500">{{ $vehicle->seats }}</td>
                                     <td class="px-3 py-2">
-                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                            Ngoài bãi
-                                        </span>
+                                        @if($vehicle->notes)
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                {{ $vehicle->notes }}
+                                            </span>
+                                        @else
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                                                Không có ghi chú
+                                            </span>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -50,33 +56,34 @@
 
                 <!-- Action Buttons -->
                 <div class="mt-6">
-                    <div style="display: flex; flex-direction: row; align-items: center; gap: 16px; justify-content: center;">
+                    <div class="flex flex-col items-center gap-4 [1028px:flex-row] [1028px:justify-center] [1280px:flex-col] [1280px:items-center]">
                         <!-- Time Selection Button Group -->
-                        <div style="display: flex; align-items: stretch;">
-                            <select id="time-select" style="padding: 8px 12px; border: 1px solid #d1d5db; border-right: none; border-radius: 6px 0 0 6px; background: white; font-size: 14px; outline: none; height: 40px; box-sizing: border-box;">
+                        <div class="flex items-stretch w-full max-w-xs [1028px:max-w-none] [1280px:max-w-xs]">
+                            <select id="time-select" class="flex-1 px-4 py-2 border border-gray-300 border-r-0 rounded-l-md bg-white text-sm outline-none h-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 <option value="45">45 phút</option>
                                 <option value="30" selected>30 phút</option>
                                 <option value="10">10 phút</option>
                             </select>
-                            <button onclick="startTimer()" style="padding: 8px 16px; background: #2563eb; color: white; border: none; border-radius: 0 6px 6px 0; font-size: 14px; font-weight: 500; cursor: pointer; min-width: 120px; transition: background-color 0.2s; outline: none; height: 40px; box-sizing: border-box;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-                                Bấm giờ
+                            <button onclick="startTimer()" class="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 min-w-[120px] h-10">
+                                Đếm
                             </button>
                         </div>
+                        
                         <!-- Route Selection Button Group -->
-                        <div style="display: flex; align-items: stretch;">
-                            <select id="route-select" style="padding: 8px 12px; border: 1px solid #d1d5db; border-right: none; border-radius: 6px 0 0 6px; background: white; font-size: 14px; outline: none; height: 40px; box-sizing: border-box;">
-                                <option value="1">Cung đường 1</option>
-                                <option value="2">Cung đường 2</option>
-                                <option value="3" selected>Cung đường 3</option>
-                                <option value="4">Cung đường 4</option>
-                                <option value="5">Cung đường 5</option>
-                                <option value="6">Cung đường 6</option>
-                                <option value="7">Cung đường 7</option>
-                                <option value="8">Cung đường 8</option>
-                                <option value="9">Cung đường 9</option>
-                                <option value="10">Cung đường 10</option>
+                        <div class="flex items-stretch w-full max-w-xs [1028px:max-w-none] [1280px:max-w-xs]">
+                            <select id="route-select" class="flex-1 px-4 py-2 border border-gray-300 border-r-0 rounded-l-md bg-white text-sm outline-none h-10 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                <option value="1">Đường 1</option>
+                                <option value="2">Đường 2</option>
+                                <option value="3" selected>Đường 3</option>
+                                <option value="4">Đường 4</option>
+                                <option value="5">Đường 5</option>
+                                <option value="6">Đường 6</option>
+                                <option value="7">Đường 7</option>
+                                <option value="8">Đường 8</option>
+                                <option value="9">Đường 9</option>
+                                <option value="10">Đường 10</option>
                             </select>
-                            <button onclick="assignRoute()" style="padding: 8px 16px; background: #16a34a; color: white; border: none; border-radius: 0 6px 6px 0; font-size: 14px; font-weight: 500; cursor: pointer; min-width: 120px; transition: background-color 0.2s; outline: none; height: 40px; box-sizing: border-box;" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
+                            <button onclick="assignRoute()" class="px-6 py-2 bg-green-600 text-white text-sm font-medium rounded-r-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 min-w-[120px] h-10">
                                 Chạy
                             </button>
                         </div>
@@ -117,10 +124,10 @@
             </div>
         </div>
 
-        <!-- Block 3: Xe theo cung đường -->
+        <!-- Block 3: Xe theo Đường -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Xe theo cung đường</h2>
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Xe theo Đường</h2>
                 
                 <div id="route-groups" class="space-y-4">
                     <!-- Route groups will be populated by JavaScript -->
@@ -148,10 +155,10 @@
 
 @push('scripts')
     <!-- Load active-vehicles.js -->
-    <script type="module" src="{{ asset('build/assets/active-vehicles-8BipxnE-.js') }}"></script>
+    @vite(['resources/js/active-vehicles.js'])
 @endpush
 
 @push('styles')
     <!-- Load active-vehicles.css -->
-    <link rel="stylesheet" href="{{ asset('build/assets/active-vehicles-CvjbaTot.css') }}">
+    @vite(['resources/css/active-vehicles.css'])
 @endpush

@@ -16,8 +16,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
         <!-- Scripts -->
-        <link rel="stylesheet" href="{{ asset('build/assets/app-NUqAGROA.css') }}">
-        <script type="module" src="{{ asset('build/assets/app-CBgjT1WM.js') }}"></script>
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="antialiased">
         <div class="min-h-screen bg-neutral-50">
