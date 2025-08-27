@@ -5,34 +5,36 @@
     <!-- Three Column Layout -->
     <div class="xl:grid xl:grid-cols-3 gap-6">
         <!-- Block 1: Xe đang chờ -->
-        <div class="bg-white  overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 border-b border-gray-200 ">
-                <h2 class="text-lg font-semibold text-gray-900  mb-4">Xe đang chờ</h2>
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Xe đang chờ</h2>
                 
                 @if($vehicles && count($vehicles) > 0)
-                    <table class="min-w-full divide-y divide-gray-200 ">
+                    <table class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr>
                                 <th class="px-3 py-2 text-left">
                                     <input type="checkbox" id="select-all-waiting" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                 </th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 ">Xe số</th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 ">Màu sắc</th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 ">Chỗ ngồi</th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 ">Trạng thái</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Xe số</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Màu sắc</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Chỗ ngồi</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Trạng thái</th>
                             </tr>
                         </thead>
-                        <tbody id="waiting-vehicles" class="divide-y divide-gray-200 ">
+                        <tbody id="waiting-vehicles" class="divide-y divide-gray-200">
                             @foreach($vehicles as $vehicle)
-                                <tr class="hover:bg-gray-50 ">
+                                <tr class="hover:bg-gray-50">
                                     <td class="px-3 py-2">
                                         <input type="checkbox" value="{{ $vehicle->id }}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                     </td>
-                                    <td class="px-3 py-2 text-sm text-gray-900 ">{{ $vehicle->name }}</td>
-                                    <td class="px-3 py-2 text-sm text-gray-500 ">{{ $vehicle->color }}</td>
-                                    <td class="px-3 py-2 text-sm text-gray-500 ">{{ $vehicle->seats }}</td>
+                                    <td class="px-3 py-2 text-sm text-gray-900">{{ $vehicle->name }}</td>
                                     <td class="px-3 py-2">
-                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800  ">
+                                        <div class="w-6 h-6 rounded border border-gray-300" style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}"></div>
+                                    </td>
+                                    <td class="px-3 py-2 text-sm text-gray-500">{{ $vehicle->seats }}</td>
+                                    <td class="px-3 py-2">
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                                             Ngoài bãi
                                         </span>
                                     </td>
@@ -42,39 +44,39 @@
                     </table>
                 @else
                     <div class="text-center py-8">
-                        <p class="text-gray-500 ">Không có xe nào đang chờ</p>
+                        <p class="text-gray-500">Không có xe nào đang chờ</p>
                     </div>
                 @endif
 
                 <!-- Action Buttons -->
                 <div class="mt-6">
-                    <div class="flex flex-col sm:flex-row items-center gap-4 justify-center">
+                    <div style="display: flex; flex-direction: row; align-items: center; gap: 16px; justify-content: center;">
                         <!-- Time Selection Button Group -->
-                        <div class="flex w-full sm:w-auto">
-                            <select id="time-select" class="flex-1 sm:flex-none px-3 py-2 border border-gray-300 bg-white text-sm outline-none h-10 rounded-l-md border-r-0 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <div style="display: flex; align-items: stretch;">
+                            <select id="time-select" style="padding: 8px 12px; border: 1px solid #d1d5db; border-right: none; border-radius: 6px 0 0 6px; background: white; font-size: 14px; outline: none; height: 40px; box-sizing: border-box;">
                                 <option value="45">45 phút</option>
                                 <option value="30" selected>30 phút</option>
                                 <option value="10">10 phút</option>
                             </select>
-                            <button onclick="startTimer()" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium h-10 rounded-r-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors min-w-[100px]">
+                            <button onclick="startTimer()" style="padding: 8px 16px; background: #2563eb; color: white; border: none; border-radius: 0 6px 6px 0; font-size: 14px; font-weight: 500; cursor: pointer; min-width: 120px; transition: background-color 0.2s; outline: none; height: 40px; box-sizing: border-box;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
                                 Bấm giờ
                             </button>
                         </div>
                         <!-- Route Selection Button Group -->
-                        <div class="flex w-full sm:w-auto">
-                            <select id="route-select" class="flex-1 sm:flex-none px-3 py-2 border border-gray-300 bg-white text-sm outline-none h-10 rounded-l-md border-r-0 focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                                <option value="1">Đường 1</option>
-                                <option value="2">Đường 2</option>
-                                <option value="3" selected>Đường 3</option>
-                                <option value="4">Đường 4</option>
-                                <option value="5">Đường 5</option>
-                                <option value="6">Đường 6</option>
-                                <option value="7">Đường 7</option>
-                                <option value="8">Đường 8</option>
-                                <option value="9">Đường 9</option>
-                                <option value="10">Đường 10</option>
+                        <div style="display: flex; align-items: stretch;">
+                            <select id="route-select" style="padding: 8px 12px; border: 1px solid #d1d5db; border-right: none; border-radius: 6px 0 0 6px; background: white; font-size: 14px; outline: none; height: 40px; box-sizing: border-box;">
+                                <option value="1">Cung đường 1</option>
+                                <option value="2">Cung đường 2</option>
+                                <option value="3" selected>Cung đường 3</option>
+                                <option value="4">Cung đường 4</option>
+                                <option value="5">Cung đường 5</option>
+                                <option value="6">Cung đường 6</option>
+                                <option value="7">Cung đường 7</option>
+                                <option value="8">Cung đường 8</option>
+                                <option value="9">Cung đường 9</option>
+                                <option value="10">Cung đường 10</option>
                             </select>
-                            <button onclick="assignRoute()" class="px-4 py-2 bg-green-600 text-white text-sm font-medium h-10 rounded-r-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors min-w-[100px]">
+                            <button onclick="assignRoute()" style="padding: 8px 16px; background: #16a34a; color: white; border: none; border-radius: 0 6px 6px 0; font-size: 14px; font-weight: 500; cursor: pointer; min-width: 120px; transition: background-color 0.2s; outline: none; height: 40px; box-sizing: border-box;" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">
                                 Chạy
                             </button>
                         </div>
@@ -84,25 +86,25 @@
         </div>
 
         <!-- Block 2: Xe chạy đường 1-2 -->
-        <div class="bg-white  overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 border-b border-gray-200 ">
-                <h2 class="text-lg font-semibold text-gray-900  mb-4">Xe chạy đường 1-2</h2>
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Xe chạy đường 1-2</h2>
                 
-                <table class="min-w-full divide-y divide-gray-200 ">
+                <table class="min-w-full divide-y divide-gray-200">
                     <thead>
                         <tr>
                             <th class="px-3 py-2 text-left">
                                 <input type="checkbox" id="select-all-timer" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                             </th>
-                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 ">Xe số</th>
-                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 ">Màu sắc</th>
-                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 ">Chỗ ngồi</th>
-                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 ">Thời gian bắt đầu</th>
-                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 ">Thời gian kết thúc</th>
-                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 ">Đếm ngược</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Xe số</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Màu sắc</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Chỗ ngồi</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Thời gian bắt đầu</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Thời gian kết thúc</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Đếm ngược</th>
                         </tr>
                     </thead>
-                    <tbody id="timer-vehicles" class="divide-y divide-gray-200 ">
+                    <tbody id="timer-vehicles" class="divide-y divide-gray-200">
                         <!-- Timer vehicles will be populated by JavaScript -->
                     </tbody>
                 </table>
@@ -115,10 +117,10 @@
             </div>
         </div>
 
-        <!-- Block 3: Xe theo đường -->
-        <div class="bg-white  overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 border-b border-gray-200 ">
-                <h2 class="text-lg font-semibold text-gray-900  mb-4">Xe theo đường</h2>
+        <!-- Block 3: Xe theo cung đường -->
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Xe theo cung đường</h2>
                 
                 <div id="route-groups" class="space-y-4">
                     <!-- Route groups will be populated by JavaScript -->
