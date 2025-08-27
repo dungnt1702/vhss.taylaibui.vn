@@ -105,9 +105,8 @@
                             </th>
                             <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Xe số</th>
                             <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Màu sắc</th>
-                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Chỗ ngồi</th>
-                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Thời gian bắt đầu</th>
-                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Thời gian kết thúc</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Bắt đầu</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Kết thúc</th>
                             <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Đếm ngược</th>
                         </tr>
                     </thead>

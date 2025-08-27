@@ -267,7 +267,6 @@ function updateTimerTable() {
                 <td class="px-3 py-2">
                     <div class="w-6 h-6 rounded border border-gray-300" style="background-color: ${vehicle.color};" title="${vehicle.color}"></div>
                 </td>
-                <td class="px-3 py-2 text-sm text-gray-500">${vehicle.seats}</td>
                 <td class="px-3 py-2 text-sm text-gray-500">${startTimeStr}</td>
                 <td class="px-3 py-2 text-sm text-gray-500">${endTimeStr}</td>
                 <td class="px-3 py-2 text-sm text-gray-500">
