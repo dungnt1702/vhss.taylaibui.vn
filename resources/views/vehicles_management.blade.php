@@ -467,9 +467,13 @@
                 form.reset();
                 
                 // Reset color picker
-                document.getElementById('vehicle-color').value = '#808080';
-                document.getElementById('color-preview').style.backgroundColor = '#808080';
-                document.getElementById('color-name').textContent = 'Chưa chọn màu';
+                const vehicleColor = document.getElementById('vehicle-color');
+                const colorPreview = document.getElementById('color-preview');
+                const colorName = document.getElementById('color-name');
+                
+                if (vehicleColor) vehicleColor.value = '#808080';
+                if (colorPreview) colorPreview.style.backgroundColor = '#808080';
+                if (colorName) colorName.textContent = 'Chưa chọn màu';
                 
                 console.log('Add mode - form reset');
             }
@@ -479,7 +483,10 @@
         }
         
         function closeVehicleModal() {
-            document.getElementById('vehicle-modal').classList.add('hidden');
+            const vehicleModal = document.getElementById('vehicle-modal');
+            if (vehicleModal) {
+                vehicleModal.classList.add('hidden');
+            }
         }
         
         function loadVehicleData(vehicleId) {
@@ -560,19 +567,27 @@
         
         // Color picker functions
         function openColorPicker() {
-            document.getElementById('color-picker-modal').classList.remove('hidden');
+            const colorPickerModal = document.getElementById('color-picker-modal');
+            if (colorPickerModal) {
+                colorPickerModal.classList.remove('hidden');
+            }
         }
         
         function closeColorPicker() {
-            document.getElementById('color-picker-modal').classList.add('hidden');
+            const colorPickerModal = document.getElementById('color-picker-modal');
+            if (colorPickerModal) {
+                colorPickerModal.classList.add('hidden');
+            }
         }
         
         function selectColor(hex, name) {
             // Update hidden input
-            document.getElementById('vehicle-color').value = hex;
+            const vehicleColor = document.getElementById('vehicle-color');
+            if (vehicleColor) vehicleColor.value = hex;
             
             // Update color preview
-            document.getElementById('color-preview').style.backgroundColor = hex;
+            const colorPreview = document.getElementById('color-preview');
+            if (colorPreview) colorPreview.style.backgroundColor = hex;
             
             // Close modal
             closeColorPicker();
@@ -587,17 +602,23 @@
         });
         
         // Close modals when clicking outside
-        document.getElementById('color-picker-modal').addEventListener('click', function(event) {
-            if (event.target === this) {
-                closeColorPicker();
-            }
-        });
+        const colorPickerModal = document.getElementById('color-picker-modal');
+        if (colorPickerModal) {
+            colorPickerModal.addEventListener('click', function(event) {
+                if (event.target === this) {
+                    closeColorPicker();
+                }
+            });
+        }
         
-        document.getElementById('vehicle-modal').addEventListener('click', function(event) {
-            if (event.target === this) {
-                closeVehicleModal();
-            }
-        });
+        const vehicleModal = document.getElementById('vehicle-modal');
+        if (vehicleModal) {
+            vehicleModal.addEventListener('click', function(event) {
+                if (event.target === this) {
+                    closeVehicleModal();
+                }
+            });
+        }
     </script>
     
     <!-- Auto-expand all vehicle cards when filter is 'running' -->

@@ -133,7 +133,9 @@
 
     @push('scripts')
     <script>
-        document.getElementById('vehicle-form').addEventListener('submit', function(e) {
+        const vehicleForm = document.getElementById('vehicle-form');
+        if (vehicleForm) {
+            vehicleForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             const formData = new FormData(this);
@@ -186,6 +188,7 @@
                 submitButton.disabled = false;
                 submitButton.textContent = originalText;
             });
+            }
         });
     </script>
     @endpush
