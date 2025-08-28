@@ -9,6 +9,7 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/css/vehicles-list.css',
                 'resources/js/vehicles-list.js',
+                'resources/js/vehicle-forms.js',
                 'resources/css/ready-vehicles.css',
                 'resources/js/ready-vehicles.js',
                 'resources/css/waiting-vehicles.css',

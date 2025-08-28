@@ -3,13 +3,6 @@
 @section('title', 'Xe đang chờ')
 
 @section('content')
-<!-- TEST DIV - Nếu bạn thấy div này thì view đang hoạt động -->
-<div class="bg-red-500 text-white p-4 mb-4 text-center">
-    <strong>TEST: View waiting_vehicles đang hoạt động!</strong>
-    <br>
-    Số lượng xe: {{ $vehicles->count() }}
-</div>
-
 <div class="container mx-auto px-4 py-6">
     <div class="mb-6">
         <h1 class="text-3xl font-bold text-neutral-900 mb-2">Xe đang chờ</h1>
@@ -80,6 +73,7 @@
 @endsection
 
 @push('scripts')
+@vite(['resources/js/vehicle-forms.js'])
 @vite(['resources/js/waiting-vehicles.js'])
 @endpush
 
