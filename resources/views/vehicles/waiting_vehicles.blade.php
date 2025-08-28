@@ -14,7 +14,7 @@
         @forelse($vehicles as $vehicle)
             <div class="vehicle-card bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition-shadow duration-200 border-l-4 border-yellow-500" data-vehicle-id="{{ $vehicle->id }}" data-vehicle-name="{{ $vehicle->name }}" data-status="{{ $vehicle->status }}" data-start-time="{{ $vehicle->start_time ? strtotime($vehicle->start_time) * 1000 : '' }}" data-end-time="{{ $vehicle->end_time ? strtotime($vehicle->end_time) * 1000 : '' }}" data-paused-at="{{ $vehicle->paused_at ? strtotime($vehicle->paused_at) * 1000 : '' }}" data-paused-remaining-seconds="{{ $vehicle->paused_remaining_seconds ?? '' }}">
                 <!-- Vehicle Header - Clickable for collapse/expand -->
-                <div class="vehicle-header cursor-pointer p-4 border-b border-neutral-200 hover:bg-neutral-50 transition-colors duration-200" onclick="toggleVehicleSimple({{ $vehicle->id }})">
+                <div class="vehicle-header cursor-pointer p-4 border-b border-neutral-200 hover:bg-neutral-50 transition-colors duration-200" data-action="toggle-vehicle" data-vehicle-id="{{ $vehicle->id }}">
                     <div class="flex justify-between items-center">
                         <h3 class="text-lg font-semibold text-neutral-900">
                             Xe số {{ $vehicle->name }}
@@ -40,13 +40,13 @@
                     
                     <!-- Action Buttons for waiting vehicles -->
                     <div class="flex flex-wrap gap-2 justify-center">
-                        <button onclick="startTimer({{ $vehicle->id }}, 30)" class="btn btn-success btn-sm">
+                        <button data-action="start-timer" data-vehicle-id="{{ $vehicle->id }}" data-duration="30" class="btn btn-success btn-sm">
                             🚗 30p
                         </button>
-                        <button onclick="startTimer({{ $vehicle->id }}, 45)" class="btn btn-primary btn-sm">
+                        <button data-action="start-timer" data-vehicle-id="{{ $vehicle->id }}" data-duration="45" class="btn btn-primary btn-sm">
                             🚙 45p
                         </button>
-                        <button onclick="vehicleForms.openWorkshopModal({{ $vehicle->id }})" class="btn btn-secondary btn-sm">
+                        <button data-action="open-workshop-modal" data-vehicle-id="{{ $vehicle->id }}" class="btn btn-secondary btn-sm">
                             🔧 Về xưởng
                         </button>
                     </div>

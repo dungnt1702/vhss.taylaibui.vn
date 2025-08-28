@@ -20,6 +20,9 @@ function initializeWaitingVehicles() {
     
     // Initialize countdown timers if any
     initializeCountdownTimers();
+    
+    // Initialize action button listeners
+    initializeActionListeners();
 }
 
 function setupVehicleCardListeners() {
@@ -42,6 +45,26 @@ function setupVehicleCardListeners() {
                     }
                 }
             });
+        }
+    });
+}
+
+function initializeActionListeners() {
+    // Use event delegation for action buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('[data-action="start-timer"]')) {
+            const vehicleId = e.target.dataset.vehicleId;
+            const duration = parseInt(e.target.dataset.duration);
+            startTimer(vehicleId, duration);
+        }
+        
+        if (e.target.matches('[data-action="open-workshop-modal"]')) {
+            const vehicleId = e.target.dataset.vehicleId;
+            if (window.vehicleForms) {
+                window.vehicleForms.openWorkshopModal(vehicleId);
+            } else {
+                console.error('vehicleForms not available');
+            }
         }
     });
 }

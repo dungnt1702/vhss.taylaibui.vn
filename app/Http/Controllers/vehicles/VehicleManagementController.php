@@ -354,7 +354,7 @@ class VehicleManagementController extends Controller
 
     /**
      * Move vehicle to workshop
-     */
+    
     public function moveToWorkshop(Request $request, Vehicle $vehicle)
     {
         $validator = Validator::make($request->all(), [
