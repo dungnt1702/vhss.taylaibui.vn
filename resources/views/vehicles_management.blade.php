@@ -36,9 +36,18 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Filter Tabs -->
-            @if(in_array($filter, ['waiting', 'running', 'expired', 'paused']))
-                <!-- Grid Display for specific statuses -->
-                @include('vehicles.grid_display')
+            @if($filter === 'waiting')
+                <!-- Waiting Vehicles Display -->
+                @include('vehicles.waiting_vehicles')
+            @elseif($filter === 'running')
+                <!-- Running Vehicles Display -->
+                @include('vehicles.running_vehicles')
+            @elseif($filter === 'expired')
+                <!-- Expired Vehicles Display -->
+                @include('vehicles.expired_vehicles')
+            @elseif($filter === 'paused')
+                <!-- Paused Vehicles Display -->
+                @include('vehicles.paused_vehicles')
             @elseif($filter === 'ready')
                 <!-- Ready Vehicles Display - Xe sẵn sàng chạy -->
                 @include('vehicles.ready_vehicles')

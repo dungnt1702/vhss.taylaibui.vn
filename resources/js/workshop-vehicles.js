@@ -3,7 +3,7 @@ const vehicleOperations = {
     // Return vehicle to yard
     returnToYard: function(vehicleId) {
         if (confirm(`Bạn có chắc muốn đưa xe ${vehicleId} về bãi?`)) {
-            this.performOperation('/api/active-vehicles/return-yard', {
+            this.performOperation('/api/vehicles/return-yard', {
                 vehicle_id: vehicleId
             });
         }

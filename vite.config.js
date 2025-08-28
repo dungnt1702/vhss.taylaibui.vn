@@ -7,10 +7,10 @@ export default defineConfig({
             input: [
                 'resources/css/app.css', 
                 'resources/js/app.js',
-                'resources/css/active-vehicles.css',
-                'resources/js/active-vehicles.js',
                 'resources/css/vehicles-list.css',
                 'resources/js/vehicles-list.js',
+                'resources/css/ready-vehicles.css',
+                'resources/js/ready-vehicles.js',
                 'resources/css/waiting-vehicles.css',
                 'resources/js/waiting-vehicles.js',
                 'resources/css/running-vehicles.css',

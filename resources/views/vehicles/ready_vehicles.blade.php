@@ -162,11 +162,11 @@
 @endsection
 
 @push('scripts')
-    <!-- Load active-vehicles.js -->
-    @vite(['resources/js/active-vehicles.js'])
+    <!-- Load ready-vehicles.js -->
+    @vite(['resources/js/ready-vehicles.js'])
 @endpush
 
 @push('styles')
-    <!-- Load active-vehicles.css -->
-    @vite(['resources/css/active-vehicles.css'])
+    <!-- Load ready-vehicles.css -->
+    @vite(['resources/css/ready-vehicles.css'])
 @endpush

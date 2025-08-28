@@ -228,9 +228,6 @@ import './vehicle-forms';
 import './vehicle-operations';
 // vehicle-wrappers.js will be loaded after vehicleOperations is initialized
 
-// Import active vehicles specific functionality
-import './active-vehicles';
-
 // Import vehicles list functionality
 import './vehicles-list';
 
