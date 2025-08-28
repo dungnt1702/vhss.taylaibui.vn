@@ -73,9 +73,9 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/maintaining-vehicles.js') }}"></script>
+@vite(['resources/js/maintaining-vehicles.js'])
 @endpush
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/maintaining-vehicles.css') }}">
+@vite(['resources/css/maintaining-vehicles.css'])
 @endpush

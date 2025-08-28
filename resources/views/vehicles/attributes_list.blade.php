@@ -161,9 +161,9 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/attributes-list.js') }}"></script>
+@vite(['resources/js/attributes-list.js'])
 @endpush
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/attributes-list.css') }}">
+@vite(['resources/css/attributes-list.css'])
 @endpush

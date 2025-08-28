@@ -73,9 +73,9 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/waiting-vehicles.js') }}"></script>
+@vite(['resources/js/waiting-vehicles.js'])
 @endpush
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/waiting-vehicles.css') }}">
+@vite(['resources/css/waiting-vehicles.css'])
 @endpush

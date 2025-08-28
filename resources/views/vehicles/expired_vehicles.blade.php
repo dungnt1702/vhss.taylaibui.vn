@@ -70,9 +70,9 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/expired-vehicles.js') }}"></script>
+@vite(['resources/js/expired-vehicles.js'])
 @endpush
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/expired-vehicles.css') }}">
+@vite(['resources/css/expired-vehicles.css'])
 @endpush

@@ -80,9 +80,9 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/paused-vehicles.js') }}"></script>
+@vite(['resources/js/paused-vehicles.js'])
 @endpush
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/paused-vehicles.css') }}">
+@vite(['resources/css/paused-vehicles.css'])
 @endpush

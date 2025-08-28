@@ -93,9 +93,9 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/running-vehicles.js') }}"></script>
+@vite(['resources/js/running-vehicles.js'])
 @endpush
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/running-vehicles.css') }}">
+@vite(['resources/css/running-vehicles.css'])
 @endpush
