@@ -1,53 +1,154 @@
 // Waiting Vehicles JavaScript
-const vehicleOperations = {
-    // Start vehicle timer
-    startVehicle: function(vehicleId, duration) {
-        if (confirm(`Bạn có chắc muốn bắt đầu bấm giờ cho xe ${vehicleId} trong ${duration} phút?`)) {
-            this.performOperation('/ready-vehicles/start-timer', {
-                vehicle_ids: [vehicleId],
-                duration: duration
-            });
-        }
-    },
-
-    // Assign route to vehicle
-    assignRoute: function(vehicleId) {
-        const routeNumber = prompt('Nhập số tuyến đường:');
-        if (routeNumber && !isNaN(routeNumber)) {
-            this.performOperation('/ready-vehicles/assign-route', {
-                vehicle_ids: [vehicleId],
-                route_number: parseInt(routeNumber)
-            });
-        }
-    },
-
-    // Perform AJAX operation
-    performOperation: function(url, data) {
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.success) {
-                alert(result.message);
-                location.reload();
-            } else {
-                alert('Có lỗi xảy ra: ' + result.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi thực hiện thao tác');
-        });
-    }
-};
-
-// Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Waiting Vehicles page loaded');
+    console.log('Waiting Vehicles JS loaded');
+    
+    // Initialize waiting vehicles functionality
+    initializeWaitingVehicles();
 });
+
+function initializeWaitingVehicles() {
+    // Set up event listeners for vehicle cards
+    setupVehicleCardListeners();
+    
+    // Initialize countdown timers if any
+    initializeCountdownTimers();
+}
+
+function setupVehicleCardListeners() {
+    // Add click listeners for vehicle headers
+    document.querySelectorAll('.vehicle-header').forEach(header => {
+        header.addEventListener('click', function() {
+            const vehicleId = this.closest('.vehicle-card').dataset.vehicleId;
+            toggleVehicleSimple(vehicleId);
+        });
+    });
+}
+
+function toggleVehicleSimple(vehicleId) {
+    const content = document.getElementById(`content-${vehicleId}`);
+    const icon = document.getElementById(`icon-${vehicleId}`);
+    
+    if (content && icon) {
+        const isHidden = content.classList.contains('hidden');
+        
+        if (isHidden) {
+            content.classList.remove('hidden');
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            content.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
+        }
+    }
+}
+
+function startTimer(vehicleId, duration) {
+    console.log(`Starting timer for vehicle ${vehicleId} with duration ${duration} minutes`);
+    
+    // Show loading state
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<span class="loading"></span>';
+    button.disabled = true;
+    
+    // Make API call to start timer
+    fetch('/api/vehicles/start-timer', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            vehicle_id: vehicleId,
+            duration: duration
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Thành công', 'Đã bắt đầu đếm ngược cho xe', 'success');
+            // Optionally redirect or refresh
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            showNotification('Lỗi', data.message || 'Không thể bắt đầu đếm ngược', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Lỗi', 'Đã xảy ra lỗi khi bắt đầu đếm ngược', 'error');
+    })
+    .finally(() => {
+        // Restore button state
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+
+function initializeCountdownTimers() {
+    // Initialize any existing countdown timers
+    const countdownElements = document.querySelectorAll('.countdown-display');
+    
+    countdownElements.forEach(element => {
+        const vehicleId = element.closest('.vehicle-card').dataset.vehicleId;
+        const endTime = element.closest('.vehicle-card').dataset.endTime;
+        
+        if (endTime) {
+            startCountdown(vehicleId, parseInt(endTime));
+        }
+    });
+}
+
+function startCountdown(vehicleId, endTime) {
+    const countdownElement = document.getElementById(`countdown-${vehicleId}`);
+    if (!countdownElement) return;
+    
+    const timer = setInterval(() => {
+        const now = Date.now();
+        const timeLeft = endTime - now;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            countdownElement.innerHTML = '<span class="text-red-600 font-black text-6xl drop-shadow-lg">HẾT GIỜ</span>';
+            return;
+        }
+        
+        const minutes = Math.floor(timeLeft / 60000);
+        const seconds = Math.floor((timeLeft % 60000) / 1000);
+        
+        const minutesDisplay = String(minutes).padStart(2, '0');
+        const secondsDisplay = String(seconds).padStart(2, '0');
+        
+        countdownElement.innerHTML = `
+            <span class="countdown-minutes text-6xl font-black drop-shadow-lg">${minutesDisplay}</span>
+            <span class="text-6xl font-black drop-shadow-lg">:</span>
+            <span class="countdown-seconds text-6xl font-black drop-shadow-lg">${secondsDisplay}</span>
+        `;
+    }, 1000);
+}
+
+function showNotification(title, message, type = 'info') {
+    // Simple notification function
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-500 text-white' :
+        type === 'error' ? 'bg-red-500 text-white' :
+        'bg-blue-500 text-white'
+    }`;
+    
+    notification.innerHTML = `
+        <h4 class="font-bold">${title}</h4>
+        <p>${message}</p>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Global functions that might be called from HTML
+window.startTimer = startTimer;
+window.toggleVehicleSimple = toggleVehicleSimple;
