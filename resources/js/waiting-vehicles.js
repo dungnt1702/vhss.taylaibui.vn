@@ -98,7 +98,7 @@ function startTimer(vehicleId, duration) {
     button.disabled = true;
     
     // Make API call to start timer
-    fetch('/api/vehicles/start-timer', {
+    fetch('/api/active-vehicles/start-timer', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

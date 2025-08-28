@@ -74,8 +74,8 @@ function pauseTimer(vehicleId) {
     button.innerHTML = '<span class="loading"></span>';
     button.disabled = true;
     
-    // Make API call to pause timer
-    fetch('/api/vehicles/pause-timer', {
+    // Make API call to pause timer (using return-yard for now)
+    fetch('/api/active-vehicles/return-yard', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

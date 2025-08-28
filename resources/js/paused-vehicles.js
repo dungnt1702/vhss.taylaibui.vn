@@ -74,8 +74,8 @@ function resumeTimer(vehicleId) {
     button.innerHTML = '<span class="loading"></span>';
     button.disabled = true;
     
-    // Make API call to resume timer
-    fetch('/api/vehicles/resume-timer', {
+    // Make API call to resume timer (using return-yard for now)
+    fetch('/api/active-vehicles/return-yard', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
