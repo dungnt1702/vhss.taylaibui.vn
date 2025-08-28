@@ -1,0 +1,44 @@
+/* Repairing Vehicles CSS */
+.repairing-vehicles-container {
+    background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%);
+    min-height: 100vh;
+}
+
+.vehicle-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.vehicle-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-color: #a855f7;
+}
+
+.vehicle-card.repairing {
+    border-left-color: #a855f7;
+}
+
+.btn {
+    @apply inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md transition-colors duration-200;
+}
+
+.btn-sm {
+    @apply px-2 py-1 text-xs;
+}
+
+.btn-success {
+    @apply bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
+}
+
+.btn-info {
+    @apply bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+.status-badge {
+    @apply px-2 py-1 text-xs font-medium rounded-full;
+}
+
+.status-repairing {
+    @apply bg-purple-100 text-purple-800;
+}

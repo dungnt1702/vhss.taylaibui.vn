@@ -2,9 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\vehicles\ActiveVehiclesController;
+use App\Http\Controllers\vehicles\ReadyVehiclesController;
+use App\Http\Controllers\vehicles\WaitingVehiclesController;
+use App\Http\Controllers\vehicles\RunningVehiclesController;
+use App\Http\Controllers\vehicles\PausedVehiclesController;
+use App\Http\Controllers\vehicles\ExpiredVehiclesController;
+use App\Http\Controllers\vehicles\WorkshopVehiclesController;
+use App\Http\Controllers\vehicles\RepairingVehiclesController;
+use App\Http\Controllers\vehicles\MaintainingVehiclesController;
 use App\Http\Controllers\vehicles\VehiclesListController;
 use App\Http\Controllers\vehicles\GridDisplayController;
-use App\Http\Controllers\vehicles\VehicleAttributesController;
+use App\Http\Controllers\vehicles\AttributesListController;
 use App\Http\Controllers\vehicles\VehicleManagementController;
 
 Route::get('/', function () {
@@ -35,8 +43,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/vehicles/{vehicle}/route', [VehicleManagementController::class, 'updateRoute'])->name('vehicles.updateRoute');
     Route::patch('/vehicles/{vehicle}/workshop', [VehicleManagementController::class, 'moveToWorkshop'])->name('vehicles.moveToWorkshop');
     
+    // Ready Vehicles (Xe sẵn sàng chạy)
+    Route::get('/ready-vehicles', [ReadyVehiclesController::class, 'index'])->name('ready-vehicles.index');
+    Route::post('/ready-vehicles/start-timer', [ReadyVehiclesController::class, 'startTimer'])->name('ready-vehicles.start-timer');
+    Route::post('/ready-vehicles/assign-route', [ReadyVehiclesController::class, 'assignRoute'])->name('ready-vehicles.assign-route');
+    Route::post('/ready-vehicles/move-workshop', [ReadyVehiclesController::class, 'moveToWorkshop'])->name('ready-vehicles.move-workshop');
+    
+    // Waiting Vehicles (Xe đang chờ)
+    Route::get('/waiting-vehicles', [WaitingVehiclesController::class, 'index'])->name('waiting-vehicles.index');
+    
+    // Running Vehicles (Xe đang chạy)
+    Route::get('/running-vehicles', [RunningVehiclesController::class, 'index'])->name('running-vehicles.index');
+    
+    // Paused Vehicles (Xe tạm dừng)
+    Route::get('/paused-vehicles', [PausedVehiclesController::class, 'index'])->name('paused-vehicles.index');
+    
+    // Expired Vehicles (Xe hết giờ)
+    Route::get('/expired-vehicles', [ExpiredVehiclesController::class, 'index'])->name('expired-vehicles.index');
+    
+    // Workshop Vehicles (Xe trong xưởng)
+    Route::get('/workshop-vehicles', [WorkshopVehiclesController::class, 'index'])->name('workshop-vehicles.index');
+    
+    // Repairing Vehicles (Xe đang sửa chữa)
+    Route::get('/repairing-vehicles', [RepairingVehiclesController::class, 'index'])->name('repairing-vehicles.index');
+    
+    // Maintaining Vehicles (Xe đang bảo trì)
+    Route::get('/maintaining-vehicles', [MaintainingVehiclesController::class, 'index'])->name('maintaining-vehicles.index');
+    
     // Vehicle Attributes
-    Route::get('/vehicles/attributes', [VehicleAttributesController::class, 'index'])->name('vehicles.attributes');
+    Route::get('/attributes-list', [AttributesListController::class, 'index'])->name('attributes-list.index');
     
     // Vehicles List
     Route::get('/vehicles-list', [VehiclesListController::class, 'index'])->name('vehicles.list');
@@ -50,8 +85,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // API Routes
     Route::get('/api/vehicles', [VehiclesListController::class, 'getVehicles'])->name('api.vehicles.get');
     Route::get('/api/vehicles/grid', [GridDisplayController::class, 'getVehiclesForGrid'])->name('api.vehicles.grid');
-    Route::get('/api/vehicles/attributes', [VehicleAttributesController::class, 'getAllAttributes'])->name('api.vehicles.attributes');
-    Route::get('/api/vehicles/attributes/{type}', [VehicleAttributesController::class, 'getAttributesByType'])->name('api.vehicles.attributes.type');
+    Route::get('/api/attributes', [AttributesListController::class, 'getAllAttributes'])->name('api.attributes.get');
     Route::get('/api/vehicles/{id}/data', [VehicleManagementController::class, 'getVehicleData'])->name('api.vehicles.data');
     
     // Active Vehicles API

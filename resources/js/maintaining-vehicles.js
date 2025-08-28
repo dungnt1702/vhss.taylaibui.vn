@@ -1,0 +1,49 @@
+// Maintaining Vehicles JavaScript
+const vehicleOperations = {
+    // Complete maintenance
+    completeMaintenance: function(vehicleId) {
+        if (confirm(`Bạn có chắc muốn hoàn thành bảo trì xe ${vehicleId}?`)) {
+            this.performOperation(`/api/vehicles/${vehicleId}/complete-maintenance`, {});
+        }
+    },
+
+    // Update maintenance status
+    updateMaintenanceStatus: function(vehicleId) {
+        const status = prompt('Cập nhật trạng thái bảo trì:');
+        if (status) {
+            this.performOperation(`/api/vehicles/${vehicleId}/update-maintenance-status`, {
+                status: status
+            });
+        }
+    },
+
+    // Perform AJAX operation
+    performOperation: function(url, data) {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert(result.message);
+                location.reload();
+            } else {
+                alert('Có lỗi xảy ra: ' + result.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi thực hiện thao tác');
+        });
+    }
+};
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Maintaining Vehicles page loaded');
+});

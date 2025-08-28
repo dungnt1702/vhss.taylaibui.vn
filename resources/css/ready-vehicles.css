@@ -1,0 +1,142 @@
+/* Ready Vehicles CSS */
+.ready-vehicles-container {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    min-height: 100vh;
+}
+
+.vehicle-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.vehicle-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-color: #3b82f6;
+}
+
+.vehicle-card.ready {
+    border-left-color: #10b981;
+}
+
+.vehicle-card.waiting {
+    border-left-color: #f59e0b;
+}
+
+.vehicle-card.running {
+    border-left-color: #3b82f6;
+}
+
+.vehicle-card.paused {
+    border-left-color: #6b7280;
+}
+
+.vehicle-card.expired {
+    border-left-color: #f97316;
+}
+
+.vehicle-card.workshop {
+    border-left-color: #ef4444;
+}
+
+.btn {
+    @apply inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md transition-colors duration-200;
+}
+
+.btn-sm {
+    @apply px-2 py-1 text-xs;
+}
+
+.btn-success {
+    @apply bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
+}
+
+.btn-info {
+    @apply bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+.btn-warning {
+    @apply bg-yellow-600 text-white hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2;
+}
+
+.btn-secondary {
+    @apply bg-gray-600 text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+}
+
+.btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+/* Status badges */
+.status-badge {
+    @apply px-2 py-1 text-xs font-medium rounded-full;
+}
+
+.status-ready {
+    @apply bg-green-100 text-green-800;
+}
+
+.status-waiting {
+    @apply bg-yellow-100 text-yellow-800;
+}
+
+.status-running {
+    @apply bg-blue-100 text-blue-800;
+}
+
+.status-paused {
+    @apply bg-gray-100 text-gray-800;
+}
+
+.status-expired {
+    @apply bg-orange-100 text-orange-800;
+}
+
+.status-workshop {
+    @apply bg-red-100 text-red-800;
+}
+
+/* Grid layout */
+.vehicles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .vehicles-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+    
+    .vehicle-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
