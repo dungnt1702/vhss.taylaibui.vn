@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Log;
 class ActiveVehiclesController extends Controller
 {
     /**
-     * Display active vehicles (xe ngoài bãi)
+     * Display ready vehicles (xe sẵn sàng chạy)
      */
     public function index()
     {
-        // Lấy xe có trạng thái active (sẵn sàng chạy)
+        // Lấy xe có trạng thái ready (sẵn sàng chạy)
         $activeVehicles = Vehicle::active()->latest()->get();
         
         // Lấy xe đang chạy
