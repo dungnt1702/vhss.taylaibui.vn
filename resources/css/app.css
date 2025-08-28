@@ -253,3 +253,5 @@ h1, h2, h3, h4, h5, h6, p, span, div, button, input, textarea, select, label, a 
 .font-bold { font-weight: var(--font-bold); }
 .font-extrabold { font-weight: var(--font-extrabold); }
 .font-black { font-weight: var(--font-black); }
+
+

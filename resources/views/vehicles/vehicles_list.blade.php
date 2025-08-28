@@ -243,11 +243,3 @@
         </div>
     </div>
 </div>
-
-@push('styles')
-    @vite(['resources/css/vehicles-list.css'])
-@endpush
-
-@push('scripts')
-    @vite(['resources/js/vehicles-list.js'])
-@endpush

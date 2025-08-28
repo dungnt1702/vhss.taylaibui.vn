@@ -649,4 +649,15 @@
     </script>
     @endif
     @endpush
+    
+    <!-- Additional styles and scripts for specific filters -->
+    @if($filter === 'vehicles_list')
+        @push('styles')
+            @vite(['resources/css/vehicles-list.css'])
+        @endpush
+        
+        @push('scripts')
+            @vite(['resources/js/vehicles-list.js'])
+        @endpush
+    @endif
 </x-app-layout>
