@@ -7,6 +7,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeWaitingVehicles() {
+    // Check if there are any vehicles before setting up listeners
+    const vehicleCards = document.querySelectorAll('.vehicle-card');
+    
+    if (vehicleCards.length === 0) {
+        console.log('No vehicles found, skipping initialization');
+        return;
+    }
+    
     // Set up event listeners for vehicle cards
     setupVehicleCardListeners();
     
@@ -16,11 +24,25 @@ function initializeWaitingVehicles() {
 
 function setupVehicleCardListeners() {
     // Add click listeners for vehicle headers
-    document.querySelectorAll('.vehicle-header').forEach(header => {
-        header.addEventListener('click', function() {
-            const vehicleId = this.closest('.vehicle-card').dataset.vehicleId;
-            toggleVehicleSimple(vehicleId);
-        });
+    const vehicleHeaders = document.querySelectorAll('.vehicle-header');
+    
+    if (vehicleHeaders.length === 0) {
+        console.log('No vehicle headers found');
+        return;
+    }
+    
+    vehicleHeaders.forEach(header => {
+        if (header) {
+            header.addEventListener('click', function() {
+                const vehicleCard = this.closest('.vehicle-card');
+                if (vehicleCard) {
+                    const vehicleId = vehicleCard.dataset.vehicleId;
+                    if (vehicleId) {
+                        toggleVehicleSimple(vehicleId);
+                    }
+                }
+            });
+        }
     });
 }
 
@@ -46,6 +68,8 @@ function startTimer(vehicleId, duration) {
     
     // Show loading state
     const button = event.target;
+    if (!button) return;
+    
     const originalText = button.innerHTML;
     button.innerHTML = '<span class="loading"></span>';
     button.disabled = true;
@@ -55,7 +79,7 @@ function startTimer(vehicleId, duration) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
         },
         body: JSON.stringify({
             vehicle_id: vehicleId,
@@ -80,8 +104,10 @@ function startTimer(vehicleId, duration) {
     })
     .finally(() => {
         // Restore button state
-        button.innerHTML = originalText;
-        button.disabled = false;
+        if (button) {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
     });
 }
 
@@ -89,12 +115,22 @@ function initializeCountdownTimers() {
     // Initialize any existing countdown timers
     const countdownElements = document.querySelectorAll('.countdown-display');
     
+    if (countdownElements.length === 0) {
+        console.log('No countdown elements found');
+        return;
+    }
+    
     countdownElements.forEach(element => {
-        const vehicleId = element.closest('.vehicle-card').dataset.vehicleId;
-        const endTime = element.closest('.vehicle-card').dataset.endTime;
-        
-        if (endTime) {
-            startCountdown(vehicleId, parseInt(endTime));
+        if (element) {
+            const vehicleCard = element.closest('.vehicle-card');
+            if (vehicleCard) {
+                const vehicleId = vehicleCard.dataset.vehicleId;
+                const endTime = vehicleCard.dataset.endTime;
+                
+                if (endTime) {
+                    startCountdown(vehicleId, parseInt(endTime));
+                }
+            }
         }
     });
 }
@@ -145,7 +181,9 @@ function showNotification(title, message, type = 'info') {
     
     // Auto remove after 3 seconds
     setTimeout(() => {
-        notification.remove();
+        if (notification && notification.parentNode) {
+            notification.remove();
+        }
     }, 3000);
 }
 

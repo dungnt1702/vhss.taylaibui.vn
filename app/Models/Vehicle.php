@@ -136,14 +136,9 @@ class Vehicle extends Model
         return $query->where('status', '!=', self::STATUS_WORKSHOP);
     }
 
-    // Scope for waiting vehicles (not running, paused, expired, route)
+    // Scope for waiting vehicles (xe sẵn sàng chạy - ready status)
     public function scopeWaiting($query)
     {
-        return $query->whereNotIn('status', [
-            self::STATUS_RUNNING,
-            self::STATUS_PAUSED,
-            self::STATUS_EXPIRED,
-            self::STATUS_ROUTE
-        ]);
+        return $query->where('status', self::STATUS_READY);
     }
 }
