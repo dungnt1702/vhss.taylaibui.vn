@@ -12,7 +12,7 @@
                 </div>
                 <!-- Expand/Collapse Icon -->
                 <div class="flex justify-center mt-2">
-                    <svg class="w-4 h-4 text-neutral-500 transform transition-transform {{ $filter === 'running' ? 'rotate-180' : '' }}" id="icon-{{ $vehicle->id }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-neutral-500 transform transition-transform {{ $filter === 'running' ? 'rotate(180deg)' : '' }}" id="icon-{{ $vehicle->id }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </div>
@@ -49,8 +49,8 @@
                     </div>
                 </div>
                 
-                                        @if($vehicle->status === 'ready')
-                    <!-- Active vehicles (waiting) - 30p, 45p, Về xưởng -->
+                @if($filter === 'waiting')
+                    <!-- Waiting vehicles (ready status) - 30p, 45p, Về xưởng -->
                     <div class="flex flex-wrap gap-2 justify-center">
                         <button onclick="startTimer({{ $vehicle->id }}, 30)" class="btn btn-success btn-sm">
                             🚗 30p
@@ -62,20 +62,20 @@
                             🔧 Về xưởng
                         </button>
                     </div>
-                @elseif($vehicle->status === 'running')
+                @elseif($filter === 'running')
                     <!-- Running vehicles - +10p, Tạm dừng, Về bãi -->
                     <div class="flex flex-wrap gap-2 justify-center">
                         <button onclick="addTime({{ $vehicle->id }}, 10)" class="btn btn-warning btn-sm">
                             ⏰ +10p
                         </button>
-                        <button onclick="pauseVehicle({{ $vehicle->id }})" class="btn btn-info btn-sm">
+                        <button onclick="pauseTimer({{ $vehicle->id }})" class="btn btn-info btn-sm">
                             ⏸️ Tạm dừng
                         </button>
                         <button onclick="returnToYard({{ $vehicle->id }})" class="btn btn-primary btn-sm">
                             🏠 Về bãi
                         </button>
                     </div>
-                @elseif($vehicle->status === 'expired')
+                @elseif($filter === 'expired')
                     <!-- Expired vehicles - +10p, Về bãi -->
                     <div class="flex flex-wrap gap-2 justify-center">
                         <button onclick="addTime({{ $vehicle->id }}, 10)" class="btn btn-warning btn-sm">
@@ -85,10 +85,10 @@
                             🏠 Về bãi
                         </button>
                     </div>
-                @elseif($vehicle->status === 'paused')
+                @elseif($filter === 'paused')
                     <!-- Paused vehicles - Tiếp tục, Về bãi -->
                     <div class="flex flex-wrap gap-2 justify-center">
-                        <button onclick="resumeVehicle({{ $vehicle->id }})" class="btn btn-success btn-sm">
+                        <button onclick="resumeTimer({{ $vehicle->id }})" class="btn btn-success btn-sm">
                             ▶️ Tiếp tục
                         </button>
                         <button onclick="returnToYard({{ $vehicle->id }})" class="btn btn-primary btn-sm">
@@ -96,13 +96,10 @@
                         </button>
                     </div>
                 @else
-                    <!-- Active vehicles (outside yard) - 30p, 45p -->
+                    <!-- Default buttons for other statuses -->
                     <div class="flex flex-wrap gap-2 justify-center">
-                        <button onclick="startTimer({{ $vehicle->id }}, 30)" class="btn btn-success btn-sm">
-                            🚗 30p
-                        </button>
-                        <button onclick="startTimer({{ $vehicle->id }}, 45)" class="btn btn-primary btn-sm">
-                            🚙 45p
+                        <button onclick="returnToYard({{ $vehicle->id }})" class="btn btn-primary btn-sm">
+                            🏠 Về bãi
                         </button>
                     </div>
                 @endif
@@ -116,19 +113,40 @@
                 </svg>
                 <h3 class="mt-2 text-sm font-medium text-neutral-900">Không có xe nào</h3>
                 <p class="mt-1 text-sm text-neutral-500">
-                    Bắt đầu bằng cách thêm xe mới vào hệ thống.
+                    Hiện tại không có xe nào với trạng thái này.
                 </p>
-                @if(auth()->user()->canManageVehicles())
-                    <div class="mt-6">
-                        <button onclick="openEditVehicleModal()" class="btn btn-success">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            Thêm xe mới
-                        </button>
-                    </div>
-                @endif
             </div>
         </div>
     @endforelse
 </div>
+
+<!-- Include appropriate CSS and JS based on filter -->
+@if($filter === 'waiting')
+    @push('styles')
+    @vite(['resources/css/waiting-vehicles.css'])
+    @endpush
+    @push('scripts')
+    @vite(['resources/js/waiting-vehicles.js'])
+    @endpush
+@elseif($filter === 'running')
+    @push('styles')
+    @vite(['resources/css/running-vehicles.css'])
+    @endpush
+    @push('scripts')
+    @vite(['resources/js/running-vehicles.js'])
+    @endpush
+@elseif($filter === 'paused')
+    @push('styles')
+    @vite(['resources/css/paused-vehicles.css'])
+    @endpush
+    @push('scripts')
+    @vite(['resources/js/paused-vehicles.js'])
+    @endpush
+@elseif($filter === 'expired')
+    @push('styles')
+    @vite(['resources/css/expired-vehicles.css'])
+    @endpush
+    @push('scripts')
+    @vite(['resources/js/expired-vehicles.js'])
+    @endpush
+@endif
