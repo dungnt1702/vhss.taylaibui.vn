@@ -1,18 +1,4 @@
-@extends('layouts.guest')
-
-@section('content')
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-neutral-50">
-        <div>
-            <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-neutral-900" />
-            </a>
-        </div>
-
-        <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-            {{ $slot }}
-        </div>
-    </div>
-@endsection
+<!-- Navigation Component -->
 
 <!-- Navigation Component -->
 <nav x-data="{ open: false, mobileOpen: false }" class="bg-white border-b border-neutral-200">
