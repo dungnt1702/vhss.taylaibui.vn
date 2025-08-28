@@ -91,6 +91,7 @@ window.toggleVehicleSimple = function(vehicleId) {
             return;
         }
         
+        // Check if content is hidden by Tailwind CSS hidden class
         const isHidden = content.classList.contains('hidden');
         
         if (isHidden) {
@@ -223,13 +224,13 @@ window.resumeVehicle = function(vehicleId) {
 
 // Import vehicle management modules in correct order
 // These will be loaded synchronously
-import './vehicles';
-import './vehicle-forms';
-import './vehicle-operations';
+import './vehicles/vehicles';
+import './vehicles/vehicle-forms';
+import './vehicles/vehicle-operations';
 // vehicle-wrappers.js will be loaded after vehicleOperations is initialized
 
 // Import vehicles list functionality
-import './vehicles-list';
+import './vehicles/vehicles-list';
 
 window.Alpine = Alpine;
 
@@ -277,9 +278,9 @@ function initializeVehicleSystem() {
             };
         }
         
-        // Now that vehicleOperations is ready, load vehicle-wrappers.js
+                // Now that vehicleOperations is ready, load vehicle-wrappers.js
         if (!window.vehicleWrappersLoaded) {
-            import('./vehicle-wrappers').then(() => {
+            import('./vehicles/vehicle-wrappers').then(() => {
                 window.vehicleWrappersLoaded = true;
                 
                 // Initialize countdown timers after everything is loaded and DOM is ready

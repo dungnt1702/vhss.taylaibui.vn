@@ -163,10 +163,10 @@
 
 @push('scripts')
     <!-- Load ready-vehicles.js -->
-    @vite(['resources/js/ready-vehicles.js'])
+    @vite(['resources/js/vehicles/ready-vehicles.js'])
 @endpush
 
 @push('styles')
     <!-- Load ready-vehicles.css -->
-    @vite(['resources/css/ready-vehicles.css'])
+    @vite(['resources/css/vehicles/ready-vehicles.css'])
 @endpush

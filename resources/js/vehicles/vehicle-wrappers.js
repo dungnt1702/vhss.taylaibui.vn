@@ -230,36 +230,7 @@ window.toggleVehicle = function(vehicleId) {
     }
 };
 
-// Simple toggle function that only affects one vehicle - NO ACCORDION BEHAVIOR
-window.toggleVehicleSimple = function(vehicleId) {
-    console.log(`Simple toggleVehicle called with vehicleId: ${vehicleId}`);
-    
-    // Find the specific vehicle card and its elements
-    const contentId = `content-${vehicleId}`;
-    const iconId = `icon-${vehicleId}`;
-    
-    const content = document.getElementById(contentId);
-    const icon = document.getElementById(iconId);
-    
-    if (!content || !icon) {
-        console.warn(`Vehicle elements not found: contentId=${contentId}, iconId=${iconId}`);
-        return;
-    }
-    
-    const isHidden = content.classList.contains('hidden');
-    
-    if (isHidden) {
-        console.log(`Opening ONLY vehicle ${vehicleId}`);
-        // Open this specific vehicle ONLY
-        content.classList.remove('hidden');
-        icon.style.transform = 'rotate(180deg)';
-    } else {
-        console.log(`Closing ONLY vehicle ${vehicleId}`);
-        // Close this specific vehicle ONLY
-        content.classList.add('hidden');
-        icon.style.transform = 'rotate(0deg)';
-    }
-};
+
 
 window.startVehicle = function(vehicleId, minutes = 30) {
     // Fallback implementation

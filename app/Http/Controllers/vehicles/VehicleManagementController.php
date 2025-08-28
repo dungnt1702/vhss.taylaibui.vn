@@ -62,7 +62,7 @@ class VehicleManagementController extends Controller
         $powerOptions = VehicleAttribute::getPowerOptions();
         $wheelSizes = VehicleAttribute::getWheelSizes();
 
-        return view('vehicles_management', compact(
+        return view('vehicles.vehicles_management', compact(
             'vehicles', 
             'activeVehicles',
             'filter', 
@@ -145,7 +145,7 @@ class VehicleManagementController extends Controller
      */
     public function show(Vehicle $vehicle)
     {
-        return view('vehicles_management', compact('vehicle'));
+        return view('vehicles.vehicles_management', compact('vehicle'));
     }
 
     /**

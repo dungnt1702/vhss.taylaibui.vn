@@ -653,11 +653,11 @@
     <!-- Additional styles and scripts for specific filters -->
     @if($filter === 'vehicles_list')
         @push('styles')
-            @vite(['resources/css/vehicles-list.css'])
+            @vite(['resources/css/vehicles/vehicles-list.css'])
         @endpush
         
         @push('scripts')
-            @vite(['resources/js/vehicles-list.js'])
+            @vite(['resources/js/vehicles/vehicles-list.js'])
         @endpush
     @endif
 </x-app-layout>

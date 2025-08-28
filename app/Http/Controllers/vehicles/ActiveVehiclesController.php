@@ -9,26 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class ActiveVehiclesController extends Controller
 {
-    /**
-     * Display ready vehicles (xe sẵn sàng chạy)
-     */
-    public function index()
-    {
-        // Lấy xe có trạng thái ready (sẵn sàng chạy)
-        $activeVehicles = Vehicle::active()->latest()->get();
-        
-        // Lấy xe đang chạy
-        $runningVehicles = Vehicle::running()->latest()->get();
-        
-        // Lấy xe trong tuyến
-        $routeVehicles = Vehicle::route()->latest()->get();
 
-        return view('vehicles.active_vehicles', compact(
-            'activeVehicles', 
-            'runningVehicles', 
-            'routeVehicles'
-        ));
-    }
 
     /**
      * Start timer for selected vehicles
@@ -37,12 +18,33 @@ class ActiveVehiclesController extends Controller
     {
         try {
             $request->validate([
-                'vehicle_ids' => 'required|array',
-                'vehicle_ids.*' => 'exists:vehicles,id',
                 'duration' => 'required|integer|min:1|max:120'
             ]);
 
-            $vehicles = Vehicle::whereIn('id', $request->vehicle_ids)->get();
+            // Handle both vehicle_ids (array) and vehicle_id (single) formats
+            $vehicleIds = [];
+            if ($request->has('vehicle_ids') && is_array($request->vehicle_ids)) {
+                $vehicleIds = $request->vehicle_ids;
+            } elseif ($request->has('vehicle_id')) {
+                $vehicleIds = [$request->vehicle_id];
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Vui lòng chọn ít nhất một xe'
+                ], 400);
+            }
+
+            // Validate vehicle IDs exist
+            foreach ($vehicleIds as $id) {
+                if (!Vehicle::find($id)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Xe không tồn tại'
+                    ], 400);
+                }
+            }
+
+            $vehicles = Vehicle::whereIn('id', $vehicleIds)->get();
             
             foreach ($vehicles as $vehicle) {
                 $vehicle->update([
@@ -76,12 +78,33 @@ class ActiveVehiclesController extends Controller
     {
         try {
             $request->validate([
-                'vehicle_ids' => 'required|array',
-                'vehicle_ids.*' => 'exists:vehicles,id',
                 'route_number' => 'required|integer|min:1|max:100'
             ]);
 
-            $vehicles = Vehicle::whereIn('id', $request->vehicle_ids)->get();
+            // Handle both vehicle_ids (array) and vehicle_id (single) formats
+            $vehicleIds = [];
+            if ($request->has('vehicle_ids') && is_array($request->vehicle_ids)) {
+                $vehicleIds = $request->vehicle_ids;
+            } elseif ($request->has('vehicle_id')) {
+                $vehicleIds = [$request->vehicle_id];
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Vui lòng chọn ít nhất một xe'
+                ], 400);
+            }
+
+            // Validate vehicle IDs exist
+            foreach ($vehicleIds as $id) {
+                if (!Vehicle::find($id)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Xe không tồn tại'
+                    ], 400);
+                }
+            }
+
+            $vehicles = Vehicle::whereIn('id', $vehicleIds)->get();
             
             foreach ($vehicles as $vehicle) {
                 $vehicle->update([
@@ -111,12 +134,30 @@ class ActiveVehiclesController extends Controller
     public function returnToYard(Request $request)
     {
         try {
-            $request->validate([
-                'vehicle_ids' => 'required|array',
-                'vehicle_ids.*' => 'exists:vehicles,id'
-            ]);
+            // Handle both vehicle_ids (array) and vehicle_id (single) formats
+            $vehicleIds = [];
+            if ($request->has('vehicle_ids') && is_array($request->vehicle_ids)) {
+                $vehicleIds = $request->vehicle_ids;
+            } elseif ($request->has('vehicle_id')) {
+                $vehicleIds = [$request->vehicle_id];
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Vui lòng chọn ít nhất một xe'
+                ], 400);
+            }
 
-            $vehicles = Vehicle::whereIn('id', $request->vehicle_ids)->get();
+            // Validate vehicle IDs exist
+            foreach ($vehicleIds as $id) {
+                if (!Vehicle::find($id)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Xe không tồn tại'
+                    ], 400);
+                }
+            }
+
+            $vehicles = Vehicle::whereIn('id', $vehicleIds)->get();
             
             foreach ($vehicles as $vehicle) {
                 $vehicle->update([

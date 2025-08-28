@@ -11,7 +11,7 @@ use App\Http\Controllers\vehicles\WorkshopVehiclesController;
 use App\Http\Controllers\vehicles\RepairingVehiclesController;
 use App\Http\Controllers\vehicles\MaintainingVehiclesController;
 use App\Http\Controllers\vehicles\VehiclesListController;
-use App\Http\Controllers\vehicles\GridDisplayController;
+
 use App\Http\Controllers\vehicles\AttributesListController;
 use App\Http\Controllers\vehicles\VehicleManagementController;
 
@@ -76,15 +76,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Vehicles List
     Route::get('/vehicles-list', [VehiclesListController::class, 'index'])->name('vehicles.list');
     
-    // Grid Display
-    Route::get('/grid-display', [GridDisplayController::class, 'index'])->name('vehicles.grid');
+
     
-    // Active Vehicles
-    Route::get('/active-vehicles', [ActiveVehiclesController::class, 'index'])->name('active-vehicles.index');
+
     
     // API Routes
     Route::get('/api/vehicles', [VehiclesListController::class, 'getVehicles'])->name('api.vehicles.get');
-    Route::get('/api/vehicles/grid', [GridDisplayController::class, 'getVehiclesForGrid'])->name('api.vehicles.grid');
+
     Route::get('/api/attributes', [AttributesListController::class, 'getAllAttributes'])->name('api.attributes.get');
     Route::get('/api/vehicles/{id}/data', [VehicleManagementController::class, 'getVehicleData'])->name('api.vehicles.data');
     

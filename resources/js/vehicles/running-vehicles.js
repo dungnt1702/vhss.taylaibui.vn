@@ -1,12 +1,12 @@
-// Paused Vehicles JavaScript
+// Running Vehicles JavaScript
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Paused Vehicles JS loaded');
+    console.log('Running Vehicles JS loaded');
     
-    // Initialize paused vehicles functionality
-    initializePausedVehicles();
+    // Initialize running vehicles functionality
+    initializeRunningVehicles();
 });
 
-function initializePausedVehicles() {
+function initializeRunningVehicles() {
     // Check if there are any vehicles before setting up listeners
     const vehicleCards = document.querySelectorAll('.vehicle-card');
     
@@ -38,7 +38,7 @@ function setupVehicleCardListeners() {
                 if (vehicleCard) {
                     const vehicleId = vehicleCard.dataset.vehicleId;
                     if (vehicleId) {
-                        toggleVehicleSimple(vehicleId);
+                        window.toggleVehicleSimple(vehicleId);
                     }
                 }
             });
@@ -46,25 +46,10 @@ function setupVehicleCardListeners() {
     });
 }
 
-function toggleVehicleSimple(vehicleId) {
-    const content = document.getElementById(`content-${vehicleId}`);
-    const icon = document.getElementById(`icon-${vehicleId}`);
-    
-    if (content && icon) {
-        const isHidden = content.classList.contains('hidden');
-        
-        if (isHidden) {
-            content.classList.remove('hidden');
-            icon.style.transform = 'rotate(180deg)';
-        } else {
-            content.classList.add('hidden');
-            icon.style.transform = 'rotate(0deg)';
-        }
-    }
-}
 
-function resumeTimer(vehicleId) {
-    console.log(`Resuming timer for vehicle ${vehicleId}`);
+
+function pauseTimer(vehicleId) {
+    console.log(`Pausing timer for vehicle ${vehicleId}`);
     
     // Show loading state
     const button = event.target;
@@ -74,7 +59,7 @@ function resumeTimer(vehicleId) {
     button.innerHTML = '<span class="loading"></span>';
     button.disabled = true;
     
-    // Make API call to resume timer (using return-yard for now)
+    // Make API call to pause timer (using return-yard for now)
     fetch('/api/active-vehicles/return-yard', {
         method: 'POST',
         headers: {
@@ -88,18 +73,18 @@ function resumeTimer(vehicleId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showNotification('Thành công', 'Đã tiếp tục đếm ngược cho xe', 'success');
+            showNotification('Thành công', 'Đã tạm dừng đếm ngược cho xe', 'success');
             // Optionally redirect or refresh
             setTimeout(() => {
                 window.location.reload();
             }, 1000);
         } else {
-            showNotification('Lỗi', data.message || 'Không thể tiếp tục đếm ngược', 'error');
+            showNotification('Lỗi', data.message || 'Không thể tạm dừng đếm ngược', 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showNotification('Lỗi', 'Đã xảy ra lỗi khi tiếp tục đếm ngược', 'error');
+        showNotification('Lỗi', 'Đã xảy ra lỗi khi tạm dừng đếm ngược', 'error');
     })
     .finally(() => {
         // Restore button state
@@ -187,5 +172,4 @@ function showNotification(title, message, type = 'info') {
 }
 
 // Global functions that might be called from HTML
-window.resumeTimer = resumeTimer;
-window.toggleVehicleSimple = toggleVehicleSimple;
+window.pauseTimer = pauseTimer;

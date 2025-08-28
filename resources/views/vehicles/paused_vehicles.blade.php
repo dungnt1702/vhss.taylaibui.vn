@@ -4,17 +4,13 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-neutral-900 mb-2">Xe tạm dừng</h1>
-        <p class="text-neutral-600">Quản lý xe đang tạm dừng</p>
-    </div>
 
     <!-- Grid Display for paused vehicles -->
     <div id="vehicle-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @forelse($vehicles as $vehicle)
             <div class="vehicle-card bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition-shadow duration-200 border-l-4 border-orange-500" data-vehicle-id="{{ $vehicle->id }}" data-vehicle-name="{{ $vehicle->name }}" data-status="{{ $vehicle->status }}" data-start-time="{{ $vehicle->start_time ? strtotime($vehicle->start_time) * 1000 : '' }}" data-end-time="{{ $vehicle->end_time ? strtotime($vehicle->end_time) * 1000 : '' }}" data-paused-at="{{ $vehicle->paused_at ? strtotime($vehicle->paused_at) * 1000 : '' }}" data-paused-remaining-seconds="{{ $vehicle->paused_remaining_seconds ?? '' }}">
                 <!-- Vehicle Header - Clickable for collapse/expand -->
-                <div class="vehicle-header cursor-pointer p-4 border-b border-neutral-200 hover:bg-neutral-50 transition-colors duration-200" onclick="toggleVehicleSimple({{ $vehicle->id }})">
+                <div class="vehicle-header cursor-pointer p-4 border-b border-neutral-200 hover:bg-neutral-50 transition-colors duration-200" data-action="toggle-vehicle" data-vehicle-id="{{ $vehicle->id }}">
                     <div class="flex justify-between items-center">
                         <h3 class="text-lg font-semibold text-neutral-900">
                             Xe số {{ $vehicle->name }}
@@ -80,9 +76,9 @@
 @endsection
 
 @push('scripts')
-@vite(['resources/js/paused-vehicles.js'])
+@vite(['resources/js/app.js', 'resources/js/vehicles/paused-vehicles.js'])
 @endpush
 
 @push('styles')
-@vite(['resources/css/paused-vehicles.css'])
+@vite(['resources/css/vehicles/paused-vehicles.css'])
 @endpush

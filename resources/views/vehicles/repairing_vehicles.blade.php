@@ -4,10 +4,6 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-neutral-900 mb-2">Xe đang sửa chữa</h1>
-        <p class="text-neutral-600">Quản lý xe đang được sửa chữa</p>
-    </div>
 
     <!-- Vehicle Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="repairing-vehicles-grid">
@@ -73,9 +69,9 @@
 @endsection
 
 @push('scripts')
-@vite(['resources/js/repairing-vehicles.js'])
+@vite(['resources/js/vehicles/repairing-vehicles.js'])
 @endpush
 
 @push('styles')
-@vite(['resources/css/repairing-vehicles.css'])
+@vite(['resources/css/vehicles/repairing-vehicles.css'])
 @endpush

@@ -21,7 +21,7 @@
     transition: all 0.3s ease;
 }
 
-.vehicle-content.hidden {
+.vehicle-content.vehicle-hidden {
     display: none;
 }
 

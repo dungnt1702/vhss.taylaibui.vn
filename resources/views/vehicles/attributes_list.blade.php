@@ -4,10 +4,6 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-neutral-900 mb-2">Thuộc tính xe</h1>
-        <p class="text-neutral-600">Quản lý các thuộc tính cơ bản của xe</p>
-    </div>
 
     <!-- Attributes Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -161,9 +157,9 @@
 @endsection
 
 @push('scripts')
-@vite(['resources/js/attributes-list.js'])
+@vite(['resources/js/vehicles/attributes-list.js'])
 @endpush
 
 @push('styles')
-@vite(['resources/css/attributes-list.css'])
+@vite(['resources/css/vehicles/attributes-list.css'])
 @endpush

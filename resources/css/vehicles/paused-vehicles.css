@@ -1,6 +1,6 @@
-/* Running Vehicles CSS */
-.running-vehicles-container {
-    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+/* Paused Vehicles CSS */
+.paused-vehicles-container {
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
     min-height: 100vh;
 }
 
@@ -12,11 +12,11 @@
 .vehicle-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    border-color: #3b82f6;
+    border-color: #6b7280;
 }
 
-.vehicle-card.running {
-    border-left-color: #3b82f6;
+.vehicle-card.paused {
+    border-left-color: #6b7280;
 }
 
 .btn {
@@ -27,8 +27,8 @@
     @apply px-2 py-1 text-xs;
 }
 
-.btn-warning {
-    @apply bg-yellow-600 text-white hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2;
+.btn-success {
+    @apply bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2;
 }
 
 .btn-info {
@@ -39,17 +39,13 @@
     @apply px-2 py-1 text-xs font-medium rounded-full;
 }
 
-.status-running {
-    @apply bg-blue-100 text-blue-800;
+.status-paused {
+    @apply bg-gray-100 text-gray-800;
 }
 
-.remaining-time {
+.paused-time {
     font-weight: bold;
-    color: #3b82f6;
-    animation: pulse 2s infinite;
+    color: #6b7280;
 }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
+

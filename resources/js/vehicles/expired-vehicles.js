@@ -1,12 +1,12 @@
-// Waiting Vehicles JavaScript
+// Expired Vehicles JavaScript
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Waiting Vehicles JS loaded');
+    console.log('Expired Vehicles JS loaded');
     
-    // Initialize waiting vehicles functionality
-    initializeWaitingVehicles();
+    // Initialize expired vehicles functionality
+    initializeExpiredVehicles();
 });
 
-function initializeWaitingVehicles() {
+function initializeExpiredVehicles() {
     // Check if there are any vehicles before setting up listeners
     const vehicleCards = document.querySelectorAll('.vehicle-card');
     
@@ -20,9 +20,6 @@ function initializeWaitingVehicles() {
     
     // Initialize countdown timers if any
     initializeCountdownTimers();
-    
-    // Initialize action button listeners
-    initializeActionListeners();
 }
 
 function setupVehicleCardListeners() {
@@ -41,7 +38,7 @@ function setupVehicleCardListeners() {
                 if (vehicleCard) {
                     const vehicleId = vehicleCard.dataset.vehicleId;
                     if (vehicleId) {
-                        toggleVehicleSimple(vehicleId);
+                        window.toggleVehicleSimple(vehicleId);
                     }
                 }
             });
@@ -49,45 +46,10 @@ function setupVehicleCardListeners() {
     });
 }
 
-function initializeActionListeners() {
-    // Use event delegation for action buttons
-    document.addEventListener('click', function(e) {
-        if (e.target.matches('[data-action="start-timer"]')) {
-            const vehicleId = e.target.dataset.vehicleId;
-            const duration = parseInt(e.target.dataset.duration);
-            startTimer(vehicleId, duration);
-        }
-        
-        if (e.target.matches('[data-action="open-workshop-modal"]')) {
-            const vehicleId = e.target.dataset.vehicleId;
-            if (window.vehicleForms) {
-                window.vehicleForms.openWorkshopModal(vehicleId);
-            } else {
-                console.error('vehicleForms not available');
-            }
-        }
-    });
-}
 
-function toggleVehicleSimple(vehicleId) {
-    const content = document.getElementById(`content-${vehicleId}`);
-    const icon = document.getElementById(`icon-${vehicleId}`);
-    
-    if (content && icon) {
-        const isHidden = content.classList.contains('hidden');
-        
-        if (isHidden) {
-            content.classList.remove('hidden');
-            icon.style.transform = 'rotate(180deg)';
-        } else {
-            content.classList.add('hidden');
-            icon.style.transform = 'rotate(0deg)';
-        }
-    }
-}
 
-function startTimer(vehicleId, duration) {
-    console.log(`Starting timer for vehicle ${vehicleId} with duration ${duration} minutes`);
+function returnToYard(vehicleId) {
+    console.log(`Returning vehicle ${vehicleId} to yard`);
     
     // Show loading state
     const button = event.target;
@@ -97,33 +59,32 @@ function startTimer(vehicleId, duration) {
     button.innerHTML = '<span class="loading"></span>';
     button.disabled = true;
     
-    // Make API call to start timer
-    fetch('/api/active-vehicles/start-timer', {
+    // Make API call to return vehicle to yard
+    fetch('/api/active-vehicles/return-yard', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
         },
         body: JSON.stringify({
-            vehicle_id: vehicleId,
-            duration: duration
+            vehicle_id: vehicleId
         })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showNotification('Thành công', 'Đã bắt đầu đếm ngược cho xe', 'success');
+            showNotification('Thành công', 'Đã đưa xe về bãi', 'success');
             // Optionally redirect or refresh
             setTimeout(() => {
                 window.location.reload();
             }, 1000);
         } else {
-            showNotification('Lỗi', data.message || 'Không thể bắt đầu đếm ngược', 'error');
+            showNotification('Lỗi', data.message || 'Không thể đưa xe về bãi', 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showNotification('Lỗi', 'Đã xảy ra lỗi khi bắt đầu đếm ngược', 'error');
+        showNotification('Lỗi', 'Đã xảy ra lỗi khi đưa xe về bãi', 'error');
     })
     .finally(() => {
         // Restore button state
@@ -211,5 +172,4 @@ function showNotification(title, message, type = 'info') {
 }
 
 // Global functions that might be called from HTML
-window.startTimer = startTimer;
-window.toggleVehicleSimple = toggleVehicleSimple;
+window.returnToYard = returnToYard;
