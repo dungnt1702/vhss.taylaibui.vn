@@ -42,7 +42,7 @@ function initializeEventListeners() {
             moveToWorkshopBulk();
         }
         
-        if (e.target.matches('[data-action="return-to-yard"]')) {
+        if (e.target.matches('[data-action="return-yard"]')) {
             returnToYard();
         }
         
