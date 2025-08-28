@@ -20,7 +20,7 @@ class VehicleManagementController extends Controller
         
         $vehicles = match($filter) {
             'vehicles_list' => Vehicle::latest()->paginate($perPage),
-            'active' => Vehicle::notInactive()->latest()->paginate($perPage),
+            'active' => Vehicle::active()->latest()->paginate($perPage),
             'inactive' => Vehicle::inactive()->latest()->paginate($perPage),
             'running' => Vehicle::running()->latest()->paginate($perPage),
             'waiting' => Vehicle::waiting()->latest()->paginate($perPage),
@@ -46,6 +46,12 @@ class VehicleManagementController extends Controller
         // Get display mode based on filter
         $displayMode = in_array($filter, ['active', 'vehicles_list', 'attributes']) ? 'list' : 'grid';
 
+        // Get active vehicles for active_vehicles.blade.php when filter = 'active'
+        $activeVehicles = null;
+        if ($filter === 'active') {
+            $activeVehicles = Vehicle::active()->latest()->get();
+        }
+
         // Get vehicle attributes for modal
         $colors = VehicleAttribute::getColors();
         $seats = VehicleAttribute::getSeats();
@@ -54,6 +60,7 @@ class VehicleManagementController extends Controller
 
         return view('vehicles_management', compact(
             'vehicles', 
+            'activeVehicles',
             'filter', 
             'pageTitle', 
             'displayMode', 

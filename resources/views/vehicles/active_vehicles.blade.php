@@ -1,6 +1,6 @@
 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
     <!-- Hidden data for JavaScript -->
-    <div id="vehicle-data" data-vehicles='@json($vehicles)' style="display: none;"></div>
+    <div id="vehicle-data" data-vehicles='@json($activeVehicles)' style="display: none;"></div>
 
     <!-- Three Column Layout -->
     <div class="xl:grid xl:grid-cols-3 gap-6">
@@ -9,7 +9,7 @@
             <div class="p-6 border-b border-gray-200">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Xe đang chờ</h2>
                 
-                @if($vehicles && count($vehicles) > 0)
+                @if($activeVehicles && count($activeVehicles) > 0)
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr>
@@ -23,7 +23,7 @@
                             </tr>
                         </thead>
                         <tbody id="waiting-vehicles" class="divide-y divide-gray-200">
-                            @foreach($vehicles as $vehicle)
+                            @foreach($activeVehicles as $vehicle)
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-3 py-2">
                                         <input type="checkbox" value="{{ $vehicle->id }}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">

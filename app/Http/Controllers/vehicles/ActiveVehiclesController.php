@@ -14,8 +14,8 @@ class ActiveVehiclesController extends Controller
      */
     public function index()
     {
-        // Lấy xe đang hoạt động (không phải trong xưởng)
-        $vehicles = Vehicle::notInactive()->latest()->get();
+        // Lấy xe có trạng thái active (sẵn sàng chạy)
+        $activeVehicles = Vehicle::active()->latest()->get();
         
         // Lấy xe đang chạy
         $runningVehicles = Vehicle::running()->latest()->get();
@@ -24,7 +24,7 @@ class ActiveVehiclesController extends Controller
         $routeVehicles = Vehicle::route()->latest()->get();
 
         return view('vehicles.active_vehicles', compact(
-            'vehicles', 
+            'activeVehicles', 
             'runningVehicles', 
             'routeVehicles'
         ));
@@ -224,7 +224,7 @@ class ActiveVehiclesController extends Controller
                 'expired' => Vehicle::expired()->latest()->get(),
                 'route' => Vehicle::route()->latest()->get(),
                 'waiting' => Vehicle::waiting()->latest()->get(),
-                default => Vehicle::notInactive()->latest()->get()
+                default => Vehicle::active()->latest()->get()
             };
 
             return response()->json([

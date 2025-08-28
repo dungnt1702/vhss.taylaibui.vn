@@ -19,7 +19,7 @@ class VehiclesListController extends Controller
         
         $vehicles = match($filter) {
             'vehicles_list' => Vehicle::latest()->paginate($perPage),
-            'active' => Vehicle::notInactive()->latest()->paginate($perPage),
+            'active' => Vehicle::active()->latest()->paginate($perPage),
             'inactive' => Vehicle::inactive()->latest()->paginate($perPage),
             'running' => Vehicle::running()->latest()->paginate($perPage),
             'waiting' => Vehicle::waiting()->latest()->paginate($perPage),
