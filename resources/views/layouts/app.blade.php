@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>TAY LÁI BỤI SÓC SƠN</title>
+        <title>@yield('title', 'TAY LÁI BỤI SÓC SƠN')</title>
 
         <!-- Favicon -->
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -17,6 +17,9 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <!-- Additional Styles -->
+        @stack('styles')
     </head>
     <body class="antialiased">
         <div class="min-h-screen bg-neutral-50">
@@ -33,7 +36,7 @@
 
             <!-- Page Content -->
             <main class="pt-4">
-                {{ $slot }}
+                @yield('content')
             </main>
         </div>
         
