@@ -50,7 +50,7 @@ class VehicleManagementController extends Controller
         // Get display mode based on filter
         $displayMode = in_array($filter, ['ready', 'vehicles_list', 'attributes']) ? 'list' : 'grid';
 
-        // Get ready vehicles for active_vehicles.blade.php when filter = 'ready'
+        // Get ready vehicles for ready_vehicles.blade.php when filter = 'ready'
         $activeVehicles = null;
         if ($filter === 'ready') {
             $activeVehicles = Vehicle::active()->latest()->get();

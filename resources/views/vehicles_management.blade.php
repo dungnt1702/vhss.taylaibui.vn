@@ -40,8 +40,8 @@
                 <!-- Grid Display for specific statuses -->
                 @include('vehicles.grid_display')
             @elseif($filter === 'ready')
-                <!-- Active Vehicles Display - Xe sẵn sàng chạy -->
-                @include('vehicles.active_vehicles')
+                <!-- Ready Vehicles Display - Xe sẵn sàng chạy -->
+                @include('vehicles.ready_vehicles')
             @elseif($filter === 'workshop')
                 <!-- Workshop Vehicles Display - Xe trong xưởng -->
                 @include('vehicles.workshop_vehicles')
@@ -58,8 +58,8 @@
                 <!-- Vehicle Attributes Display -->
                 @include('vehicles.attributes_list')
             @else
-                <!-- Default to active vehicles -->
-                @include('vehicles.active_vehicles')
+                <!-- Default to ready vehicles -->
+                @include('vehicles.ready_vehicles')
             @endif
         </div>
     </div>
