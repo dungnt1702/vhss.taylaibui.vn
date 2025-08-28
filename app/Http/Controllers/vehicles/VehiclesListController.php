@@ -19,8 +19,8 @@ class VehiclesListController extends Controller
         
         $vehicles = match($filter) {
             'vehicles_list' => Vehicle::latest()->paginate($perPage),
-            'active' => Vehicle::active()->latest()->paginate($perPage),
-            'inactive' => Vehicle::inactive()->latest()->paginate($perPage),
+            'ready' => Vehicle::active()->latest()->paginate($perPage),
+            'workshop' => Vehicle::inactive()->latest()->paginate($perPage),
             'running' => Vehicle::running()->latest()->paginate($perPage),
             'waiting' => Vehicle::waiting()->latest()->paginate($perPage),
             'expired' => Vehicle::expired()->latest()->paginate($perPage),
@@ -31,8 +31,8 @@ class VehiclesListController extends Controller
 
         $pageTitle = match($filter) {
             'vehicles_list' => 'Danh sách xe',
-            'active' => 'Xe ngoài bãi',
-            'inactive' => 'Xe trong xưởng',
+            'ready' => 'Xe sẵn sàng chạy',
+            'workshop' => 'Xe trong xưởng',
             'running' => 'Xe đang chạy',
             'waiting' => 'Xe đang chờ',
             'expired' => 'Xe hết giờ',
@@ -70,8 +70,8 @@ class VehiclesListController extends Controller
         
         $vehicles = match($filter) {
             'all' => Vehicle::latest()->get(),
-            'active' => Vehicle::active()->latest()->get(),
-            'inactive' => Vehicle::inactive()->latest()->get(),
+            'ready' => Vehicle::active()->latest()->get(),
+            'workshop' => Vehicle::inactive()->latest()->get(),
             'running' => Vehicle::running()->latest()->get(),
             'waiting' => Vehicle::waiting()->latest()->get(),
             'expired' => Vehicle::expired()->latest()->get(),

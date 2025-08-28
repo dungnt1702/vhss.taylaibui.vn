@@ -40,8 +40,8 @@ class Vehicle extends Model
     ];
 
     // Status constants
-    const STATUS_ACTIVE = 'active';      // Xe sẵn sàng chạy (thay thế cho Xe ngoài bãi)
-    const STATUS_INACTIVE = 'inactive';  // Xe trong xưởng
+    const STATUS_READY = 'ready';        // Xe sẵn sàng chạy (thay thế cho Xe ngoài bãi)
+    const STATUS_WORKSHOP = 'workshop';  // Xe trong xưởng
     const STATUS_RUNNING = 'running';    // Xe đang chạy
     const STATUS_WAITING = 'waiting';    // Xe đang chờ
     const STATUS_EXPIRED = 'expired';    // Xe hết giờ
@@ -86,16 +86,16 @@ class Vehicle extends Model
         return $query->where('status', $status);
     }
 
-    // Scope for active vehicles
+    // Scope for ready vehicles (previously active)
     public function scopeActive($query)
     {
-        return $query->where('status', self::STATUS_ACTIVE);
+        return $query->where('status', self::STATUS_READY);
     }
 
-    // Scope for inactive vehicles
+    // Scope for workshop vehicles (previously inactive)
     public function scopeInactive($query)
     {
-        return $query->where('status', self::STATUS_INACTIVE);
+        return $query->where('status', self::STATUS_WORKSHOP);
     }
 
     // Scope for running vehicles
@@ -130,10 +130,10 @@ class Vehicle extends Model
         return $query->where('status', self::STATUS_GROUP);
     }
 
-    // Scope for vehicles that are not inactive (for Xe ngoài bãi screen)
+    // Scope for vehicles that are not in workshop (for Xe ngoài bãi screen)
     public function scopeNotInactive($query)
     {
-        return $query->where('status', '!=', self::STATUS_INACTIVE);
+        return $query->where('status', '!=', self::STATUS_WORKSHOP);
     }
 
     // Scope for waiting vehicles (not running, paused, expired, route)

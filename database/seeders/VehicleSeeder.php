@@ -27,8 +27,8 @@ class VehicleSeeder extends Seeder
             
             // Distribute vehicles across different statuses
             $statuses = [
-                Vehicle::STATUS_ACTIVE,
-                Vehicle::STATUS_INACTIVE,
+                Vehicle::STATUS_READY,
+                Vehicle::STATUS_WORKSHOP,
                 Vehicle::STATUS_RUNNING,
                 Vehicle::STATUS_WAITING,
                 Vehicle::STATUS_EXPIRED,
@@ -57,8 +57,8 @@ class VehicleSeeder extends Seeder
     private function getLocationByStatus($status)
     {
         return match($status) {
-            Vehicle::STATUS_ACTIVE => 'Bãi xe chính',
-            Vehicle::STATUS_INACTIVE => 'Xưởng sửa chữa',
+            Vehicle::STATUS_READY => 'Bãi xe chính',
+            Vehicle::STATUS_WORKSHOP => 'Xưởng sửa chữa',
             Vehicle::STATUS_RUNNING => 'Đang chạy tuyến',
             Vehicle::STATUS_WAITING => 'Bến xe chờ',
             Vehicle::STATUS_EXPIRED => 'Bãi xe phụ',
@@ -72,8 +72,8 @@ class VehicleSeeder extends Seeder
     private function getNotesByStatus($status, $vehicleNumber)
     {
         return match($status) {
-            Vehicle::STATUS_ACTIVE => "Xe Gokart số {$vehicleNumber} đang hoạt động tốt",
-            Vehicle::STATUS_INACTIVE => "Xe Gokart số {$vehicleNumber} đang bảo dưỡng",
+            Vehicle::STATUS_READY => "Xe Gokart số {$vehicleNumber} đang hoạt động tốt",
+            Vehicle::STATUS_WORKSHOP => "Xe Gokart số {$vehicleNumber} đang bảo dưỡng",
             Vehicle::STATUS_RUNNING => "Xe Gokart số {$vehicleNumber} đang chở khách",
             Vehicle::STATUS_WAITING => "Xe Gokart số {$vehicleNumber} đang chờ khách",
             Vehicle::STATUS_EXPIRED => "Xe Gokart số {$vehicleNumber} cần bảo dưỡng gấp",

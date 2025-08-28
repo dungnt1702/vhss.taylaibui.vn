@@ -74,8 +74,8 @@ app/Models/vehicles/
 ### 1. VehicleStatus
 **Chức năng:** Quản lý trạng thái xe
 **Constants:**
-- `STATUS_ACTIVE` - Xe sẵn sàng chạy
-- `STATUS_INACTIVE` - Xe trong xưởng
+- `STATUS_READY` - Xe sẵn sàng chạy
+- `STATUS_WORKSHOP` - Xe trong xưởng
 - `STATUS_RUNNING` - Xe đang chạy
 - `STATUS_WAITING` - Xe đang chờ
 - `STATUS_EXPIRED` - Xe hết giờ
@@ -138,7 +138,7 @@ use App\Models\vehicles\VehicleStatus;
 use App\Models\vehicles\VehicleRoute;
 
 // Sử dụng VehicleStatus
-$statusName = VehicleStatus::getDisplayName('active');
+$statusName = VehicleStatus::getDisplayName('ready');
 $colorClass = VehicleStatus::getColorClass('running');
 
 // Sử dụng VehicleRoute

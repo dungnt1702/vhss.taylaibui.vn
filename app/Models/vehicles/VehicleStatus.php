@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class VehicleStatus extends Model
 {
     // Status constants
-    const STATUS_ACTIVE = 'active';      // Xe sẵn sàng chạy
-    const STATUS_INACTIVE = 'inactive';  // Xe trong xưởng
+    const STATUS_READY = 'ready';        // Xe sẵn sàng chạy
+    const STATUS_WORKSHOP = 'workshop';  // Xe trong xưởng
     const STATUS_RUNNING = 'running';    // Xe đang chạy
     const STATUS_WAITING = 'waiting';    // Xe đang chờ
     const STATUS_EXPIRED = 'expired';    // Xe hết giờ
@@ -22,8 +22,8 @@ class VehicleStatus extends Model
     public static function getAllStatuses(): array
     {
         return [
-            self::STATUS_ACTIVE,
-            self::STATUS_INACTIVE,
+            self::STATUS_READY,
+            self::STATUS_WORKSHOP,
             self::STATUS_RUNNING,
             self::STATUS_WAITING,
             self::STATUS_EXPIRED,
@@ -38,8 +38,8 @@ class VehicleStatus extends Model
     public static function getDisplayName(string $status): string
     {
         return match($status) {
-            self::STATUS_ACTIVE => 'Xe sẵn sàng chạy',
-            self::STATUS_INACTIVE => 'Xe trong xưởng',
+            self::STATUS_READY => 'Xe sẵn sàng chạy',
+            self::STATUS_WORKSHOP => 'Xe trong xưởng',
             self::STATUS_RUNNING => 'Xe đang chạy',
             self::STATUS_WAITING => 'Xe đang chờ',
             self::STATUS_EXPIRED => 'Xe hết giờ',
@@ -55,8 +55,8 @@ class VehicleStatus extends Model
     public static function getColorClass(string $status): string
     {
         return match($status) {
-            self::STATUS_ACTIVE => 'bg-green-100 text-green-800',
-            self::STATUS_INACTIVE => 'bg-red-100 text-red-800',
+            self::STATUS_READY => 'bg-green-100 text-green-800',
+            self::STATUS_WORKSHOP => 'bg-red-100 text-red-800',
             self::STATUS_RUNNING => 'bg-blue-100 text-blue-800',
             self::STATUS_WAITING => 'bg-yellow-100 text-yellow-800',
             self::STATUS_EXPIRED => 'bg-orange-100 text-orange-800',
@@ -72,12 +72,12 @@ class VehicleStatus extends Model
     public static function getAvailableTransitions(string $currentStatus): array
     {
         return match($currentStatus) {
-            self::STATUS_ACTIVE => [self::STATUS_RUNNING, self::STATUS_ROUTE, self::STATUS_INACTIVE],
-            self::STATUS_RUNNING => [self::STATUS_PAUSED, self::STATUS_EXPIRED, self::STATUS_ACTIVE],
-            self::STATUS_PAUSED => [self::STATUS_RUNNING, self::STATUS_ACTIVE],
-            self::STATUS_EXPIRED => [self::STATUS_ACTIVE, self::STATUS_INACTIVE],
-            self::STATUS_ROUTE => [self::STATUS_ACTIVE, self::STATUS_INACTIVE],
-            self::STATUS_INACTIVE => [self::STATUS_ACTIVE],
+            self::STATUS_READY => [self::STATUS_RUNNING, self::STATUS_ROUTE, self::STATUS_WORKSHOP],
+            self::STATUS_RUNNING => [self::STATUS_PAUSED, self::STATUS_EXPIRED, self::STATUS_READY],
+            self::STATUS_PAUSED => [self::STATUS_RUNNING, self::STATUS_READY],
+            self::STATUS_EXPIRED => [self::STATUS_READY, self::STATUS_WORKSHOP],
+            self::STATUS_ROUTE => [self::STATUS_READY, self::STATUS_WORKSHOP],
+            self::STATUS_WORKSHOP => [self::STATUS_READY],
             default => []
         };
     }
@@ -97,7 +97,7 @@ class VehicleStatus extends Model
     public static function getActiveStatuses(): array
     {
         return [
-            self::STATUS_ACTIVE,
+            self::STATUS_READY,
             self::STATUS_RUNNING,
             self::STATUS_WAITING,
             self::STATUS_EXPIRED,
@@ -112,7 +112,7 @@ class VehicleStatus extends Model
     public static function getManageableStatuses(): array
     {
         return [
-            self::STATUS_ACTIVE,
+            self::STATUS_READY,
             self::STATUS_RUNNING,
             self::STATUS_PAUSED,
             self::STATUS_EXPIRED,

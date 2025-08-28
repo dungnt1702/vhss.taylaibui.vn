@@ -211,7 +211,7 @@ class VehicleManager {
             case 'expired':
                 statusText = 'Hết giờ';
                 break;
-            case 'active':
+            case 'ready':
                 statusText = minutes !== null ? `Xe chạy ${minutes}p` : 'Ngoài bãi';
                 break;
             default:
@@ -258,7 +258,7 @@ class VehicleManager {
                     </button>
                 `;
                 break;
-            case 'active':
+            case 'ready':
                 buttonHTML = `
                     <button onclick="vehicleManager.startVehicle(${vehicleId}, 30)" class="btn btn-success btn-sm">
                         🚀 Xuất bãi
@@ -414,9 +414,9 @@ class VehicleManager {
                     }
                 } else {
                     // No end time data, can't resume
-                            vehicleCard.dataset.status = 'active';
-        this.updateStatusText(vehicleId, 'active', null);
-                    this.updateVehicleButtons(vehicleId, 'active');
+                            vehicleCard.dataset.status = 'ready';
+        this.updateStatusText(vehicleId, 'ready', null);
+                    this.updateVehicleButtons(vehicleId, 'ready');
                     return; // Exit early
                 }
             }
@@ -477,14 +477,14 @@ class VehicleManager {
         const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
         if (vehicleCard) {
             vehicleCard.dataset.endTime = '';
-            vehicleCard.dataset.status = 'active';
+            vehicleCard.dataset.status = 'ready';
         }
         
         // Update status text to show active status
-        this.updateStatusText(vehicleId, 'active', null);
+        this.updateStatusText(vehicleId, 'ready', null);
         
         // Update button display to show active buttons
-        this.updateVehicleButtons(vehicleId, 'active');
+        this.updateVehicleButtons(vehicleId, 'ready');
         
         // Speak notification
         const vehicleName = this.getVehicleName(vehicleId);
@@ -511,7 +511,7 @@ class VehicleManager {
         }
         
         // Update vehicle status to active and clear end_time
-        this.updateVehicleStatus(vehicleId, 'active', null);
+        this.updateVehicleStatus(vehicleId, 'ready', null);
         
         // Show navigation hint to user
         this.showNavigationHint(vehicleId, 'waiting');
@@ -585,7 +585,7 @@ class VehicleManager {
                 targetFilter = 'expired';
                 break;
             case 'waiting':
-                targetFilter = 'active'; // active screen shows waiting vehicles
+                targetFilter = 'ready'; // active screen shows waiting vehicles
                 break;
         }
         

@@ -18,7 +18,7 @@
                         <span class="text-sm text-neutral-600">/{{ $vehicles->total() }} xe</span>
                     </div>
                     
-                    @if(auth()->user()->canManageVehicles() && !in_array($filter, ['active', 'running', 'waiting', 'expired', 'paused']))
+                    @if(auth()->user()->canManageVehicles() && !in_array($filter, ['ready', 'running', 'waiting', 'expired', 'paused']))
                     <button onclick="openEditVehicleModal()" class="btn btn-success btn-sm" title="Thêm xe mới">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -39,7 +39,7 @@
             @if(in_array($filter, ['waiting', 'running', 'expired', 'paused']))
                 <!-- Grid Display for specific statuses -->
                 @include('vehicles.grid_display')
-            @elseif($filter === 'active')
+                            @elseif($filter === 'ready')
                 <!-- Active Vehicles Display - Xe ngoài bãi -->
                 @include('vehicles.active_vehicles')
             @elseif($filter === 'vehicles_list')

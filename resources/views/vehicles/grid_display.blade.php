@@ -49,7 +49,7 @@
                     </div>
                 </div>
                 
-                @if($vehicle->status === 'active')
+                                        @if($vehicle->status === 'ready')
                     <!-- Active vehicles (waiting) - 30p, 45p, Về xưởng -->
                     <div class="flex flex-wrap gap-2 justify-center">
                         <button onclick="startTimer({{ $vehicle->id }}, 30)" class="btn btn-success btn-sm">

@@ -120,7 +120,7 @@ class ActiveVehiclesController extends Controller
             
             foreach ($vehicles as $vehicle) {
                 $vehicle->update([
-                    'status' => Vehicle::STATUS_ACTIVE,
+                    'status' => Vehicle::STATUS_READY,
                     'start_time' => null,
                     'end_time' => null,
                     'paused_at' => null,
@@ -218,7 +218,7 @@ class ActiveVehiclesController extends Controller
             $status = $request->get('status', 'all');
             
             $vehicles = match($status) {
-                'active' => Vehicle::active()->latest()->get(),
+                'ready' => Vehicle::active()->latest()->get(),
                 'running' => Vehicle::running()->latest()->get(),
                 'paused' => Vehicle::paused()->latest()->get(),
                 'expired' => Vehicle::expired()->latest()->get(),

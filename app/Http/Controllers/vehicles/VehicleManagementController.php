@@ -20,8 +20,8 @@ class VehicleManagementController extends Controller
         
         $vehicles = match($filter) {
             'vehicles_list' => Vehicle::latest()->paginate($perPage),
-            'active' => Vehicle::active()->latest()->paginate($perPage),
-            'inactive' => Vehicle::inactive()->latest()->paginate($perPage),
+            'ready' => Vehicle::active()->latest()->paginate($perPage),
+            'workshop' => Vehicle::inactive()->latest()->paginate($perPage),
             'running' => Vehicle::running()->latest()->paginate($perPage),
             'waiting' => Vehicle::waiting()->latest()->paginate($perPage),
             'expired' => Vehicle::expired()->paginate($perPage),
@@ -33,8 +33,8 @@ class VehicleManagementController extends Controller
 
         $pageTitle = match($filter) {
             'vehicles_list' => 'Danh sách xe',
-            'active' => 'Xe ngoài bãi',
-            'inactive' => 'Xe trong xưởng',
+            'ready' => 'Xe sẵn sàng chạy',
+            'workshop' => 'Xe trong xưởng',
             'running' => 'Xe đang chạy',
             'waiting' => 'Xe đang chờ',
             'expired' => 'Xe hết giờ',
@@ -44,11 +44,11 @@ class VehicleManagementController extends Controller
         };
 
         // Get display mode based on filter
-        $displayMode = in_array($filter, ['active', 'vehicles_list', 'attributes']) ? 'list' : 'grid';
+        $displayMode = in_array($filter, ['ready', 'vehicles_list', 'attributes']) ? 'list' : 'grid';
 
-        // Get active vehicles for active_vehicles.blade.php when filter = 'active'
+        // Get ready vehicles for active_vehicles.blade.php when filter = 'ready'
         $activeVehicles = null;
-        if ($filter === 'active') {
+        if ($filter === 'ready') {
             $activeVehicles = Vehicle::active()->latest()->get();
         }
 
@@ -123,7 +123,7 @@ class VehicleManagementController extends Controller
             'seats' => $request->seats,
             'power' => $request->power,
             'wheel_size' => $request->wheel_size,
-            'status' => Vehicle::STATUS_ACTIVE,
+            'status' => Vehicle::STATUS_READY,
             'current_location' => $request->current_location,
             'notes' => $request->notes,
             'status_changed_at' => now(),
@@ -282,8 +282,8 @@ class VehicleManagementController extends Controller
             }
         }
         
-        // Handle active status - reset all timing data
-        if ($request->status === 'active') {
+        // Handle ready status - reset all timing data
+        if ($request->status === 'ready') {
             $updateData['start_time'] = null;
             $updateData['end_time'] = null;
             $updateData['paused_at'] = null;
@@ -365,7 +365,7 @@ class VehicleManagementController extends Controller
         }
 
         $vehicle->update([
-            'status' => Vehicle::STATUS_INACTIVE,
+            'status' => Vehicle::STATUS_WORKSHOP,
             'status_changed_at' => now(),
             'notes' => 'Chuyển về xưởng: ' . $request->reason,
         ]);

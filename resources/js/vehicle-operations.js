@@ -172,9 +172,9 @@ class VehicleOperations {
             }
         } else {
             // No paused data, can't resume
-                    vehicleCard.dataset.status = 'active';
-        this.updateStatusText(vehicleId, 'active', null);
-            this.updateVehicleButtons(vehicleId, 'active');
+                                vehicleCard.dataset.status = 'ready';
+            this.updateStatusText(vehicleId, 'ready', null);
+            this.updateVehicleButtons(vehicleId, 'ready');
             return; // Exit early
         }
         
@@ -244,14 +244,14 @@ class VehicleOperations {
         if (vehicleCard) {
             vehicleCard.dataset.startTime = '';
             vehicleCard.dataset.endTime = '';
-            vehicleCard.dataset.status = 'active';
+            vehicleCard.dataset.status = 'ready';
         }
         
         // Update status text to show active status
-        this.updateStatusText(vehicleId, 'active', null);
+        this.updateStatusText(vehicleId, 'ready', null);
         
         // Update button display to show active buttons
-        this.updateVehicleButtons(vehicleId, 'active');
+        this.updateVehicleButtons(vehicleId, 'ready');
         
         // Speak notification
         const vehicleName = this.getVehicleName(vehicleId);
@@ -279,12 +279,12 @@ class VehicleOperations {
         
         // Update vehicle status to active and clear all timing data
         if (window.sendVehicleStatusToServer) {
-            window.sendVehicleStatusToServer(vehicleId, 'active', null, null);
+            window.sendVehicleStatusToServer(vehicleId, 'ready', null, null);
         }
-        this.updateVehicleStatus(vehicleId, 'active', null, null);
+        this.updateVehicleStatus(vehicleId, 'ready', null, null);
         
         // Show navigation hint to user
-        this.showNavigationHint(vehicleId, 'active');
+        this.showNavigationHint(vehicleId, 'ready');
     }
 
     addTime(vehicleId, additionalMinutes) {
@@ -431,7 +431,7 @@ class VehicleOperations {
             case 'expired':
                 statusText = 'Hết giờ';
                 break;
-            case 'active':
+            case 'ready':
                 statusText = 'Sẵn sàng chạy';
                 break;
             default:
@@ -478,7 +478,7 @@ class VehicleOperations {
                     </button>
                 `;
                 break;
-            case 'active':
+            case 'ready':
                 buttonHTML = `
                     <button onclick="vehicleOperations.startVehicle(${vehicleId}, 30)" class="btn btn-success btn-sm">
                         🚗 30p
@@ -491,7 +491,7 @@ class VehicleOperations {
                     </button>
                 `;
                 break;
-            case 'active':
+            case 'ready':
                 buttonHTML = `
                     <button onclick="vehicleOperations.startVehicle(${vehicleId}, 30)" class="btn btn-success btn-sm">
                         🚗 30p
@@ -540,7 +540,7 @@ class VehicleOperations {
                 targetFilter = 'expired';
                 break;
             case 'waiting':
-                targetFilter = 'active'; // active screen shows waiting vehicles
+                targetFilter = 'ready'; // active screen shows waiting vehicles
                 break;
         }
         
@@ -559,7 +559,7 @@ class VehicleOperations {
         const currentFilter = new URLSearchParams(window.location.search).get('filter');
         
         // Don't hide from these screens (they show all vehicles)
-        if (currentFilter === 'active' || currentFilter === 'route') {
+        if (currentFilter === 'ready' || currentFilter === 'route') {
             return;
         }
         
@@ -587,13 +587,13 @@ class VehicleOperations {
     // Determine if vehicle should be hidden from current screen
     shouldHideVehicle(currentFilter, newStatus) {
         switch (currentFilter) {
-            case 'active': // Xe sẵn sàng chạy
+            case 'ready': // Xe sẵn sàng chạy
                 // Hide when status changes from active
-                return newStatus !== 'active';
+                return newStatus !== 'ready';
                 
-                          case 'active': // Xe đang chờ (active status)
+                          case 'ready': // Xe đang chờ (active status)
                         // Hide when status changes from active
-        return newStatus !== 'active';
+        return newStatus !== 'ready';
                 
             case 'running': // Xe đang chạy
                 // Hide when status changes from running

@@ -19,8 +19,8 @@ class GridDisplayController extends Controller
         
         $vehicles = match($filter) {
             'grid' => Vehicle::latest()->paginate($perPage),
-            'active' => Vehicle::active()->latest()->paginate($perPage),
-            'inactive' => Vehicle::inactive()->latest()->paginate($perPage),
+            'ready' => Vehicle::active()->latest()->paginate($perPage),
+            'workshop' => Vehicle::inactive()->latest()->paginate($perPage),
             'running' => Vehicle::running()->latest()->paginate($perPage),
             'waiting' => Vehicle::waiting()->latest()->paginate($perPage),
             'expired' => Vehicle::expired()->latest()->paginate($perPage),
@@ -31,8 +31,8 @@ class GridDisplayController extends Controller
 
         $pageTitle = match($filter) {
             'grid' => 'Hiển thị dạng lưới',
-            'active' => 'Xe ngoài bãi',
-            'inactive' => 'Xe trong xưởng',
+            'ready' => 'Xe sẵn sàng chạy',
+            'workshop' => 'Xe trong xưởng',
             'running' => 'Xe đang chạy',
             'waiting' => 'Xe đang chờ',
             'expired' => 'Xe hết giờ',
@@ -72,8 +72,8 @@ class GridDisplayController extends Controller
         
         $vehicles = match($filter) {
             'all' => Vehicle::latest()->paginate($perPage, ['*'], 'page', $page),
-            'active' => Vehicle::active()->latest()->paginate($perPage, ['*'], 'page', $page),
-            'inactive' => Vehicle::inactive()->latest()->paginate($perPage, ['*'], 'page', $page),
+            'ready' => Vehicle::active()->latest()->paginate($perPage, ['*'], 'page', $page),
+            'workshop' => Vehicle::inactive()->latest()->paginate($perPage, ['*'], 'page', $page),
             'running' => Vehicle::running()->latest()->paginate($perPage, ['*'], 'page', $page),
             'waiting' => Vehicle::waiting()->latest()->paginate($perPage, ['*'], 'page', $page),
             'expired' => Vehicle::expired()->latest()->paginate($perPage, ['*'], 'page', $page),
