@@ -18,7 +18,7 @@
                         <span class="text-sm text-neutral-600">/{{ $vehicles->total() }} xe</span>
                     </div>
                     
-                    @if(auth()->user()->canManageVehicles() && !in_array($filter, ['ready', 'running', 'waiting', 'expired', 'paused']))
+                    @if(auth()->user()->canManageVehicles() && !in_array($filter, ['ready', 'running', 'waiting', 'expired', 'paused', 'workshop', 'repairing', 'maintaining']))
                     <button onclick="openEditVehicleModal()" class="btn btn-success btn-sm" title="Thêm xe mới">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -39,15 +39,24 @@
             @if(in_array($filter, ['waiting', 'running', 'expired', 'paused']))
                 <!-- Grid Display for specific statuses -->
                 @include('vehicles.grid_display')
-                            @elseif($filter === 'ready')
-                <!-- Active Vehicles Display - Xe ngoài bãi -->
+            @elseif($filter === 'ready')
+                <!-- Active Vehicles Display - Xe sẵn sàng chạy -->
                 @include('vehicles.active_vehicles')
+            @elseif($filter === 'workshop')
+                <!-- Workshop Vehicles Display - Xe trong xưởng -->
+                @include('vehicles.workshop_vehicles')
+            @elseif($filter === 'repairing')
+                <!-- Repairing Vehicles Display - Xe đang sửa chữa -->
+                @include('vehicles.repairing_vehicles')
+            @elseif($filter === 'maintaining')
+                <!-- Maintaining Vehicles Display - Xe đang bảo trì -->
+                @include('vehicles.maintaining_vehicles')
             @elseif($filter === 'vehicles_list')
                 <!-- Vehicles List Display -->
                 @include('vehicles.vehicles_list')
             @elseif($filter === 'attributes')
                 <!-- Vehicle Attributes Display -->
-                @include('vehicles.vehicle_attributes')
+                @include('vehicles.attributes_list')
             @else
                 <!-- Default to active vehicles -->
                 @include('vehicles.active_vehicles')

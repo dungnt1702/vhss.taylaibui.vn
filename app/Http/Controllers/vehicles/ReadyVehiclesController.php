@@ -17,9 +17,6 @@ class ReadyVehiclesController extends Controller
         // Lấy xe có trạng thái ready (sẵn sàng chạy)
         $vehicles = Vehicle::active()->latest()->get();
 
-        // Load các thuộc tính cần thiết
-        $vehicles->load(['status_display_name', 'status_color_class']);
-
         return view('vehicles.ready_vehicles', compact('vehicles'));
     }
 

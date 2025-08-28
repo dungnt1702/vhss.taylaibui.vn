@@ -27,6 +27,8 @@ class VehicleManagementController extends Controller
             'expired' => Vehicle::expired()->paginate($perPage),
             'paused' => Vehicle::paused()->latest()->paginate($perPage),
             'route' => Vehicle::route()->latest()->paginate($perPage),
+            'repairing' => Vehicle::where('status', 'repairing')->latest()->paginate($perPage),
+            'maintaining' => Vehicle::where('status', 'maintaining')->latest()->paginate($perPage),
             'attributes' => Vehicle::latest()->paginate($perPage),
             default => Vehicle::latest()->paginate($perPage)
         };
@@ -39,6 +41,8 @@ class VehicleManagementController extends Controller
             'waiting' => 'Xe đang chờ',
             'expired' => 'Xe hết giờ',
             'paused' => 'Xe tạm dừng',
+            'repairing' => 'Xe đang sửa chữa',
+            'maintaining' => 'Xe đang bảo trì',
             'attributes' => 'Thuộc tính xe',
             default => 'Danh sách xe'
         };
