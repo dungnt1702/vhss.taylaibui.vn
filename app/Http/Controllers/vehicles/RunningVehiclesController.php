@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\vehicles;
 
-use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 
-class RunningVehiclesController extends Controller
+class RunningVehiclesController extends VehicleBaseController
 {
     /**
      * Display running vehicles (xe đang chạy)

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\vehicles\ActiveVehiclesController;
+// ActiveVehiclesController đã được migration sang VehicleOperationsController
 use App\Http\Controllers\vehicles\ReadyVehiclesController;
 use App\Http\Controllers\vehicles\WaitingVehiclesController;
 use App\Http\Controllers\vehicles\RunningVehiclesController;
@@ -11,6 +11,7 @@ use App\Http\Controllers\vehicles\WorkshopVehiclesController;
 use App\Http\Controllers\vehicles\RepairingVehiclesController;
 use App\Http\Controllers\vehicles\MaintainingVehiclesController;
 use App\Http\Controllers\vehicles\VehiclesListController;
+use App\Http\Controllers\vehicles\VehicleOperationsController;
 
 use App\Http\Controllers\vehicles\AttributesListController;
 use App\Http\Controllers\vehicles\VehicleManagementController;
@@ -86,13 +87,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/attributes', [AttributesListController::class, 'getAllAttributes'])->name('api.attributes.get');
     Route::get('/api/vehicles/{id}/data', [VehicleManagementController::class, 'getVehicleData'])->name('api.vehicles.data');
     
-    // Active Vehicles API
-    Route::post('/api/active-vehicles/start-timer', [ActiveVehiclesController::class, 'startTimer'])->name('api.active-vehicles.start-timer');
-    Route::post('/api/active-vehicles/assign-route', [ActiveVehiclesController::class, 'assignRoute'])->name('api.active-vehicles.assign-route');
-    Route::post('/api/active-vehicles/return-yard', [ActiveVehiclesController::class, 'returnToYard'])->name('api.active-vehicles.return-yard');
-    Route::patch('/api/active-vehicles/{vehicle}/pause', [ActiveVehiclesController::class, 'pause'])->name('api.active-vehicles.pause');
-    Route::patch('/api/active-vehicles/{vehicle}/resume', [ActiveVehiclesController::class, 'resume'])->name('api.active-vehicles.resume');
-    Route::get('/api/active-vehicles/by-status', [ActiveVehiclesController::class, 'getVehiclesByStatus'])->name('api.active-vehicles.by-status');
+    // Vehicle Operations API (Centralized)
+    Route::post('/api/vehicles/start-timer', [VehicleOperationsController::class, 'startTimer'])->name('api.vehicles.start-timer');
+    Route::post('/api/vehicles/assign-route', [VehicleOperationsController::class, 'assignRoute'])->name('api.vehicles.assign-route');
+    Route::post('/api/vehicles/return-yard', [VehicleOperationsController::class, 'returnToYard'])->name('api.vehicles.return-yard');
+    Route::patch('/api/vehicles/{vehicle}/pause', [VehicleOperationsController::class, 'pause'])->name('api.vehicles.pause');
+    Route::patch('/api/vehicles/{vehicle}/resume', [VehicleOperationsController::class, 'resume'])->name('api.vehicles.resume');
+    Route::post('/api/vehicles/move-workshop', [VehicleOperationsController::class, 'moveToWorkshop'])->name('api.vehicles.move-workshop');
+    Route::get('/api/vehicles/by-status', [VehicleOperationsController::class, 'getVehiclesByStatus'])->name('api.vehicles.by-status');
+    
+    // Legacy API Routes (redirected to VehicleOperationsController for backward compatibility)
+    Route::post('/api/active-vehicles/start-timer', [VehicleOperationsController::class, 'startTimer'])->name('api.active-vehicles.start-timer');
+    Route::post('/api/active-vehicles/assign-route', [VehicleOperationsController::class, 'assignRoute'])->name('api.active-vehicles.assign-route');
+    Route::post('/api/active-vehicles/return-yard', [VehicleOperationsController::class, 'returnToYard'])->name('api.active-vehicles.return-yard');
+    Route::patch('/api/active-vehicles/{vehicle}/pause', [VehicleOperationsController::class, 'pause'])->name('api.active-vehicles.pause');
+    Route::patch('/api/active-vehicles/{vehicle}/resume', [VehicleOperationsController::class, 'resume'])->name('api.active-vehicles.resume');
+    Route::get('/api/active-vehicles/by-status', [VehicleOperationsController::class, 'getVehiclesByStatus'])->name('api.active-vehicles.by-status');
 });
 
 require __DIR__.'/auth.php';

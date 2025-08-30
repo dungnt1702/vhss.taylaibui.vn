@@ -60,7 +60,7 @@ function returnToYard(vehicleId) {
     button.disabled = true;
     
     // Make API call to return vehicle to yard
-    fetch('/api/active-vehicles/return-yard', {
+            fetch('/api/vehicles/return-yard', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

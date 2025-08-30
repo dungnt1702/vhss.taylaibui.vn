@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\vehicles;
 
-use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 
-class PausedVehiclesController extends Controller
+class PausedVehiclesController extends VehicleBaseController
 {
     /**
      * Display paused vehicles (xe tạm dừng)

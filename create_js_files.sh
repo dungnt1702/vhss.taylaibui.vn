@@ -132,14 +132,14 @@ const vehicleOperations = {
     // Pause vehicle
     pauseVehicle: function(vehicleId) {
         if (confirm(`Bạn có chắc muốn tạm dừng xe ${vehicleId}?`)) {
-            this.performOperation(`/api/active-vehicles/${vehicleId}/pause`, {});
+            this.performOperation(`/api/vehicles/${vehicleId}/pause`, {});
         }
     },
 
     // Return vehicle to yard
     returnToYard: function(vehicleId) {
         if (confirm(`Bạn có chắc muốn đưa xe ${vehicleId} về bãi?`)) {
-            this.performOperation('/api/active-vehicles/return-yard', {
+            this.performOperation('/api/vehicles/return-yard', {
                 vehicle_id: vehicleId
             });
         }
@@ -197,14 +197,14 @@ const vehicleOperations = {
     // Resume vehicle
     resumeVehicle: function(vehicleId) {
         if (confirm(`Bạn có chắc muốn tiếp tục xe ${vehicleId}?`)) {
-            this.performOperation(`/api/active-vehicles/${vehicleId}/resume`, {});
+            this.performOperation(`/api/vehicles/${vehicleId}/resume`, {});
         }
     },
 
     // Return vehicle to yard
     returnToYard: function(vehicleId) {
         if (confirm(`Bạn có chắc muốn đưa xe ${vehicleId} về bãi?`)) {
-            this.performOperation('/api/active-vehicles/return-yard', {
+            this.performOperation('/api/vehicles/return-yard', {
                 vehicle_id: vehicleId
             });
         }
@@ -249,7 +249,7 @@ const vehicleOperations = {
     // Return vehicle to yard
     returnToYard: function(vehicleId) {
         if (confirm(`Bạn có chắc muốn đưa xe ${vehicleId} về bãi?`)) {
-            this.performOperation('/api/active-vehicles/return-yard', {
+            this.performOperation('/api/vehicles/return-yard', {
                 vehicle_id: vehicleId
             });
         }
@@ -305,7 +305,7 @@ const vehicleOperations = {
     // Return vehicle to yard
     returnToYard: function(vehicleId) {
         if (confirm(`Bạn có chắc muốn đưa xe ${vehicleId} về bãi?`)) {
-            this.performOperation('/api/active-vehicles/return-yard', {
+            this.performOperation('/api/vehicles/return-yard', {
                 vehicle_id: vehicleId
             });
         }

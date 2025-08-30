@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\vehicles;
 
-use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 
-class WaitingVehiclesController extends Controller
+class WaitingVehiclesController extends VehicleBaseController
 {
     /**
      * Display waiting vehicles (xe đang chờ)

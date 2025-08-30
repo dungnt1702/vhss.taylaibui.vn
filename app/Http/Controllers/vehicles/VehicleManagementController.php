@@ -7,6 +7,7 @@ use App\Models\Vehicle;
 use App\Models\VehicleAttribute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\vehicles\VehicleOperationsController;
 
 class VehicleManagementController extends Controller
 {
@@ -411,5 +412,70 @@ class VehicleManagementController extends Controller
                 'message' => 'Không thể lấy thông tin xe: ' . $e->getMessage()
             ], 404);
         }
+    }
+
+    // ===== DELEGATE OPERATIONS TO VehicleOperationsController =====
+    
+    /**
+     * Start timer for selected vehicles
+     */
+    public function startTimer(Request $request)
+    {
+        $operationsController = new VehicleOperationsController();
+        return $operationsController->startTimer($request);
+    }
+
+    /**
+     * Assign route to selected vehicles
+     */
+    public function assignRoute(Request $request)
+    {
+        $operationsController = new VehicleOperationsController();
+        return $operationsController->assignRoute($request);
+    }
+
+    /**
+     * Return vehicles to yard
+     */
+    public function returnToYard(Request $request)
+    {
+        $operationsController = new VehicleOperationsController();
+        return $operationsController->returnToYard($request);
+    }
+
+    /**
+     * Pause vehicle
+     */
+    public function pause(Request $request, Vehicle $vehicle)
+    {
+        $operationsController = new VehicleOperationsController();
+        return $operationsController->pause($request, $vehicle);
+    }
+
+    /**
+     * Resume vehicle
+     */
+    public function resume(Request $request, Vehicle $vehicle)
+    {
+        $operationsController = new VehicleOperationsController();
+        return $operationsController->resume($request, $vehicle);
+    }
+
+    /**
+     * Move vehicle to workshop
+     */
+    public function moveToWorkshop(Request $request, Vehicle $vehicle)
+    {
+        $operationsController = new VehicleOperationsController();
+        return $operationsController->moveToWorkshop($request);
+    }
+
+    /**
+     * Get vehicles by status for API
+     */
+    public function getVehiclesByStatus(Request $request)
+    {
+        $operationsController = new VehicleOperationsController();
+        return $operationsController->getVehiclesByStatus($request);
     }
 }

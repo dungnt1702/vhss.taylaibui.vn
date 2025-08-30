@@ -8,7 +8,7 @@ Hệ thống VHSS đã được tái cấu trúc để dễ quản lý và bảo
 ### Controllers
 ```
 app/Http/Controllers/vehicles/
-├── ActiveVehiclesController.php      # Quản lý xe đang hoạt động
+# ActiveVehiclesController.php đã được migration sang VehicleOperationsController
 ├── VehiclesListController.php        # Quản lý danh sách xe
 ├── GridDisplayController.php         # Quản lý hiển thị dạng lưới
 ├── VehicleAttributesController.php   # Quản lý thuộc tính xe
@@ -25,16 +25,10 @@ app/Models/vehicles/
 
 ## Chi Tiết Các Controller
 
-### 1. ActiveVehiclesController
-**Chức năng:** Quản lý xe đang hoạt động (xe ngoài bãi)
-**Methods:**
-- `index()` - Hiển thị trang xe đang hoạt động
-- `startTimer()` - Bắt đầu bấm giờ cho xe
-- `assignRoute()` - Phân tuyến cho xe
-- `returnToYard()` - Đưa xe về bãi
-- `pause()` - Tạm dừng xe
-- `resume()` - Tiếp tục xe
-- `getVehiclesByStatus()` - Lấy xe theo trạng thái
+### 1. ActiveVehiclesController (Đã được migration)
+**Trạng thái:** Đã được migration sang VehicleOperationsController
+**Lý do migration:** Tránh duplicate code, tập trung operations vào một nơi
+**Migration path:** Tất cả API endpoints cũ vẫn hoạt động (redirected)
 
 ### 2. VehiclesListController
 **Chức năng:** Quản lý danh sách xe với bộ lọc
@@ -120,7 +114,7 @@ app/Models/vehicles/
 - `/api/vehicles` - API danh sách xe
 - `/api/vehicles/grid` - API xe cho grid
 - `/api/vehicles/attributes` - API thuộc tính xe
-- `/api/active-vehicles/*` - API xe đang hoạt động
+- `/api/active-vehicles/*` - API xe đang hoạt động (redirected to VehicleOperationsController)
 
 ## Lợi Ích Của Cấu Trúc Mới
 

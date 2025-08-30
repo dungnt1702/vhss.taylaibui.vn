@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\vehicles;
 
-use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 
-class ExpiredVehiclesController extends Controller
+class ExpiredVehiclesController extends VehicleBaseController
 {
     /**
      * Display expired vehicles (xe hết giờ)

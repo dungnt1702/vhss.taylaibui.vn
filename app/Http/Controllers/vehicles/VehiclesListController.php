@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use App\Models\VehicleAttribute;
 use Illuminate\Http\Request;
+use App\Http\Controllers\vehicles\VehicleOperationsController;
 
 class VehiclesListController extends Controller
 {
@@ -66,24 +67,7 @@ class VehiclesListController extends Controller
      */
     public function getVehicles(Request $request)
     {
-        $filter = $request->get('filter', 'all');
-        
-        $vehicles = match($filter) {
-            'all' => Vehicle::latest()->get(),
-            'ready' => Vehicle::active()->latest()->get(),
-            'workshop' => Vehicle::inactive()->latest()->get(),
-            'running' => Vehicle::running()->latest()->get(),
-            'waiting' => Vehicle::waiting()->latest()->get(),
-            'expired' => Vehicle::expired()->latest()->get(),
-            'paused' => Vehicle::paused()->latest()->get(),
-            'route' => Vehicle::route()->latest()->get(),
-            'group' => Vehicle::route()->latest()->get(),
-            default => Vehicle::latest()->get()
-        };
-
-        return response()->json([
-            'success' => true,
-            'vehicles' => $vehicles
-        ]);
+        $operationsController = new VehicleOperationsController();
+        return $operationsController->getVehiclesByStatus($request);
     }
 }
