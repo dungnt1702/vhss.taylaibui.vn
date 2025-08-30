@@ -255,29 +255,42 @@ class ReadyVehicles extends VehicleBase {
     }
 
     /**
-     * Return all vehicles to yard
+     * Return selected vehicles to yard
      */
     async returnToYard() {
-        if (confirm('Bạn có chắc muốn trả tất cả xe về bãi?')) {
-            try {
-                const response = await this.makeApiCall('/api/vehicles/return-yard', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        all: true
-                    })
-                });
-
-                if (response.success) {
-                    this.showNotification('Trả về bãi thành công!', 'success');
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
-                }
-            } catch (error) {
-                console.error('Error returning to yard:', error);
-                this.showNotification('Có lỗi xảy ra khi trả về bãi', 'error');
-            }
+        const selectedVehicles = this.getSelectedVehicles();
+        if (selectedVehicles.length === 0) {
+            console.log('Không có xe nào được chọn để đưa về bãi');
+            return;
         }
+
+        console.log('Đang đưa', selectedVehicles.length, 'xe được chọn về bãi...');
+        
+        try {
+            const response = await this.makeApiCall('/api/vehicles/return-yard', {
+                method: 'POST',
+                body: JSON.stringify({
+                    vehicle_ids: selectedVehicles
+                })
+            });
+
+            if (response.success) {
+                console.log('Đã đưa', selectedVehicles.length, 'xe về bãi thành công');
+                // Reload page to show updated status
+                window.location.reload();
+            } else {
+                console.error('Return to yard failed:', response.message);
+            }
+        } catch (error) {
+            console.error('Error returning vehicles to yard:', error);
+        }
+    }
+
+    /**
+     * Return selected vehicles to yard (public function for HTML onclick)
+     */
+    returnSelectedVehiclesToYard() {
+        this.returnToYard();
     }
 }
 
