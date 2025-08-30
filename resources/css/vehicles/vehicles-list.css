@@ -1,262 +1,169 @@
-/* Vehicles List Styles */
+/**
+ * Vehicles List CSS
+ * Styling for the vehicles list table and components
+ */
 
-/* Table Layout */
+/* Vehicle table responsive styles */
 .vehicle-table {
-    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
 }
 
-@media (max-width: 767px) {
-    .vehicle-table {
-        table-layout: auto;
+/* Desktop layout - 5 columns */
+@media (min-width: 768px) {
+    .vehicle-table th,
+    .vehicle-table td {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .vehicle-table th {
+        background-color: #f9fafb;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        color: #6b7280;
+    }
+    
+    .vehicle-table tbody tr:hover {
+        background-color: #f9fafb;
     }
 }
 
-/* Vehicle Detail Modal */
-#vehicle-detail-modal {
-    z-index: 50;
+/* Mobile layout - 3 rows per vehicle */
+@media (max-width: 767px) {
+    .vehicle-table th {
+        display: none;
+    }
+    
+    .vehicle-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    /* Alternating row colors for mobile */
+    .vehicle-table tbody tr:nth-child(6n+1),
+    .vehicle-table tbody tr:nth-child(6n+2),
+    .vehicle-table tbody tr:nth-child(6n+3) {
+        background-color: #ffffff;
+    }
+    
+    .vehicle-table tbody tr:nth-child(6n+4),
+    .vehicle-table tbody tr:nth-child(6n+5),
+    .vehicle-table tbody tr:nth-child(6n+6) {
+        background-color: #f9fafb;
+    }
 }
 
-#vehicle-detail-modal .bg-black {
-    background-color: rgba(0, 0, 0, 0.5);
+/* Action buttons styling */
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-#vehicle-detail-modal .max-w-4xl {
-    max-width: 56rem;
-}
-
-#vehicle-detail-modal .max-h-\[90vh\] {
-    max-height: 90vh;
-}
-
-/* Button Styles */
-.btn-vehicle-action {
+.action-button {
+    padding: 0.25rem;
+    border-radius: 0.25rem;
     transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.btn-vehicle-action:hover {
+.action-button:hover {
     transform: scale(1.05);
 }
 
-.btn-vehicle-action:active {
-    transform: scale(0.95);
-}
-
-/* Status Badge */
-.status-badge {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    border-radius: 9999px;
-}
-
-/* Color Preview */
-.color-preview {
+/* Color swatch styling */
+.color-swatch {
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 0.25rem;
     border: 1px solid #d1d5db;
+    display: inline-block;
 }
 
-/* Responsive Design */
-@media (max-width: 767px) {
-    .vehicle-table th,
-    .vehicle-table td {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.875rem;
-    }
-    
-    .vehicle-table th:nth-child(1),
-    .vehicle-table td:nth-child(1) {
-        width: 25%;
-    }
-    
-    .vehicle-table th:nth-child(2),
-    .vehicle-table td:nth-child(2) {
-        width: 25%;
-    }
-    
-    .vehicle-table th:nth-child(3),
-    .vehicle-table td:nth-child(3) {
-        width: 50%;
+/* Status badge styling */
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Pagination styling */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.pagination a,
+.pagination span {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination a:hover {
+    background-color: #f3f4f6;
+}
+
+.pagination .current {
+    background-color: #3b82f6;
+    color: white;
+    border: 1px solid #3b82f6;
+}
+
+.pagination .disabled {
+    color: #9ca3af;
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+
+/* Modal styling */
+#vehicle-detail-modal {
+    z-index: 50;
+}
+
+#vehicle-detail-modal .modal-content {
+    max-width: 64rem;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Responsive modal sizing */
+@media (min-width: 640px) {
+    #vehicle-detail-modal .modal-content {
+        max-width: 32rem;
     }
 }
 
 @media (min-width: 768px) {
-    .vehicle-table th:nth-child(1),
-    .vehicle-table td:nth-child(1) {
-        width: 15%;
-    }
-    
-    .vehicle-table th:nth-child(2),
-    .vehicle-table td:nth-child(2) {
-        width: 15%;
-    }
-    
-    .vehicle-table th:nth-child(3),
-    .vehicle-table td:nth-child(3) {
-        width: 20%;
-    }
-    
-    .vehicle-table th:nth-child(4),
-    .vehicle-table td:nth-child(4) {
-        width: 25%;
-    }
-    
-    .vehicle-table th:nth-child(5),
-    .vehicle-table td:nth-child(5) {
-        width: 25%;
+    #vehicle-detail-modal .modal-content {
+        max-width: 42rem;
     }
 }
 
-/* Vehicle Management Modal Styles */
-#vehicle-modal {
-    z-index: 50;
+@media (min-width: 1024px) {
+    #vehicle-detail-modal .modal-content {
+        max-width: 56rem;
+    }
 }
 
-#vehicle-modal .bg-black {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-#vehicle-modal .max-w-sm {
-    max-width: 35rem;
-}
-
-#vehicle-modal .max-w-md {
-    max-width: 40rem;
-}
-
-#vehicle-modal .max-w-2xl {
-    max-width: 50rem;
-}
-
-#vehicle-modal .max-w-4xl {
-    max-width: 72rem;
-}
-
-#vehicle-modal .max-w-5xl {
-    max-width: 80rem;
-}
-
-#vehicle-modal .max-w-6xl {
-    max-width: 88rem;
-}
-
-#vehicle-modal .max-w-7xl {
-    max-width: 96rem;
-}
-
-#vehicle-modal .max-w-8xl {
-    max-width: 104rem;
-}
-
-#vehicle-modal .max-h-\[90vh\] {
-    max-height: 90vh;
-}
-
-/* Status Modal Styles */
-#status-modal {
-    z-index: 50;
-}
-
-#status-modal .bg-black {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-#status-modal .max-w-md {
-    max-width: 28rem;
-}
-
-/* Workshop Modal Styles */
-#workshop-modal {
-    z-index: 50;
-}
-
-#workshop-modal .bg-black {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-#workshop-modal .max-w-md {
-    max-width: 28rem;
-}
-
-/* Color Picker Modal Styles */
-#color-picker-modal {
-    z-index: 50;
-}
-
-#color-picker-modal .bg-black {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-#color-picker-modal .max-w-4xl {
-    max-width: 56rem;
-}
-
-#color-picker-modal .max-h-96 {
-    max-height: 24rem;
-}
-
-.color-option {
-    transition: all 0.2s ease-in-out;
-}
-
-.color-option:hover {
-    transform: scale(1.05);
-}
-
-.color-option:active {
-    transform: scale(0.95);
-}
-
-/* Custom scrollbar for color grid */
-#color-picker-modal .overflow-y-auto::-webkit-scrollbar {
-    width: 8px;
-}
-
-#color-picker-modal .overflow-y-auto::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-#color-picker-modal .overflow-y-auto::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-#color-picker-modal .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
-/* Form Styles */
-.vehicle-form-field {
-    transition: all 0.2s ease-in-out;
-}
-
-.vehicle-form-field:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Modal Content Styles */
-.modal-scroll {
-    scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #f1f1f1;
-}
-
-.modal-scroll::-webkit-scrollbar {
-    width: 6px;
-}
-
-.modal-scroll::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-.modal-scroll::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-}
-
-.modal-scroll::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+@media (min-width: 1280px) {
+    #vehicle-detail-modal .modal-content {
+        max-width: 64rem;
+    }
 }

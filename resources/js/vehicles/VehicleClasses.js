@@ -30,4 +30,5 @@ console.log('All vehicle classes loaded successfully from VehicleClasses.js entr
 // Make VehicleBase available globally for backward compatibility
 if (typeof window !== 'undefined') {
     window.VehicleBase = VehicleBase;
+    window.VehiclesList = VehiclesList;
 }

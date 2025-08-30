@@ -4,6 +4,38 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-neutral-900">Quản lý thuộc tính xe</h1>
+        <p class="text-neutral-600 mt-2">Thêm, sửa, xóa các thuộc tính của xe</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mb-6 flex flex-wrap gap-3">
+        <button onclick="addAttribute('color')" class="btn btn-primary">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Thêm màu sắc
+        </button>
+        <button onclick="addAttribute('seat')" class="btn btn-primary">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Thêm số ghế
+        </button>
+        <button onclick="addAttribute('power')" class="btn btn-primary">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Thêm công suất
+        </button>
+        <button onclick="addAttribute('wheel_size')" class="btn btn-primary">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Thêm kích thước bánh
+        </button>
+    </div>
 
     <!-- Attributes Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -34,7 +66,7 @@
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                Thêm màu
+                Thêm màu sắc
             </button>
         </div>
 
@@ -49,7 +81,7 @@
             <div class="space-y-2">
                 @foreach($seats as $seat)
                 <div class="flex items-center justify-between p-2 bg-neutral-50 rounded">
-                    <span class="text-sm text-neutral-700">{{ $seat }} ghế</span>
+                    <span class="text-sm text-neutral-700">{{ $seat }}</span>
                     <button class="text-red-500 hover:text-red-700" onclick="deleteAttribute('seat', '{{ $seat }}')">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -62,7 +94,7 @@
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                Thêm ghế
+                Thêm số ghế
             </button>
         </div>
 
@@ -157,7 +189,8 @@
 @endsection
 
 @push('scripts')
-@vite(['resources/js/vehicles/attributes-list.js'])
+    <!-- Load VehicleClasses.js for all vehicle functionality -->
+    @vite(['resources/js/vehicles/VehicleClasses.js'])
 @endpush
 
 @push('styles')

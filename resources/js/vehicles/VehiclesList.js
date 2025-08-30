@@ -44,6 +44,11 @@ class VehiclesList extends VehicleBase {
         window.openVehicleDetailModal = (vehicleId) => this.openVehicleDetailModal(vehicleId);
         window.closeVehicleDetailModal = () => this.closeVehicleDetailModal();
         window.toggleVehicleExpansion = (vehicleId) => this.toggleVehicleExpansion(vehicleId);
+        
+        // Additional functions needed for vehicles_list.blade.php
+        window.openStatusModal = (vehicleId, currentStatus, currentNotes) => this.openStatusModal(vehicleId, currentStatus, currentNotes);
+        window.openEditVehicleModal = (vehicleId) => this.openEditVehicleModal(vehicleId);
+        window.deleteVehicle = (vehicleId) => this.deleteVehicle(vehicleId);
     }
 
     /**
@@ -405,6 +410,143 @@ class VehiclesList extends VehicleBase {
         } catch (error) {
             console.error('Error exporting vehicle list:', error);
             this.showNotification('Có lỗi xảy ra khi export', 'error');
+        }
+    }
+
+    /**
+     * Open status modal
+     */
+    openStatusModal(vehicleId, currentStatus, status, currentNotes) {
+        // Call function from vehicle-forms.js if available
+        if (typeof window.openStatusModal === 'function') {
+            window.openStatusModal(vehicleId, currentStatus, status, currentNotes);
+        } else {
+            console.warn('openStatusModal function not available');
+        }
+    }
+
+    /**
+     * Open edit vehicle modal
+     */
+    async openEditVehicleModal(vehicleId) {
+        try {
+            // Call API to get vehicle data for editing
+            const response = await fetch(`/api/vehicles/${vehicleId}/data`);
+            const result = await response.json();
+            
+            if (result.success) {
+                const vehicleData = result.data;
+                console.log('Vehicle data for edit modal:', vehicleData);
+                
+                // Populate form with vehicle data
+                this.populateEditVehicleForm(vehicleData);
+                
+                // Update modal title
+                const modalTitle = document.getElementById('vehicle-modal-title');
+                if (modalTitle) {
+                    modalTitle.textContent = 'Chỉnh sửa thông tin xe';
+                }
+                
+                // Update vehicle ID in form
+                const vehicleEditId = document.getElementById('vehicle-edit-id');
+                if (vehicleEditId) {
+                    vehicleEditId.value = vehicleId;
+                }
+                
+                // Show modal
+                const modal = document.getElementById('vehicle-modal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                }
+            } else {
+                console.error('Failed to get vehicle data for edit:', result.message);
+                this.showNotification('Không thể lấy thông tin xe để chỉnh sửa: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error fetching vehicle data for edit:', error);
+            this.showNotification('Lỗi khi lấy thông tin xe để chỉnh sửa: ' + error.message, 'error');
+        }
+    }
+
+    /**
+     * Populate edit vehicle form with data
+     */
+    populateEditVehicleForm(vehicleData) {
+        console.log('=== populateEditVehicleForm called with:', vehicleData, '===');
+        
+        // Populate form fields
+        const fields = {
+            'vehicle-name': vehicleData.name,
+            'vehicle-color': vehicleData.color,
+            'vehicle-seats': vehicleData.seats,
+            'vehicle-power': vehicleData.power,
+            'vehicle-wheel-size': vehicleData.wheel_size,
+            'vehicle-notes': vehicleData.notes || ''
+        };
+        
+        Object.keys(fields).forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                const value = fields[fieldId];
+                
+                // Set value for input
+                if (field.type === 'select-one') {
+                    field.value = value;
+                } else {
+                    field.value = value;
+                    field.setAttribute('value', value);
+                    field.defaultValue = value;
+                }
+                
+                // Dispatch events to trigger validation
+                field.dispatchEvent(new Event('input', { bubbles: true }));
+                field.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+        
+        // Update color preview
+        const colorPreview = document.getElementById('color-preview');
+        if (colorPreview && vehicleData.color) {
+            colorPreview.style.backgroundColor = vehicleData.color;
+        }
+        
+        // Verify form has been populated
+        requestAnimationFrame(() => {
+            const nameField = document.getElementById('vehicle-name');
+            if (nameField && nameField.value === vehicleData.name) {
+                console.log('=== Form populated successfully ===');
+            } else {
+                console.warn('Form population verification failed');
+            }
+        });
+    }
+
+    /**
+     * Delete vehicle
+     */
+    async deleteVehicle(vehicleId) {
+        if (confirm('Bạn có chắc chắn muốn xóa xe này?')) {
+            try {
+                // Call API to delete vehicle
+                const response = await fetch(`/vehicles/${vehicleId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    // Reload page after successful deletion
+                    window.location.reload();
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error deleting vehicle:', error);
+                this.showNotification('Không thể xóa xe. Vui lòng thử lại.', 'error');
+            }
         }
     }
 }

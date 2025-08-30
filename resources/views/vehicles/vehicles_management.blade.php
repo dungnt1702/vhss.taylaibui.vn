@@ -1,663 +1,128 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-neutral-800 leading-tight">
-                {{ $pageTitle }}
-            </h2>
-            <div class="flex items-center space-x-4">
-                <!-- Rows per page selector and add vehicle button -->
-                <div class="flex items-center space-x-3">
-                    <div class="flex items-center space-x-2">
-                        <label for="per-page" class="text-sm text-neutral-600">Hiển thị:</label>
-                        <select id="per-page" class="px-3 py-1 border border-neutral-300 rounded-md bg-white text-neutral-900 text-sm" style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none;">
-                            <option value="5" {{ request('per_page', 10) == 5 ? 'selected' : '' }}>5</option>
-                            <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
-                            <option value="20" {{ request('per_page', 10) == 20 ? 'selected' : '' }}>20</option>
-                            <option value="30" {{ request('per_page', 10) == 30 ? 'selected' : '' }}>30</option>
-                        </select>
-                        <span class="text-sm text-neutral-600">/{{ $vehicles->total() }} xe</span>
-                    </div>
-                    
-                    @if(auth()->user()->canManageVehicles() && !in_array($filter, ['ready', 'running', 'waiting', 'expired', 'paused', 'workshop', 'repairing', 'maintaining']))
-                    <button onclick="openEditVehicleModal()" class="btn btn-success btn-sm" title="Thêm xe mới">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                    </button>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </x-slot>
-    
+@extends('layouts.app')
 
+@section('title', 'Quản lý xe')
 
-    <!-- Page Content -->
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Filter Tabs -->
-            @if($filter === 'waiting')
-                <!-- Waiting Vehicles Display -->
-                @include('vehicles.waiting_vehicles')
-            @elseif($filter === 'running')
-                <!-- Running Vehicles Display -->
-                @include('vehicles.running_vehicles')
-            @elseif($filter === 'expired')
-                <!-- Expired Vehicles Display -->
-                @include('vehicles.expired_vehicles')
-            @elseif($filter === 'paused')
-                <!-- Paused Vehicles Display -->
-                @include('vehicles.paused_vehicles')
-            @elseif($filter === 'ready')
-                <!-- Ready Vehicles Display - Xe sẵn sàng chạy -->
-                @include('vehicles.ready_vehicles')
-            @elseif($filter === 'workshop')
-                <!-- Workshop Vehicles Display - Xe trong xưởng -->
-                @include('vehicles.workshop_vehicles')
-            @elseif($filter === 'repairing')
-                <!-- Repairing Vehicles Display - Xe đang sửa chữa -->
-                @include('vehicles.repairing_vehicles')
-            @elseif($filter === 'maintaining')
-                <!-- Maintaining Vehicles Display - Xe đang bảo trì -->
-                @include('vehicles.maintaining_vehicles')
-            @elseif($filter === 'vehicles_list')
-                <!-- Vehicles List Display -->
-                @include('vehicles.vehicles_list')
-            @elseif($filter === 'attributes')
-                <!-- Vehicle Attributes Display -->
-                @include('vehicles.attributes_list')
-            @else
-                <!-- Default to ready vehicles -->
-                @include('vehicles.ready_vehicles')
-            @endif
+@section('content')
+<div class="container mx-auto px-4 py-6">
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-neutral-900">Quản lý xe</h1>
+        <p class="text-neutral-600 mt-2">Quản lý tất cả xe trong hệ thống</p>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="mb-6">
+        <div class="border-b border-neutral-200">
+            <nav class="-mb-px flex space-x-8">
+                <a href="{{ route('vehicles.index', ['filter' => 'ready']) }}" 
+                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'ready' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
+                    Xe sẵn sàng chạy
+                </a>
+                <a href="{{ route('vehicles.index', ['filter' => 'waiting']) }}" 
+                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'waiting' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
+                    Xe đang chờ
+                </a>
+                <a href="{{ route('vehicles.index', ['filter' => 'running']) }}" 
+                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'running' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
+                    Xe đang chạy
+                </a>
+                <a href="{{ route('vehicles.index', ['filter' => 'paused']) }}" 
+                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'paused' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
+                    Xe tạm dừng
+                </a>
+                <a href="{{ route('vehicles.index', ['filter' => 'expired']) }}" 
+                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'expired' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
+                    Xe hết giờ
+                </a>
+                <a href="{{ route('vehicles.index', ['filter' => 'workshop']) }}" 
+                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'workshop' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
+                    Xe trong xưởng
+                </a>
+                <a href="{{ route('vehicles.index', ['filter' => 'repairing']) }}" 
+                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'repairing' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
+                    Xe đang sửa chữa
+                </a>
+                <a href="{{ route('vehicles.index', ['filter' => 'maintaining']) }}" 
+                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'maintaining' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
+                    Xe đang bảo trì
+                </a>
+                <a href="{{ route('vehicles.index', ['filter' => 'attributes']) }}" 
+                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'attributes' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
+                    Thuộc tính xe
+                </a>
+                <a href="{{ route('vehicles.index', ['filter' => 'vehicles_list']) }}" 
+                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'vehicles_list' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
+                    Danh sách xe
+                </a>
+            </nav>
         </div>
     </div>
 
-    <!-- Vehicle Modal -->
-    <div id="vehicle-modal" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-        <div class="relative min-h-screen flex items-center justify-center p-2 sm:p-4">
-            <div class="bg-white rounded-lg shadow-xl w-full max-w-sm sm:max-w-md md:max-w-6xl lg:max-w-7xl xl:max-w-8xl max-h-[90vh] flex flex-col">
-                <!-- Header -->
-                <div class="p-8 pb-6 border-b border-neutral-200 flex-shrink-0">
-                    <div class="flex justify-between items-center">
-                        <h3 id="vehicle-modal-title" class="text-lg font-semibold text-neutral-900">
-                            Thêm xe mới
-                        </h3>
-                        <button onclick="closeVehicleModal()" class="text-neutral-400 hover:text-neutral-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Form Content with Scroll -->
-                <div class="flex-1 overflow-y-auto p-8 modal-scroll">
-                    <form id="vehicle-form">
-                        @csrf
-                        <input type="hidden" id="vehicle-edit-id" name="vehicle_id">
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div>
-                                <label for="vehicle-name" class="block text-sm font-medium text-neutral-700 mb-3">
-                                    Xe số <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="vehicle-name" name="name" required
-                                       class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                                       placeholder="Nhập số xe">
-                            </div>
-                            
-                            <div>
-                                <label for="vehicle-color" class="block text-sm font-medium text-neutral-700 mb-3">
-                                    Màu sắc <span class="text-red-500">*</span>
-                                </label>
-                                <div class="flex items-center space-x-3">
-                                    <button type="button" onclick="openColorPicker()" class="px-4 py-2 border border-neutral-300 rounded-md bg-white text-neutral-700 hover:bg-neutral-50 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
-                                        Chọn màu
-                                    </button>
-                                    <div id="selected-color-display" class="flex items-center space-x-2">
-                                        <div id="color-preview" class="w-8 h-8 rounded border-2 border-neutral-300 shadow-sm" style="background-color: #808080;"></div>
-                                    </div>
-                                </div>
-                                <input type="hidden" id="vehicle-color" name="color" value="#808080" required>
-                            </div>
-                            
-                            <!-- Dòng 2: Số chỗ ngồi, Công suất, Kích cỡ bánh -->
-                            <div class="md:col-span-2">
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div>
-                                        <label for="vehicle-seats" class="block text-sm font-medium text-neutral-700 mb-3">
-                                            Số chỗ ngồi <span class="text-red-500">*</span>
-                                        </label>
-                                        <select id="vehicle-seats" name="seats" required
-                                                class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
-                                            <option value="">Chọn số chỗ</option>
-                                            @if($seats && count($seats) > 0)
-                                                @foreach($seats as $seat)
-                                                    <option value="{{ $seat }}">{{ $seat }}</option>
-                                                @endforeach
-                                            @else
-                                                <option value="1">1</option>
-                                                <option value="2">2</option>
-                                            @endif
-                                        </select>
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="vehicle-power" class="block text-sm font-medium text-neutral-700 mb-3">
-                                            Công suất <span class="text-red-500">*</span>
-                                        </label>
-                                        <select id="vehicle-power" name="power" required
-                                                class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
-                                            <option value="">Chọn công suất</option>
-                                            @if($powerOptions && count($powerOptions) > 0)
-                                                @foreach($powerOptions as $power)
-                                                    <option value="{{ $power }}">{{ $power }}</option>
-                                                @endforeach
-                                            @else
-                                                <option value="48V-1000W">48V-1000W</option>
-                                                <option value="60V-1200W">60V-1200W</option>
-                                            @endif
-                                        </select>
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="vehicle-wheel-size" class="block text-sm font-medium text-neutral-700 mb-3">
-                                            Kích cỡ bánh <span class="text-red-500">*</span>
-                                        </label>
-                                        <select id="vehicle-wheel-size" name="wheel_size" required
-                                                class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
-                                            <option value="">Chọn kích cỡ bánh</option>
-                                            @if($wheelSizes && count($wheelSizes) > 0)
-                                                @foreach($wheelSizes as $wheelSize)
-                                                    <option value="{{ $wheelSize }}">{{ $wheelSize }}</option>
-                                                @endforeach
-                                            @else
-                                                <option value="7inch">7inch</option>
-                                                <option value="8inch">8inch</option>
-                                            @endif
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="md:col-span-2">
-                                <label for="vehicle-notes" class="block text-sm font-medium text-neutral-700 mb-3">
-                                    Ghi chú
-                                </label>
-                                <textarea id="vehicle-notes" name="notes" rows="3"
-                                          class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                                          placeholder="Nhập ghi chú về xe..."></textarea>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                
-                <!-- Footer - Fixed at bottom -->
-                <div class="p-8 pt-6 border-t border-neutral-200 flex-shrink-0">
-                    <div class="flex space-x-3">
-                        <button type="submit" form="vehicle-form" id="vehicle-submit-btn" class="btn btn-primary flex-1">
-                            Thêm xe
-                        </button>
-                        <button type="button" onclick="closeVehicleModal()" class="btn btn-secondary flex-1">
-                            Hủy
-                        </button>
-                    </div>
-                </div>
-            </div>
+    <!-- Content based on filter -->
+    @if($filter === 'ready')
+        @include('vehicles.ready_vehicles')
+    @elseif($filter === 'waiting')
+        @include('vehicles.waiting_vehicles')
+    @elseif($filter === 'running')
+        @include('vehicles.running_vehicles')
+    @elseif($filter === 'paused')
+        @include('vehicles.paused_vehicles')
+    @elseif($filter === 'expired')
+        @include('vehicles.expired_vehicles')
+    @elseif($filter === 'workshop')
+        @include('vehicles.workshop_vehicles')
+    @elseif($filter === 'repairing')
+        @include('vehicles.repairing_vehicles')
+    @elseif($filter === 'maintaining')
+        @include('vehicles.maintaining_vehicles')
+    @elseif($filter === 'attributes')
+        @include('vehicles.attributes_list')
+    @elseif($filter === 'vehicles_list')
+        @include('vehicles.vehicles_list')
+    @else
+        <!-- Default view -->
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-neutral-900">Chọn bộ lọc</h3>
+            <p class="mt-1 text-sm text-neutral-500">
+                Vui lòng chọn một bộ lọc để xem danh sách xe.
+            </p>
         </div>
-    </div>
-
-    <!-- Status Update Modal -->
-    <div id="status-modal" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-        <div class="relative min-h-screen flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold text-neutral-900 mb-4">
-                        Cập nhật trạng thái xe
-                    </h3>
-                    
-                    <form id="status-form">
-                        @csrf
-                        <input type="hidden" id="vehicle-id" name="vehicle_id">
-                        
-                        <div class="mb-4">
-                            <label for="status-select" class="block text-sm font-medium text-neutral-700 mb-2">
-                                Trạng thái mới
-                            </label>
-                            <select id="status-select" name="status" class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
-                                <option value="active">Xe ngoài bãi</option>
-                                <option value="inactive">Xe trong xưởng</option>
-                                <option value="running">Xe đang chạy</option>
-                                <option value="waiting">Xe đang chờ</option>
-                                <option value="expired">Xe hết giờ</option>
-                                <option value="paused">Xe tạm dừng</option>
-                                
-                                <option value="group">Xe ngoài bãi</option>
-                            </select>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label for="status-notes" class="block text-sm font-medium text-neutral-700 mb-2">
-                                Ghi chú
-                            </label>
-                            <textarea id="status-notes" name="notes" rows="3" class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500" placeholder="Nhập ghi chú về trạng thái xe..."></textarea>
-                        </div>
-                        
-                        <div class="flex space-x-3">
-                                                    <button type="submit" class="btn btn-primary flex-1">
-                            Cập nhật
-                        </button>
-                        <button type="button" onclick="closeStatusModal()" class="btn btn-secondary flex-1">
-                            Hủy
-                        </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Workshop Modal -->
-    <div id="workshop-modal" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-        <div class="relative min-h-screen flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold text-neutral-900 mb-4">
-                        Chuyển xe về xưởng
-                    </h3>
-                    
-                    <form id="workshop-form">
-                        @csrf
-                        <input type="hidden" id="workshop-vehicle-id" name="vehicle_id">
-                        
-                        <div class="mb-4">
-                            <label for="workshop-reason" class="block text-sm font-medium text-neutral-700 mb-2">
-                                Lý do chuyển xe về xưởng
-                            </label>
-                            <textarea id="workshop-reason" name="reason" rows="4" class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500" placeholder="Nhập lý do chuyển xe về xưởng kiểm tra..." required></textarea>
-                        </div>
-                        
-                        <div class="flex space-x-3">
-                                                    <button type="submit" class="btn btn-danger flex-1">
-                            Chuyển về xưởng
-                        </button>
-                        <button type="button" onclick="closeWorkshopModal()" class="btn btn-secondary flex-1">
-                            Hủy
-                        </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Color Picker Modal -->
-    <div id="color-picker-modal" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-        <div class="relative min-h-screen flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold text-neutral-900">
-                            Chọn màu xe
-                        </h3>
-                        <button onclick="closeColorPicker()" class="text-neutral-400 hover:text-neutral-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    
-                    <div class="max-h-96 overflow-y-auto">
-                        <div class="grid grid-cols-6 gap-3 mb-4">
-                            @php
-                                $colorOptions = [
-                                    '#FF0000' => 'Đỏ',
-                                    '#FF4500' => 'Cam đỏ',
-                                    '#FF8C00' => 'Cam',
-                                    '#FFD700' => 'Vàng',
-                                    '#32CD32' => 'Xanh lá',
-                                    '#00CED1' => 'Xanh dương',
-                                    '#4169E1' => 'Xanh hoàng gia',
-                                    '#8A2BE2' => 'Xanh tím',
-                                    '#FF69B4' => 'Hồng',
-                                    '#FF1493' => 'Hồng đậm',
-                                    '#FF6347' => 'Cà chua',
-                                    '#20B2AA' => 'Xanh biển nhạt',
-                                    '#228B22' => 'Xanh rừng',
-                                    '#DC143C' => 'Đỏ đậm',
-                                    '#000000' => 'Đen',
-                                    '#FFFFFF' => 'Trắng',
-                                    '#808080' => 'Xám',
-                                    '#C0C0C0' => 'Bạc',
-                                    '#D2691E' => 'Nâu',
-                                    '#4B0082' => 'Tím',
-                                    '#FF00FF' => 'Magenta',
-                                    '#FF6B6B' => 'Hồng san hô',
-                                    '#4ECDC4' => 'Xanh ngọc',
-                                    '#45B7D1' => 'Xanh dương nhạt',
-                                    '#96CEB4' => 'Xanh mint',
-                                    '#FFEAA7' => 'Vàng kem',
-                                    '#DDA0DD' => 'Tím nhạt',
-                                    '#98D8C8' => 'Xanh lá nhạt',
-                                    '#F7DC6F' => 'Vàng đậm',
-                                    '#BB8FCE' => 'Tím lavender',
-                                    '#85C1E9' => 'Xanh dương bầu trời',
-                                    '#F8C471' => 'Cam nhạt',
-                                    '#82E0AA' => 'Xanh lá tươi',
-                                    '#F1948A' => 'Hồng đào',
-                                    '#85C1E9' => 'Xanh dương nhạt',
-                                    '#D7BDE2' => 'Tím nhạt',
-                                    '#FAD7A0' => 'Cam kem',
-                                    '#A9DFBF' => 'Xanh lá nhạt',
-                                    '#F9E79F' => 'Vàng nhạt',
-                                    '#D5A6BD' => 'Hồng nhạt',
-                                    '#A3E4D7' => 'Xanh ngọc nhạt',
-                                    '#F8C471' => 'Cam kem',
-                                    '#D2B4DE' => 'Tím lavender nhạt'
-                                ];
-                            @endphp
-                            @foreach($colorOptions as $hex => $name)
-                                <div class="color-option cursor-pointer text-center" data-color="{{ $hex }}" data-name="{{ $name }}" onclick="selectColor('{{ $hex }}', '{{ $name }}')" title="{{ $name }}">
-                                    <div class="w-10 h-10 rounded-lg border-2 border-neutral-300 hover:border-brand-500 transition-all hover:scale-110 mx-auto mb-1" style="background-color: {{ $hex }};"></div>
-                                    <div class="text-xs text-neutral-600">{{ $name }}</div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                    
-                    <div class="flex justify-end space-x-3">
-                        <button onclick="closeColorPicker()" class="px-4 py-2 border border-neutral-300 rounded-md bg-white text-neutral-700 hover:bg-neutral-50">
-                            Hủy
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    
-    @push('scripts')
-    <!-- All JavaScript functionality moved to separate modules:
-         - vehicles.js: Main vehicle management logic
-         - vehicle-forms.js: Form handling and modals
-         - vehicle-operations.js: Vehicle control operations
-         - vehicle-wrappers.js: Wrapper functions for HTML onclick events
-    -->
-    
-    <!-- Vehicle modal and color picker functionality -->
-    <style>
-        /* Color picker modal styles */
-        #color-picker-modal .max-h-96 {
-            max-height: 24rem;
-        }
-        
-        .color-option {
-            transition: all 0.2s ease-in-out;
-        }
-        
-        .color-option:hover {
-            transform: scale(1.05);
-        }
-        
-        .color-option:active {
-            transform: scale(0.95);
-        }
-        
-        /* Custom scrollbar for color grid */
-        #color-picker-modal .overflow-y-auto::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        #color-picker-modal .overflow-y-auto::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
-        }
-        
-        #color-picker-modal .overflow-y-auto::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 4px;
-        }
-        
-        #color-picker-modal .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-    </style>
-    
-    <script>
-        // Vehicle modal functions
-        function openEditVehicleModal(vehicleId = null) {
-    console.log('=== openEditVehicleModal called with vehicleId:', vehicleId, '===');
-            
-            const modal = document.getElementById('vehicle-modal');
-            const modalTitle = document.getElementById('vehicle-modal-title');
-            const form = document.getElementById('vehicle-form');
-            const editIdInput = document.getElementById('vehicle-edit-id');
-            
-            console.log('Modal elements found:', { modal, modalTitle, form, editIdInput });
-            
-            if (vehicleId) {
-                // Edit mode
-                modalTitle.textContent = 'Sửa thông tin xe';
-                editIdInput.value = vehicleId;
-                
-                console.log('Edit mode - loading data for vehicle:', vehicleId);
-                
-                // Debug: Check all data attributes in the table
-                const allRows = document.querySelectorAll('tr[data-vehicle-id]');
-                console.log('All table rows with data-vehicle-id:', allRows);
-                
-                allRows.forEach((row, index) => {
-                    const rowId = row.dataset.vehicleId;
-                    const name = row.querySelector('[data-vehicle-name]')?.dataset.vehicleName;
-                    const color = row.querySelector('[data-vehicle-color]')?.dataset.vehicleColor;
-                    console.log(`Row ${index}: ID=${rowId}, Name=${name}, Color=${color}`);
-                });
-                
-                // Load vehicle data
-                loadVehicleData(vehicleId);
-            } else {
-                // Add mode
-                modalTitle.textContent = 'Thêm xe mới';
-                editIdInput.value = '';
-                form.reset();
-                
-                // Reset color picker
-                const vehicleColor = document.getElementById('vehicle-color');
-                const colorPreview = document.getElementById('color-preview');
-                const colorName = document.getElementById('color-name');
-                
-                if (vehicleColor) vehicleColor.value = '#808080';
-                if (colorPreview) colorPreview.style.backgroundColor = '#808080';
-                if (colorName) colorName.textContent = 'Chưa chọn màu';
-                
-                console.log('Add mode - form reset');
-            }
-            
-            modal.classList.remove('hidden');
-            console.log('Modal opened');
-        }
-        
-        function closeVehicleModal() {
-            const vehicleModal = document.getElementById('vehicle-modal');
-            if (vehicleModal) {
-                vehicleModal.classList.add('hidden');
-            }
-        }
-        
-        function loadVehicleData(vehicleId) {
-            console.log('=== loadVehicleData called with vehicleId:', vehicleId, '===');
-            
-            // Call API to get vehicle data from database
-            fetch(`/api/vehicles/${vehicleId}/data`)
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        const vehicleData = result.data;
-                        console.log('Vehicle data from API:', vehicleData);
-                        
-                        // Populate form fields with data from API
-                        populateVehicleForm(vehicleData);
-                    } else {
-                        console.error('Failed to get vehicle data:', result.message);
-                        alert('Không thể lấy thông tin xe: ' + result.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching vehicle data:', error);
-                    alert('Lỗi khi lấy thông tin xe: ' + error.message);
-                });
-        }
-        
-        function populateVehicleForm(vehicleData) {
-            console.log('=== populateVehicleForm called with:', vehicleData, '===');
-                
-                // Populate form fields
-                const nameField = document.getElementById('vehicle-name');
-                const colorField = document.getElementById('vehicle-color');
-                const seatsField = document.getElementById('vehicle-seats');
-                const powerField = document.getElementById('vehicle-power');
-                const wheelSizeField = document.getElementById('vehicle-wheel-size');
-                const colorPreview = document.getElementById('color-preview');
-                
-                console.log('Form fields found:', {
-                    nameField,
-                    colorField,
-                    seatsField,
-                    powerField,
-                    wheelSizeField,
-                    colorPreview
-                });
-                
-                if (nameField) {
-                    nameField.value = vehicleData.name || '';
-                    console.log('Set name field to:', vehicleData.name);
-                }
-                if (colorField) {
-                    colorField.value = vehicleData.color || '#808080';
-                    console.log('Set color field to:', vehicleData.color);
-                }
-                if (seatsField) {
-                    seatsField.value = vehicleData.seats || '';
-                    console.log('Set seats field to:', vehicleData.seats);
-                }
-                if (powerField) {
-                    powerField.value = vehicleData.power || '';
-                    console.log('Set power field to:', vehicleData.power);
-                }
-                if (wheelSizeField) {
-                    wheelSizeField.value = vehicleData.wheel_size || '';
-                    console.log('Set wheel size field to:', vehicleData.wheel_size);
-                }
-                
-                // Update color preview
-                if (colorPreview) {
-                    colorPreview.style.backgroundColor = vehicleData.color || '#808080';
-                    console.log('Updated color preview to:', vehicleData.color);
-                }
-                
-                // Color preview updated successfully
-                
-                console.log('=== Form populated successfully ===');
-        }
-        
-        // Color picker functions
-        function openColorPicker() {
-            const colorPickerModal = document.getElementById('color-picker-modal');
-            if (colorPickerModal) {
-                colorPickerModal.classList.remove('hidden');
-            }
-        }
-        
-        function closeColorPicker() {
-            const colorPickerModal = document.getElementById('color-picker-modal');
-            if (colorPickerModal) {
-                colorPickerModal.classList.add('hidden');
-            }
-        }
-        
-        function selectColor(hex, name) {
-            // Update hidden input
-            const vehicleColor = document.getElementById('vehicle-color');
-            if (vehicleColor) vehicleColor.value = hex;
-            
-            // Update color preview
-            const colorPreview = document.getElementById('color-preview');
-            if (colorPreview) colorPreview.style.backgroundColor = hex;
-            
-            // Close modal
-            closeColorPicker();
-        }
-        
-        // Close modals with Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeColorPicker();
-                closeVehicleModal();
-            }
-        });
-        
-        // Close modals when clicking outside
-        const colorPickerModal = document.getElementById('color-picker-modal');
-        if (colorPickerModal) {
-            colorPickerModal.addEventListener('click', function(event) {
-                if (event.target === this) {
-                    closeColorPicker();
-                }
-            });
-        }
-        
-        const vehicleModal = document.getElementById('vehicle-modal');
-        if (vehicleModal) {
-            vehicleModal.addEventListener('click', function(event) {
-                if (event.target === this) {
-                    closeVehicleModal();
-                }
-            });
-        }
-    </script>
-    
-    <!-- Auto-expand all vehicle cards when filter is 'running' -->
-    @if($filter === 'running')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Use the global function to auto-expand all running vehicles
-            if (typeof window.autoExpandRunningVehicles === 'function') {
-                const expandedCount = window.autoExpandRunningVehicles();
-                console.log(`Auto-expanded ${expandedCount} vehicle cards for running filter`);
-            } else {
-                // Fallback if function is not available
-                console.warn('autoExpandRunningVehicles function not available, using fallback');
-                const allVehicleCards = document.querySelectorAll('.vehicle-card');
-                
-                allVehicleCards.forEach(function(card) {
-                    const vehicleId = card.dataset.vehicleId;
-                    const content = document.getElementById(`content-${vehicleId}`);
-                    const icon = document.getElementById(`icon-${vehicleId}`);
-                    
-                    if (content && icon) {
-                        content.classList.remove('hidden');
-                        icon.style.transform = 'rotate(180deg)';
-                    }
-                });
-            }
-        });
-    </script>
     @endif
-    @endpush
-    
-    <!-- Additional styles and scripts for specific filters -->
-    @if($filter === 'vehicles_list')
-        @push('styles')
-            @vite(['resources/css/vehicles/vehicles-list.css'])
-        @endpush
-        
-        @push('scripts')
-            @vite(['resources/js/vehicles/vehicles-list.js'])
-        @endpush
+</div>
+
+@include('vehicles.partials.vehicle_modals')
+
+@endsection
+
+@push('scripts')
+    <!-- Load VehicleClasses.js for all vehicle functionality -->
+    @vite(['resources/js/vehicles/VehicleClasses.js'])
+@endpush
+
+@push('styles')
+    <!-- Load appropriate CSS based on filter -->
+    @if($filter === 'ready')
+        @vite(['resources/css/vehicles/ready-vehicles.css'])
+    @elseif($filter === 'waiting')
+        @vite(['resources/css/vehicles/waiting-vehicles.css'])
+    @elseif($filter === 'running')
+        @vite(['resources/css/vehicles/running-vehicles.css'])
+    @elseif($filter === 'paused')
+        @vite(['resources/css/vehicles/paused-vehicles.css'])
+    @elseif($filter === 'expired')
+        @vite(['resources/css/vehicles/expired-vehicles.css'])
+    @elseif($filter === 'workshop')
+        @vite(['resources/css/vehicles/workshop-vehicles.css'])
+    @elseif($filter === 'repairing')
+        @vite(['resources/css/vehicles/repairing-vehicles.css'])
+    @elseif($filter === 'maintaining')
+        @vite(['resources/css/vehicles/maintaining-vehicles.css'])
+    @elseif($filter === 'attributes')
+        @vite(['resources/css/vehicles/attributes-list.css'])
+    @elseif($filter === 'vehicles_list')
+        @vite(['resources/css/vehicles/vehicles-list.css'])
     @endif
-</x-app-layout>
+@endpush
