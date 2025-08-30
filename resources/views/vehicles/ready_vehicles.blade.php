@@ -3,7 +3,7 @@
 @section('title', 'Xe sẵn sàng')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
+<div class="container mx-auto px-4 py-6" id="vehicle-page" data-page-type="ready">
 
     <!-- Header for Ready Vehicles -->
     <div class="mb-6">
@@ -172,8 +172,8 @@
 @endsection
 
 @push('scripts')
-    <!-- Load only ReadyVehicles.js for this page -->
-    @vite(['resources/js/vehicles/ReadyVehicles.js'])
+    <!-- Load VehicleClasses.js for smart vehicle functionality -->
+    @vite(['resources/js/vehicles/VehicleClasses.js'])
 @endpush
 
 @push('styles')
