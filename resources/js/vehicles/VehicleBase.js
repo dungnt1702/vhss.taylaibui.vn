@@ -426,9 +426,13 @@ export class VehicleBase {
     }
 
     /**
-     * Show notification to user with Vietnamese messages
+     * Show notification to user with Vietnamese messages and text-to-speech
      */
     showNotification(message, type = 'info') {
+        // 1. SPEAK THE MESSAGE (Text-to-Speech)
+        this.speakMessage(message);
+        
+        // 2. SHOW VISUAL NOTIFICATION
         // Create notification element
         const notification = document.createElement('div');
         notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
@@ -493,6 +497,45 @@ export class VehicleBase {
                 }, 300);
             }
         }, 5000);
+    }
+
+    /**
+     * Speak message using text-to-speech (Đọc thông báo)
+     */
+    speakMessage(message) {
+        // Check if speech synthesis is available
+        if ('speechSynthesis' in window) {
+            // Stop any current speech
+            window.speechSynthesis.cancel();
+            
+            // Create speech utterance
+            const utterance = new SpeechSynthesisUtterance(message);
+            
+            // Set Vietnamese language and voice
+            utterance.lang = 'vi-VN';
+            utterance.rate = 0.9; // Slightly slower for clarity
+            utterance.pitch = 1.0;
+            utterance.volume = 0.8;
+            
+            // Try to find Vietnamese voice
+            const voices = window.speechSynthesis.getVoices();
+            const vietnameseVoice = voices.find(voice => 
+                voice.lang.includes('vi') || 
+                voice.lang.includes('VN') ||
+                voice.name.toLowerCase().includes('vietnamese')
+            );
+            
+            if (vietnameseVoice) {
+                utterance.voice = vietnameseVoice;
+            }
+            
+            // Speak the message
+            window.speechSynthesis.speak(utterance);
+            
+            console.log('🔊 Đang đọc thông báo:', message);
+        } else {
+            console.log('❌ Text-to-speech không được hỗ trợ trên trình duyệt này');
+        }
     }
 
     /**
