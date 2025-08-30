@@ -96,8 +96,24 @@ class RunningVehicles extends VehicleBase {
      */
     async addTime(vehicleId, duration, button) {
         try {
-            this.showButtonLoading(button, `Đang thêm ${duration} phút...`);
+            // Prevent duplicate requests
+            if (button.disabled || button.dataset.processing === 'true') {
+                console.log('Button already processing, skipping duplicate request');
+                return;
+            }
             
+            // Mark button as processing
+            button.dataset.processing = 'true';
+            button.dataset.originalText = button.innerHTML;
+            button.innerHTML = `Đang thêm ${duration} phút...`;
+            button.disabled = true;
+            
+            console.log('Button state set:', {
+                disabled: button.disabled,
+                processing: button.dataset.processing,
+                text: button.innerHTML
+            });
+
             const response = await this.makeApiCall('/api/vehicles/add-time', {
                 method: 'POST',
                 body: JSON.stringify({
@@ -107,32 +123,77 @@ class RunningVehicles extends VehicleBase {
             });
 
             if (response.success) {
-                this.showNotification(`Đã thêm ${duration} phút thành công!`, 'success');
+                this.showNotificationModal('Thành công', `Đã thêm ${duration} phút thành công!`, 'success');
                 
-                // Refresh countdown timer với thời gian mới
+                // Xử lý xe running: cập nhật timer và tiếp tục đếm ngược
                 const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
                 if (vehicleCard) {
-                    // Clear interval cũ
-                    this.clearCountdownInterval(vehicleId);
-                    
-                    // Cập nhật end time từ response nếu có
-                    if (response.new_end_time) {
-                        vehicleCard.dataset.endTime = response.new_end_time;
-                    }
-                    
-                    // Restart countdown timer
-                    this.startCountdownTimer(vehicleCard);
+                    console.log('Processing running vehicle response');
+                    this.handleRunningVehicleAddTime(vehicleCard, response);
                 }
                 
             } else {
-                this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+                this.showNotificationModal('Lỗi', response.message || 'Có lỗi xảy ra', 'error');
             }
         } catch (error) {
-            console.error('Error adding time:', error);
-            this.showNotification('Có lỗi xảy ra khi thêm thời gian', 'error');
+            console.error('Error adding time to running vehicle:', error);
+            this.showNotificationModal('Lỗi', 'Có lỗi xảy ra khi thêm thời gian', 'error');
         } finally {
-            this.restoreButtonState(button);
+            // Restore button state
+            if (button.dataset.originalText) {
+                button.innerHTML = button.dataset.originalText;
+                delete button.dataset.originalText;
+            }
+            button.disabled = false;
+            delete button.dataset.processing;
+            
+            console.log('Button state restored:', {
+                disabled: button.disabled,
+                processing: button.dataset.processing,
+                text: button.innerHTML
+            });
         }
+    }
+
+    /**
+     * Handle add time response for running vehicles
+     */
+    handleRunningVehicleAddTime(vehicleCard, response) {
+        console.log('=== RUNNING VEHICLE ADD TIME ===');
+        console.log('Vehicle ID:', vehicleCard.dataset.vehicleId);
+        console.log('Old end time (dataset):', vehicleCard.dataset.endTime);
+        console.log('Response new_end_time:', response.new_end_time);
+        console.log('Duration added (from response):', response.duration_added);
+        
+        // Clear interval cũ
+        this.clearCountdownInterval(vehicleCard.dataset.vehicleId);
+        
+        // Cập nhật end time từ response nếu có
+        if (response.new_end_time) {
+            const oldEndTime = vehicleCard.dataset.endTime;
+            vehicleCard.dataset.endTime = response.new_end_time;
+            
+            // Tính toán chính xác thời gian được thêm vào
+            const timeDiffMs = response.new_end_time - oldEndTime;
+            const timeDiffMinutes = timeDiffMs / (1000 * 60);
+            
+            console.log('=== TIME CALCULATION ===');
+            console.log('Old end time (ms):', oldEndTime);
+            console.log('New end time (ms):', response.new_end_time);
+            console.log('Time difference (ms):', timeDiffMs);
+            console.log('Time difference (minutes):', timeDiffMinutes);
+            console.log('Expected duration:', response.duration_added);
+            console.log('Is correct?', Math.abs(timeDiffMinutes - response.duration_added) < 0.1);
+            
+            // Convert to readable time for debugging
+            const oldDate = new Date(parseInt(oldEndTime));
+            const newDate = new Date(parseInt(response.new_end_time));
+            console.log('Old end time (readable):', oldDate.toLocaleString('vi-VN'));
+            console.log('New end time (readable):', newDate.toLocaleString('vi-VN'));
+        }
+        
+        // Restart countdown timer với thời gian mới NGAY LẬP TỨC
+        this.startCountdownTimer(vehicleCard);
     }
 }
 

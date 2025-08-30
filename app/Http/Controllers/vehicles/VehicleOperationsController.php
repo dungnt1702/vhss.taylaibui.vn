@@ -256,6 +256,13 @@ class VehicleOperationsController extends Controller
     public function addTime(Request $request)
     {
         try {
+            // Log request details
+            Log::info('Add time request received', [
+                'request_data' => $request->all(),
+                'timestamp' => now()->format('Y-m-d H:i:s'),
+                'user_agent' => $request->header('User-Agent')
+            ]);
+            
             $request->validate([
                 'vehicle_ids' => 'required|array',
                 'vehicle_ids.*' => 'exists:vehicles,id',
@@ -264,6 +271,11 @@ class VehicleOperationsController extends Controller
 
             $vehicleIds = $request->vehicle_ids;
             $duration = $request->duration;
+            
+            Log::info('Add time validation passed', [
+                'vehicle_ids' => $vehicleIds,
+                'duration' => $duration
+            ]);
 
             // Validate vehicle IDs exist
             $this->validateVehicleIds($vehicleIds);
@@ -271,21 +283,87 @@ class VehicleOperationsController extends Controller
             $vehicles = Vehicle::whereIn('id', $vehicleIds)->get();
             
             foreach ($vehicles as $vehicle) {
-                // Chỉ thêm thời gian cho xe đang chạy
+                // Log vehicle state before update
+                Log::info('Processing vehicle for add time', [
+                    'vehicle_id' => $vehicle->id,
+                    'current_status' => $vehicle->status,
+                    'current_end_time' => $vehicle->end_time ? $vehicle->end_time->format('Y-m-d H:i:s') : 'null',
+                    'request_duration' => $duration
+                ]);
+                
                 if ($vehicle->status === Vehicle::STATUS_RUNNING && $vehicle->end_time) {
-                    $newEndTime = $vehicle->end_time->addMinutes($duration);
+                    // Xe đang chạy: thêm thời gian vào end_time hiện tại
+                    $oldEndTime = $vehicle->end_time;
+                    $newEndTime = $oldEndTime->copy()->addMinutes($duration);
+                    
+                    Log::info('Adding time to running vehicle', [
+                        'vehicle_id' => $vehicle->id,
+                        'old_end_time' => $oldEndTime->format('Y-m-d H:i:s'),
+                        'duration_minutes' => $duration,
+                        'new_end_time' => $newEndTime->format('Y-m-d H:i:s'),
+                        'difference_minutes' => $oldEndTime->diffInMinutes($newEndTime)
+                    ]);
+                    
                     $vehicle->update([
                         'end_time' => $newEndTime,
                         'status_changed_at' => now()
                     ]);
+                    
+                    // Log after update
+                    Log::info('Vehicle updated successfully', [
+                        'vehicle_id' => $vehicle->id,
+                        'final_end_time' => $vehicle->fresh()->end_time->format('Y-m-d H:i:s')
+                    ]);
+                    
+                } elseif ($vehicle->status === Vehicle::STATUS_EXPIRED) {
+                    // Xe hết giờ: xử lý giống như xe khác - chỉ cập nhật thời gian
+                    $currentTime = now();
+                    $newEndTime = $currentTime->copy()->addMinutes($duration);
+                    
+                    Log::info('Adding time to expired vehicle', [
+                        'vehicle_id' => $vehicle->id,
+                        'current_time' => $currentTime->format('Y-m-d H:i:s'),
+                        'duration_minutes' => $duration,
+                        'new_end_time' => $newEndTime->format('Y-m-d H:i:s')
+                    ]);
+                    
+                    $vehicle->update([
+                        'end_time' => $newEndTime,
+                        'status' => Vehicle::STATUS_RUNNING, // Chuyển sang running
+                        'status_changed_at' => now(),
+                        'paused_at' => null, // Xóa dữ liệu paused nếu có
+                        'paused_remaining_seconds' => null // Xóa dữ liệu paused nếu có
+                    ]);
+                    
+                    // Log after update
+                    Log::info('Expired vehicle updated successfully', [
+                        'vehicle_id' => $vehicle->id,
+                        'final_end_time' => $vehicle->fresh()->end_time->format('Y-m-d H:i:s'),
+                        'final_status' => $vehicle->fresh()->status
+                    ]);
                 }
             }
 
+            // Tìm xe expired đã được chuyển sang running
+            $expiredVehicles = $vehicles->where('status', Vehicle::STATUS_EXPIRED);
+            $runningVehicles = $vehicles->where('status', Vehicle::STATUS_RUNNING);
+            
+            // Lấy end_time của xe expired (nếu có) để trả về
+            $expiredEndTime = null;
+            if ($expiredVehicles->isNotEmpty()) {
+                $expiredVehicle = $expiredVehicles->first();
+                $expiredEndTime = $expiredVehicle->end_time ? $expiredVehicle->end_time->timestamp * 1000 : null;
+            }
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Đã thêm ' . $duration . ' phút cho ' . count($vehicles) . ' xe',
                 'new_end_time' => $newEndTime ? $newEndTime->timestamp * 1000 : null,
-                'vehicles' => $vehicles
+                'expired_end_time' => $expiredEndTime, // Thêm end_time cho xe expired
+                'duration_added' => $duration,
+                'vehicles' => $vehicles,
+                'updated_vehicles' => $runningVehicles->count(),
+                'expired_vehicles' => $expiredVehicles->count()
             ]);
         } catch (\Exception $e) {
             Log::error('Lỗi khi thêm thời gian: ' . $e->getMessage());

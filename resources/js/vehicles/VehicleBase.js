@@ -77,6 +77,9 @@ export class VehicleBase {
             case 'toggle-vehicle':
                 button.addEventListener('click', (e) => this.handleToggleVehicle(e));
                 break;
+            case 'add-time':
+                button.addEventListener('click', (e) => this.handleAddTime(e));
+                break;
             case 'open-workshop-modal':
                 button.addEventListener('click', (e) => this.handleOpenWorkshopModal(e));
                 break;
@@ -135,7 +138,11 @@ export class VehicleBase {
         
         // Update every second
         const intervalId = setInterval(() => {
-            this.updateCountdown(timerElement, endTime);
+            // Always use the latest end time from dataset
+            const currentEndTime = card.dataset.endTime;
+            if (currentEndTime) {
+                this.updateCountdown(timerElement, currentEndTime);
+            }
         }, 1000);
 
         // Lưu interval ID để có thể clear sau này
@@ -210,6 +217,19 @@ export class VehicleBase {
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
+        // Debug: Log thời gian mỗi lần update (chỉ log mỗi 10 giây để tránh spam)
+        const debugInterval = 10000; // 10 giây
+        if (distance % debugInterval < 1000) {
+            console.log('Countdown update:', {
+                endTime: end,
+                now: now,
+                distance: distance,
+                minutes: minutes,
+                seconds: seconds,
+                totalMinutes: Math.floor(distance / (1000 * 60))
+            });
+        }
+
         // Cập nhật từng phần tử riêng biệt
         const minutesElement = timerElement.querySelector('.countdown-minutes');
         const secondsElement = timerElement.querySelector('.countdown-seconds');
@@ -221,8 +241,6 @@ export class VehicleBase {
         if (secondsElement) {
             secondsElement.textContent = seconds.toString().padStart(2, '0');
         }
-
-
     }
 
     /**
@@ -305,10 +323,119 @@ export class VehicleBase {
         const vehicleId = e.target.dataset.vehicleId;
         const duration = parseInt(e.target.dataset.duration);
         if (vehicleId && duration) {
-            console.log('Adding', duration, 'minutes to vehicle', vehicleId);
             this.addTime(vehicleId, duration, e.target);
         }
     }
+
+    /**
+     * Add time to vehicle timer - handles both running and expired vehicles
+     */
+        async addTime(vehicleId, duration, button) {
+        // Prevent duplicate requests - check both disabled state and data attribute
+        if (button.disabled || button.dataset.processing === 'true') {
+            console.log('Button already processing, skipping duplicate request');
+            return;
+        }
+        
+        try {
+            console.log(`=== ADD TIME REQUEST ===`);
+            console.log('Vehicle ID:', vehicleId);
+            console.log('Duration:', duration);
+            console.log('Button element:', button);
+            console.log('Button disabled state:', button.disabled);
+            console.log('Button processing state:', button.dataset.processing);
+            
+            // Mark button as processing BEFORE calling showButtonLoading
+            button.dataset.processing = 'true';
+            console.log('Button marked as processing:', button.dataset.processing);
+            
+            // Double-check button state
+            console.log('Button state after marking processing:', {
+                disabled: button.disabled,
+                processing: button.dataset.processing
+            });
+            
+            // Set button loading state manually to avoid conflicts
+            button.dataset.originalText = button.innerHTML;
+            button.innerHTML = `Đang thêm ${duration} phút...`;
+            button.disabled = true;
+            
+            console.log('Button loading state set manually:', {
+                disabled: button.disabled,
+                processing: button.dataset.processing,
+                text: button.innerHTML
+            });
+            
+            // Final check before API call
+            console.log('Final button state before API call:', {
+                disabled: button.disabled,
+                processing: button.dataset.processing,
+                text: button.innerHTML
+            });
+
+            const response = await this.makeApiCall('/api/vehicles/add-time', {
+                method: 'POST',
+                body: JSON.stringify({
+                    vehicle_ids: [vehicleId],
+                    duration: duration
+                })
+            });
+
+            if (response.success) {
+                this.showNotificationModal('Thành công', `Đã thêm ${duration} phút thành công!`, 'success');
+                
+                // Xử lý khác nhau cho từng loại xe
+                const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
+                if (vehicleCard) {
+                    const vehicleStatus = vehicleCard.dataset.status;
+                    console.log('=== ADD TIME RESPONSE ===');
+                    console.log('Vehicle status:', vehicleStatus);
+                    console.log('Request duration:', duration, 'minutes');
+                    console.log('Response:', response);
+                    console.log('Current end time in dataset:', vehicleCard.dataset.endTime);
+                    
+                    if (vehicleStatus === 'running') {
+                        // Xe running sẽ được xử lý bởi RunningVehicles.js
+                        console.log('Running vehicle - should be handled by RunningVehicles.js');
+                    } else if (vehicleStatus === 'expired') {
+                        // Xe expired sẽ được xử lý bởi ExpiredVehicles.js
+                        console.log('Expired vehicle - should be handled by ExpiredVehicles.js');
+                    } else if (vehicleStatus === 'waiting') {
+                        // Xe waiting sẽ được xử lý bởi WaitingVehicles.js
+                        console.log('Waiting vehicle - should be handled by WaitingVehicles.js');
+                    } else {
+                        console.log('Unknown vehicle status:', vehicleStatus);
+                    }
+                } else {
+                    console.log('Vehicle card not found for ID:', vehicleId);
+                }
+                
+            } else {
+                this.showNotificationModal('Lỗi', response.message || 'Có lỗi xảy ra', 'error');
+            }
+        } catch (error) {
+            console.error('Error adding time:', error);
+            this.showNotificationModal('Lỗi', 'Có lỗi xảy ra khi thêm thời gian', 'error');
+        } finally {
+            // Restore button state manually to avoid conflicts
+            if (button.dataset.originalText) {
+                button.innerHTML = button.dataset.originalText;
+                delete button.dataset.originalText;
+            }
+            button.disabled = false;
+            delete button.dataset.processing;
+            
+            console.log('Button state restored manually:', {
+                disabled: button.disabled,
+                processing: button.dataset.processing,
+                text: button.innerHTML
+            });
+        }
+    }
+
+
+
+
 
     /**
      * Handle pause vehicle action
@@ -932,6 +1059,15 @@ export class VehicleBase {
         button.dataset.originalText = button.textContent;
         button.textContent = text;
         button.disabled = true;
+        
+        // Don't set processing here - it's already set in addTime
+        // button.dataset.processing = 'true';
+        
+        console.log('Button loading state set:', {
+            disabled: button.disabled,
+            processing: button.dataset.processing,
+            text: button.textContent
+        });
     }
 
     /**
@@ -945,6 +1081,15 @@ export class VehicleBase {
             delete button.dataset.originalText;
         }
         button.disabled = false;
+        
+        // Clear processing state
+        delete button.dataset.processing;
+        
+        console.log('Button state restored:', {
+            disabled: button.disabled,
+            processing: button.dataset.processing,
+            text: button.textContent
+        });
     }
 
     /**
