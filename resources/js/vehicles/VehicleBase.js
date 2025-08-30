@@ -138,18 +138,34 @@ export class VehicleBase {
      * Start countdown timer for a specific vehicle card
      */
     startCountdownTimer(card) {
-        const timerElement = card.querySelector('.countdown-timer');
-        if (!timerElement) return;
+        // Tìm countdown element bằng id hoặc class
+        const vehicleId = card.dataset.vehicleId;
+        const timerElement = card.querySelector(`#countdown-${vehicleId}`) || card.querySelector('.countdown-display');
+        
+        if (!timerElement) {
+            console.log(`${this.pageName}: No countdown timer found for vehicle ${vehicleId}`);
+            return;
+        }
 
-        const endTime = timerElement.dataset.endTime;
-        if (!endTime) return;
+        // Lấy end time từ data attribute của vehicle card
+        const endTime = card.dataset.endTime;
+        if (!endTime) {
+            console.log(`${this.pageName}: No end time found for vehicle ${vehicleId}`);
+            return;
+        }
 
+        console.log(`${this.pageName}: Starting countdown for vehicle ${vehicleId}, end time: ${endTime}`);
+
+        // Update ngay lập tức
         this.updateCountdown(timerElement, endTime);
         
         // Update every second
-        setInterval(() => {
+        const intervalId = setInterval(() => {
             this.updateCountdown(timerElement, endTime);
         }, 1000);
+
+        // Lưu interval ID để có thể clear sau này
+        card.dataset.countdownInterval = intervalId;
     }
 
     /**
@@ -157,20 +173,48 @@ export class VehicleBase {
      */
     updateCountdown(timerElement, endTime) {
         const now = new Date().getTime();
-        const end = new Date(endTime).getTime();
+        const end = parseInt(endTime); // endTime đã là timestamp từ data attribute
+        
+        if (isNaN(end)) {
+            console.log('Invalid end time:', endTime);
+            return;
+        }
+
         const distance = end - now;
 
         if (distance < 0) {
-            timerElement.textContent = 'Hết giờ';
+            // Hết giờ - cập nhật cả minutes và seconds
+            const minutesElement = timerElement.querySelector('.countdown-minutes');
+            const secondsElement = timerElement.querySelector('.countdown-seconds');
+            
+            if (minutesElement) minutesElement.textContent = '00';
+            if (secondsElement) secondsElement.textContent = '00';
+            
+            // Thêm class đỏ cho hết giờ
             timerElement.classList.add('text-red-500');
             return;
         }
 
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        // Tính toán thời gian còn lại
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        timerElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        // Cập nhật từng phần tử riêng biệt
+        const minutesElement = timerElement.querySelector('.countdown-minutes');
+        const secondsElement = timerElement.querySelector('.countdown-seconds');
+        
+        if (minutesElement) {
+            minutesElement.textContent = minutes.toString().padStart(2, '0');
+        }
+        
+        if (secondsElement) {
+            secondsElement.textContent = seconds.toString().padStart(2, '0');
+        }
+
+        // Debug log mỗi 10 giây
+        if (seconds % 10 === 0) {
+            console.log(`Countdown update: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} remaining`);
+        }
     }
 
     /**
@@ -303,6 +347,9 @@ export class VehicleBase {
      * Hide vehicle card after successful action
      */
     hideVehicleCard(vehicleId) {
+        // Clear countdown interval trước khi ẩn card
+        this.clearCountdownInterval(vehicleId);
+        
         const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
         if (vehicleCard) {
             // Animate out
@@ -619,6 +666,32 @@ export class VehicleBase {
                 </div>
             `;
         }
+    }
+
+    /**
+     * Clear countdown intervals for a specific vehicle
+     */
+    clearCountdownInterval(vehicleId) {
+        const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
+        if (vehicleCard && vehicleCard.dataset.countdownInterval) {
+            clearInterval(parseInt(vehicleCard.dataset.countdownInterval));
+            delete vehicleCard.dataset.countdownInterval;
+            console.log(`Cleared countdown interval for vehicle ${vehicleId}`);
+        }
+    }
+
+    /**
+     * Clear all countdown intervals
+     */
+    clearAllCountdownIntervals() {
+        const vehicleCards = document.querySelectorAll('.vehicle-card');
+        vehicleCards.forEach(card => {
+            if (card.dataset.countdownInterval) {
+                clearInterval(parseInt(card.dataset.countdownInterval));
+                delete card.dataset.countdownInterval;
+            }
+        });
+        console.log('Cleared all countdown intervals');
     }
 
     /**
