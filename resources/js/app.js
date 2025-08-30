@@ -30,6 +30,55 @@ window.toggleVehicleSimple = function(vehicleId) {
     }
 };
 
+// Global function to return vehicle to yard
+window.returnVehicleToYard = async function(vehicleId, button) {
+    try {
+        // Show loading state
+        if (button) {
+            const originalText = button.textContent;
+            button.textContent = 'Đang xử lý...';
+            button.disabled = true;
+        }
+        
+        const response = await fetch('/api/vehicles/return-yard', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            },
+            body: JSON.stringify({
+                vehicle_ids: [vehicleId]
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Simple success - just reload page
+            window.location.reload();
+        } else {
+            // Show error if needed
+            console.error('Return to yard failed:', result.message);
+            if (button) {
+                button.textContent = 'Lỗi - Thử lại';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }, 2000);
+            }
+        }
+    } catch (error) {
+        console.error('Error returning vehicle to yard:', error);
+        if (button) {
+            button.textContent = 'Lỗi - Thử lại';
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.disabled = false;
+            }, 2000);
+        }
+    }
+};
+
 // Navigation JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu toggle
@@ -160,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                 case 'return-yard':
                     console.log('Returning vehicle', vehicleId, 'to yard');
-                    // TODO: Implement return to yard logic
+                    window.returnVehicleToYard(vehicleId, button);
                     break;
                     
                 case 'add-time':
