@@ -207,27 +207,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     // TODO: Implement resume logic
                     break;
                     
-                case 'return-yard':
-                    console.log('Returning vehicle', vehicleId, 'to yard - handled by VehicleBase');
-                    // Use VehicleBase function for single vehicle return
-                    if (window.vehicleBase) {
-                        window.vehicleBase.returnSingleVehicleToYard(vehicleId, button);
-                    } else {
-                        console.error('VehicleBase not available');
-                    }
-                    break;
-                    
                 case 'add-time':
                     const addDuration = button.getAttribute('data-duration');
                     console.log('Adding', addDuration, 'minutes to vehicle', vehicleId);
                     // TODO: Implement add time logic
                     break;
-                    
                 case 'pause-vehicle':
                     console.log('Pausing vehicle', vehicleId);
                     // TODO: Implement pause logic
                     break;
-                    
                 case 'open-workshop-modal':
                     console.log('Opening workshop modal for vehicle', vehicleId);
                     // TODO: Implement workshop modal logic

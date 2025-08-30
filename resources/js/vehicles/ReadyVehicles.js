@@ -265,7 +265,7 @@ class ReadyVehicles extends VehicleBase {
         }
 
         // Use VehicleBase function for multiple vehicles
-        await this.returnMultipleVehiclesToYard(selectedVehicles);
+        await this.returnToYard(selectedVehicles);
     }
 
     /**

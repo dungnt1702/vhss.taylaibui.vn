@@ -287,45 +287,52 @@ export class VehicleBase {
     }
 
     /**
-     * Return vehicle to yard
+     * Return vehicle(s) to yard (handles both single and multiple vehicles)
      */
-    async returnToYard(vehicleId, button) {
+    async returnToYard(vehicleIds, button) {
         try {
-            // Simple loading state
+            // Convert single ID to array if needed
+            const ids = Array.isArray(vehicleIds) ? vehicleIds : [vehicleIds];
+            
+            if (ids.length === 0) {
+                console.log('Không có xe nào được chọn để đưa về bãi');
+                return;
+            }
+
+            // Show loading state
             if (button) {
-                const originalText = button.textContent;
-                button.textContent = 'Đang xử lý...';
-                button.disabled = true;
+                this.showButtonLoading(button, 'Đang xử lý...');
             }
             
             const response = await this.makeApiCall('/api/vehicles/return-yard', {
                 method: 'POST',
                 body: JSON.stringify({
-                    vehicle_ids: [vehicleId]
+                    vehicle_ids: ids
                 })
             });
 
             if (response.success) {
+                console.log(`Đã đưa ${ids.length} xe về bãi thành công`);
                 // Simple success - just reload page
                 window.location.reload();
             } else {
                 // Show error if needed
                 console.error('Return to yard failed:', response.message);
                 if (button) {
+                    this.restoreButtonState(button);
                     button.textContent = 'Lỗi - Thử lại';
                     setTimeout(() => {
-                        button.textContent = originalText;
-                        button.disabled = false;
+                        this.restoreButtonState(button);
                     }, 2000);
                 }
             }
         } catch (error) {
-            console.error('Error returning to yard:', error);
+            console.error('Error returning vehicle(s) to yard:', error);
             if (button) {
+                this.restoreButtonState(button);
                 button.textContent = 'Lỗi - Thử lại';
                 setTimeout(() => {
-                    button.textContent = originalText;
-                    button.disabled = false;
+                    this.restoreButtonState(button);
                 }, 2000);
             }
         }
@@ -477,80 +484,6 @@ export class VehicleBase {
                 checkbox.checked = this.checked;
             });
         });
-    }
-
-    /**
-     * Return single vehicle to yard (for paused/expired screens)
-     */
-    async returnSingleVehicleToYard(vehicleId, button) {
-        try {
-            // Show loading state
-            if (button) {
-                this.showButtonLoading(button, 'Đang xử lý...');
-            }
-            
-            const response = await this.makeApiCall('/api/vehicles/return-yard', {
-                method: 'POST',
-                body: JSON.stringify({
-                    vehicle_ids: [vehicleId]
-                })
-            });
-            
-            if (response.success) {
-                // Simple success - just reload page
-                window.location.reload();
-            } else {
-                // Show error if needed
-                console.error('Return to yard failed:', response.message);
-                if (button) {
-                    this.restoreButtonState(button);
-                    button.textContent = 'Lỗi - Thử lại';
-                    setTimeout(() => {
-                        this.restoreButtonState(button);
-                    }, 2000);
-                }
-            }
-        } catch (error) {
-            console.error('Error returning vehicle to yard:', error);
-            if (button) {
-                this.restoreButtonState(button);
-                button.textContent = 'Lỗi - Thử lại';
-                setTimeout(() => {
-                    this.restoreButtonState(button);
-                }, 2000);
-            }
-        }
-    }
-
-    /**
-     * Return multiple vehicles to yard (for ready screen)
-     */
-    async returnMultipleVehiclesToYard(selectedVehicleIds) {
-        try {
-            if (!selectedVehicleIds || selectedVehicleIds.length === 0) {
-                console.log('Không có xe nào được chọn để đưa về bãi');
-                return;
-            }
-            
-            console.log('Đang đưa', selectedVehicleIds.length, 'xe về bãi...');
-            
-            const response = await this.makeApiCall('/api/vehicles/return-yard', {
-                method: 'POST',
-                body: JSON.stringify({
-                    vehicle_ids: selectedVehicleIds
-                })
-            });
-            
-            if (response.success) {
-                console.log('Đã đưa', selectedVehicleIds.length, 'xe về bãi thành công');
-                // Reload page to show updated status
-                window.location.reload();
-            } else {
-                console.error('Return to yard failed:', response.message);
-            }
-        } catch (error) {
-            console.error('Error returning vehicles to yard:', error);
-        }
     }
 }
 

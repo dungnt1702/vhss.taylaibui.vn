@@ -51,6 +51,7 @@ class PausedVehicles extends VehicleBase {
             button.addEventListener('click', (e) => {
                 const vehicleId = e.target.dataset.vehicleId;
                 if (vehicleId) {
+                    // Use VehicleBase function for single vehicle
                     this.returnToYard(vehicleId, e.target);
                 }
             });
