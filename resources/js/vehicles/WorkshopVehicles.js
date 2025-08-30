@@ -220,29 +220,29 @@ class WorkshopVehicles extends VehicleBase {
      * Override returnToYard for workshop-specific logic
      */
     async returnToYard(vehicleId, button) {
-        if (confirm(`Bạn có chắc muốn đưa xe ${vehicleId} về bãi?`)) {
-            try {
-                this.showButtonLoading(button, 'Đang đưa về bãi...');
-                
-                const response = await this.makeApiCall('/api/vehicles/return-yard', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        vehicle_ids: [vehicleId]
-                    })
-                });
+        try {
+            this.showButtonLoading(button, 'Đang đưa về bãi...');
+            
+            const response = await this.makeApiCall('/api/vehicles/return-yard', {
+                method: 'POST',
+                body: JSON.stringify({
+                    vehicle_ids: [vehicleId]
+                })
+            });
 
-                if (response.success) {
-                    this.showNotification('Đưa về bãi thành công!', 'success');
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
-                }
-            } catch (error) {
-                console.error('Error returning to yard:', error);
-                this.showNotification('Có lỗi xảy ra khi đưa về bãi', 'error');
-            } finally {
-                this.restoreButtonState(button);
+            if (response.success) {
+                console.log('Đưa về bãi thành công!');
+                // Simple success - just reload page
+                window.location.reload();
+            } else {
+                console.error('Return to yard failed:', response.message);
+                this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
             }
+        } catch (error) {
+            console.error('Error returning to yard:', error);
+            this.showNotification('Có lỗi xảy ra khi đưa về bãi', 'error');
+        } finally {
+            this.restoreButtonState(button);
         }
     }
 }

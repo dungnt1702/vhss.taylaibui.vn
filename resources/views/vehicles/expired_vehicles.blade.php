@@ -72,8 +72,8 @@
 @endsection
 
 @push('scripts')
-    <!-- Load VehicleClasses.js for all vehicle functionality -->
-    @vite(['resources/js/vehicles/VehicleClasses.js'])
+    <!-- Load only ExpiredVehicles.js for this page -->
+    @vite(['resources/js/vehicles/ExpiredVehicles.js'])
 @endpush
 
 @push('styles')
