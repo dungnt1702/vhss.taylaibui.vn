@@ -151,21 +151,7 @@
     </div>
 </div>
 
-<!-- Notification Popup -->
-<div id="notification-popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 1000; min-width: 300px; text-align: center;">
-    <div style="margin-bottom: 16px;">
-        <svg style="width: 48px; height: 48px; color: #f59e0b; margin: 0 auto;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-        </svg>
-    </div>
-    <h3 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 600; color: #111827;">Thông báo</h3>
-    <p id="notification-message" style="margin: 0 0 20px 0; color: #6b7280; line-height: 1.5;"></p>
-            <button data-action="close-notification" style="padding: 8px 24px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
-            Đóng
-        </button>
-</div>
-<!-- Overlay for popup -->
-<div id="popup-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
+<!-- Notification modal is now included from vehicle_modals.blade.php -->
 
 @include('vehicles.partials.vehicle_modals')
 

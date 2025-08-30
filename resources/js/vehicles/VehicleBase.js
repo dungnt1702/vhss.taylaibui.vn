@@ -10,7 +10,7 @@ export class VehicleBase {
         this.actionButtons = [];
         this.initialized = false;
         this.isSpeaking = false; // Track if a speech is currently in progress
-        console.log(`${this.pageName} class initialized`);
+
     }
 
     /**
@@ -23,7 +23,6 @@ export class VehicleBase {
         this.initializeEventListeners();
         this.initializeCountdownTimers();
         this.initialized = true;
-        console.log(`${this.pageName} page initialized`);
     }
 
     /**
@@ -34,19 +33,8 @@ export class VehicleBase {
         this.actionButtons = document.querySelectorAll('[data-action]');
         
         if (this.vehicleCards.length === 0) {
-            console.log(`${this.pageName}: No vehicle cards found`);
             return;
         }
-        
-        console.log(`${this.pageName}: Found ${this.vehicleCards.length} vehicle cards`);
-        console.log(`${this.pageName}: Found ${this.actionButtons.length} action buttons`);
-        
-        // Debug: Log all action buttons found
-        this.actionButtons.forEach((button, index) => {
-            const action = button.dataset.action;
-            const vehicleId = button.dataset.vehicleId;
-            console.log(`${this.pageName}: Button ${index + 1} - action: ${action}, vehicleId: ${vehicleId}`);
-        });
     }
 
     /**
@@ -54,36 +42,25 @@ export class VehicleBase {
      */
     initializeEventListeners() {
         if (this.actionButtons.length === 0) {
-            console.log(`${this.pageName}: No action buttons to bind events to`);
             return;
         }
-        
-        console.log(`${this.pageName}: Binding events to ${this.actionButtons.length} action buttons`);
         
         this.actionButtons.forEach((button, index) => {
             const action = button.dataset.action;
             if (action) {
-                console.log(`${this.pageName}: Binding event for button ${index + 1} - action: ${action}`);
                 this.setupActionListener(button, action);
             }
         });
-        
-        console.log(`${this.pageName}: Event binding completed`);
     }
 
     /**
      * Setup action listener for a specific button
      */
     setupActionListener(button, action) {
-        console.log(`${this.pageName}: Setting up listener for action: ${action}`);
-        
         switch (action) {
             case 'assign-timer':
-                console.log(`${this.pageName}: Adding click listener for assign-timer`);
-                button.addEventListener('click', (e) => {
-                    console.log(`${this.pageName}: assign-timer button clicked!`);
-                    this.handleAssignTimer(e);
-                });
+                // assign-timer được xử lý bởi VehicleBase.js
+                button.addEventListener('click', (e) => this.handleAssignTimer(e));
                 break;
             case 'return-yard':
                 button.addEventListener('click', (e) => this.handleReturnYard(e));
@@ -104,7 +81,7 @@ export class VehicleBase {
                 button.addEventListener('click', (e) => this.handleOpenWorkshopModal(e));
                 break;
             default:
-                console.log(`${this.pageName}: Unknown action: ${action}`);
+                // Unknown action - ignore
         }
     }
 
@@ -128,22 +105,18 @@ export class VehicleBase {
         const timerElement = card.querySelector(`#countdown-${vehicleId}`) || card.querySelector('.countdown-display');
         
         if (!timerElement) {
-            console.log(`${this.pageName}: No countdown timer found for vehicle ${vehicleId}`);
             return;
         }
 
         // Lấy end time từ data attribute của vehicle card
         const endTime = card.dataset.endTime;
         if (!endTime) {
-            console.log(`${this.pageName}: No end time found for vehicle ${vehicleId}`);
             return;
         }
 
         // Kiểm tra vehicle status - chỉ start countdown cho running vehicles
         const vehicleStatus = card.dataset.status;
         if (vehicleStatus !== 'running') {
-            console.log(`${this.pageName}: Vehicle ${vehicleId} is ${vehicleStatus}, not starting countdown timer`);
-            
             // Với paused vehicles, hiển thị thời gian còn lại từ paused_remaining_seconds
             if (vehicleStatus === 'paused') {
                 this.displayPausedTime(timerElement, card);
@@ -156,8 +129,6 @@ export class VehicleBase {
             
             return;
         }
-
-        console.log(`${this.pageName}: Starting countdown for vehicle ${vehicleId}, end time: ${endTime}`);
 
         // Update ngay lập tức
         this.updateCountdown(timerElement, endTime);
@@ -192,7 +163,6 @@ export class VehicleBase {
             
             // Thêm class xám cho paused vehicles
             timerElement.classList.add('text-gray-500');
-            console.log(`Displaying paused time for vehicle: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
         }
     }
 
@@ -208,7 +178,6 @@ export class VehicleBase {
         
         // Thêm class đỏ cho expired vehicles
         timerElement.classList.add('text-red-500');
-        console.log('Displaying expired time: 00:00');
     }
 
     /**
@@ -219,7 +188,6 @@ export class VehicleBase {
         const end = parseInt(endTime); // endTime đã là timestamp từ data attribute
         
         if (isNaN(end)) {
-            console.log('Invalid end time:', endTime);
             return;
         }
 
@@ -254,10 +222,7 @@ export class VehicleBase {
             secondsElement.textContent = seconds.toString().padStart(2, '0');
         }
 
-        // Debug log mỗi 10 giây
-        if (seconds % 10 === 0) {
-            console.log(`Countdown update: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} remaining`);
-        }
+
     }
 
     /**
@@ -268,7 +233,6 @@ export class VehicleBase {
         const duration = parseInt(e.target.dataset.duration);
         
         if (!vehicleId || !duration) {
-            console.error('Missing vehicle ID or duration');
             return;
         }
 
@@ -420,6 +384,32 @@ export class VehicleBase {
     }
 
     /**
+     * Handle assign timer action
+     */
+    handleAssignTimer(e) {
+        // Kiểm tra xem có xe nào được chọn không
+        const selectedVehicles = this.getSelectedVehicles();
+        
+        if (selectedVehicles.length === 0) {
+            this.showNotificationModal('Cảnh báo', 'Bạn phải chọn xe trước!', 'warning');
+            return;
+        }
+
+        // Lấy duration từ select box
+        const timeSelect = document.getElementById('time-select');
+        const duration = parseInt(timeSelect.value);
+        
+        if (duration) {
+            // Gọi method từ ReadyVehicles nếu có
+            if (this.assignTimerBulk && typeof this.assignTimerBulk === 'function') {
+                this.assignTimerBulk(duration);
+            }
+        } else {
+            this.showNotificationModal('Cảnh báo', 'Vui lòng chọn thời gian.', 'warning');
+        }
+    }
+
+    /**
      * Handle custom actions - can be overridden by child classes
      */
     handleCustomAction(action, vehicleId, button) {
@@ -480,11 +470,11 @@ export class VehicleBase {
             });
 
             if (response.success) {
-                this.showNotification('Bấm giờ thành công!', 'success');
+                this.showNotificationModal('Thành công', 'Bấm giờ thành công!', 'success');
                 // Không reload page, chỉ ẩn vehicle card
                 this.hideVehicleCard(vehicleId);
             } else {
-                this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+                this.showNotificationModal('Lỗi', response.message || 'Có lỗi xảy ra', 'error');
             }
         } catch (error) {
             console.error('Error assigning timer:', error);
@@ -515,15 +505,21 @@ export class VehicleBase {
             });
 
             if (response.success) {
-                this.showNotification(`Đã bấm giờ thành công cho ${vehicleIds.length} xe!`, 'success');
+                this.showNotificationModal('Thành công', `Đã bấm giờ thành công cho ${vehicleIds.length} xe!`, 'success');
+                
                 // Không reload page, ẩn tất cả vehicle cards
                 vehicleIds.forEach(id => this.hideVehicleCard(id));
+                
+                // Trả về response để child class có thể xử lý thêm
+                return response;
             } else {
-                this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+                this.showNotificationModal('Lỗi', response.message || 'Có lỗi xảy ra', 'error');
+                return response;
             }
         } catch (error) {
             console.error('Error assigning timer for multiple vehicles:', error);
-            this.showNotification('Có lỗi xảy ra khi bấm giờ', 'error');
+            this.showNotificationModal('Lỗi', 'Có lỗi xảy ra khi bấm giờ', 'error');
+            return { success: false, message: 'Có lỗi xảy ra khi bấm giờ' };
         } finally {
             this.restoreButtonState(button);
         }
@@ -589,6 +585,7 @@ export class VehicleBase {
             }
         }
     }
+
 
     /**
      * Hide vehicle cards after successful return to yard
@@ -682,14 +679,14 @@ export class VehicleBase {
             });
 
             if (response.success) {
-                this.showNotification('Chuyển xưởng thành công!', 'success');
+                this.showNotificationModal('Thành công', 'Chuyển xưởng thành công!', 'success');
                 setTimeout(() => window.location.reload(), 1000);
             } else {
-                this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+                this.showNotificationModal('Lỗi', response.message || 'Có lỗi xảy ra', 'error');
             }
         } catch (error) {
             console.error('Error moving to workshop:', error);
-            this.showNotification('Có lỗi xảy ra khi chuyển xưởng', 'error');
+            this.showNotificationModal('Lỗi', 'Có lỗi xảy ra khi chuyển xưởng', 'error');
         } finally {
             this.restoreButtonState(button);
         }
@@ -710,14 +707,14 @@ export class VehicleBase {
             });
 
             if (response.success) {
-                this.showNotification('Phân tuyến thành công!', 'success');
+                this.showNotificationModal('Thành công', 'Phân tuyến thành công!', 'success');
                 setTimeout(() => window.location.reload(), 1000);
             } else {
-                this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+                this.showNotificationModal('Lỗi', response.message || 'Có lỗi xảy ra', 'error');
             }
         } catch (error) {
             console.error('Error assigning route:', error);
-            this.showNotification('Có lỗi xảy ra khi phân tuyến', 'error');
+            this.showNotificationModal('Lỗi', 'Có lỗi xảy ra khi phân tuyến', 'error');
         } finally {
             this.restoreButtonState(button);
         }
@@ -756,71 +753,20 @@ export class VehicleBase {
         // 1. SPEAK THE MESSAGE (Text-to-Speech)
         this.speakMessage(message);
         
-        // 2. SHOW VISUAL NOTIFICATION
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
+        // DEPRECATED: Redirect to showNotificationModal
+        console.warn('showNotification is deprecated, use showNotificationModal instead');
         
-        // Set background color based on type
-        let bgColor, textColor, icon;
+        // Chuyển đổi type để tương thích
+        let modalType = 'info';
         switch (type) {
-            case 'success':
-                bgColor = 'bg-green-500';
-                textColor = 'text-white';
-                icon = '✅';
-                break;
-            case 'error':
-                bgColor = 'bg-red-500';
-                textColor = 'text-white';
-                icon = '❌';
-                break;
-            case 'warning':
-                bgColor = 'bg-yellow-500';
-                textColor = 'text-white';
-                icon = '⚠️';
-                break;
-            case 'info':
-            default:
-                bgColor = 'bg-blue-500';
-                textColor = 'text-white';
-                icon = 'ℹ️';
-                break;
+            case 'success': modalType = 'success'; break;
+            case 'error': modalType = 'error'; break;
+            case 'warning': modalType = 'warning'; break;
+            default: modalType = 'info';
         }
         
-        notification.className += ` ${bgColor} ${textColor}`;
-        
-        // Set content
-        notification.innerHTML = `
-            <div class="flex items-center">
-                <span class="text-lg mr-2">${icon}</span>
-                <span class="font-medium">${message}</span>
-                <button class="ml-auto text-white hover:text-gray-200" onclick="this.parentElement.parentElement.remove()">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-        `;
-        
-        // Add to page
-        document.body.appendChild(notification);
-        
-        // Animate in
-        setTimeout(() => {
-            notification.classList.remove('translate-x-full');
-        }, 100);
-        
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            if (notification.parentElement) {
-                notification.classList.add('translate-x-full');
-                setTimeout(() => {
-                    if (notification.parentElement) {
-                        notification.remove();
-                    }
-                }, 300);
-            }
-        }, 5000);
+        // Gọi showNotificationModal thay vì tạo toast
+        this.showNotificationModal('Thông báo', message, modalType);
     }
 
     /**
@@ -937,28 +883,28 @@ export class VehicleBase {
      * Show success notification
      */
     showSuccess(message) {
-        this.showNotification(message, 'success');
+        this.showNotificationModal('Thành công', message, 'success');
     }
 
     /**
      * Show error notification
      */
     showError(message) {
-        this.showNotification(message, 'error');
+        this.showNotificationModal('Lỗi', message, 'error');
     }
 
     /**
      * Show warning notification
      */
     showWarning(message) {
-        this.showNotification(message, 'warning');
+        this.showNotificationModal('Cảnh báo', message, 'warning');
     }
 
     /**
      * Show info notification
      */
     showInfo(message) {
-        this.showNotification(message, 'info');
+        this.showNotificationModal('Thông báo', message, 'info');
     }
 
     /**
@@ -988,6 +934,75 @@ export class VehicleBase {
         const notification = event.target.closest('.notification');
         if (notification) {
             notification.remove();
+        }
+    }
+
+    /**
+     * Show notification modal
+     */
+    showNotificationModal(title, message, type = 'info') {
+        const modal = document.getElementById('notification-modal');
+        const modalTitle = document.getElementById('notification-title');
+        const modalMessage = document.getElementById('notification-message');
+        const iconContainer = document.getElementById('notification-icon-container');
+        const icon = document.getElementById('notification-icon');
+        const closeBtn = document.getElementById('notification-close-btn');
+
+        if (!modal || !modalTitle || !modalMessage || !iconContainer || !icon || !closeBtn) {
+            console.error('Notification modal elements not found');
+            return;
+        }
+
+        // Set title and message
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+
+        // Setup close button event listener
+        closeBtn.onclick = () => this.closeNotificationModal();
+
+        // Set icon and color based on type
+        let iconSvg = '';
+        let iconColor = 'text-brand-600';
+        let bgColor = 'bg-brand-100';
+
+        switch (type) {
+            case 'success':
+                iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />';
+                iconColor = 'text-green-600';
+                bgColor = 'bg-green-100';
+                break;
+            case 'error':
+                iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+                iconColor = 'text-red-600';
+                bgColor = 'bg-red-100';
+                break;
+            case 'warning':
+                iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />';
+                iconColor = 'text-yellow-600';
+                bgColor = 'bg-yellow-100';
+                break;
+            default:
+                iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />';
+                iconColor = 'text-blue-600';
+                bgColor = 'bg-blue-100';
+        }
+
+        // Update icon and colors
+        icon.innerHTML = iconSvg;
+        icon.setAttribute('class', `h-6 w-6 ${iconColor}`);
+        iconContainer.setAttribute('class', `mx-auto flex items-center justify-center h-12 w-12 rounded-full ${bgColor}`);
+
+        // Show modal
+        modal.classList.remove('hidden');
+    }
+
+    /**
+     * Close notification modal
+     */
+    closeNotificationModal() {
+        const modal = document.getElementById('notification-modal');
+        if (modal) {
+            modal.classList.add('hidden');
         }
     }
 
@@ -1023,20 +1038,14 @@ if (typeof window !== 'undefined') {
     window.testSpeech = () => {
         if (window.vehicleBase) {
             window.vehicleBase.testSpeech();
-        } else {
-            console.log('❌ VehicleBase not available. Try refreshing the page.');
         }
     };
     
     window.testSpeak = (message) => {
         if (window.vehicleBase) {
             window.vehicleBase.speakMessage(message || 'Test message tiếng Việt');
-        } else {
-            console.log('❌ VehicleBase not available. Try refreshing the page.');
         }
     };
     
-    console.log('🧪 Text-to-speech test functions available:');
-    console.log('  - testSpeech() - Test with default message');
-    console.log('  - testSpeak("Your message") - Test with custom message');
+
 }

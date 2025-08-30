@@ -151,15 +151,14 @@
             <div class="p-6 text-center">
                 <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full" id="notification-icon-container">
                     <svg class="h-6 w-6" id="notification-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-                <h3 class="mt-4 text-lg font-semibold text-neutral-900" id="notification-title">Thành công</h3>
-                <p class="mt-2 text-sm text-neutral-700" id="notification-message">Hành động đã được thực hiện thành công.</p>
+                <h3 class="mt-4 text-lg font-semibold text-neutral-900" id="notification-title"></h3>
+                <p class="mt-2 text-sm text-neutral-700" id="notification-message"></p>
                 <div class="mt-6">
-                    <button type="button" onclick="closeNotificationModal()" class="px-4 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
-                        Đóng
-                    </button>
+                                    <button type="button" id="notification-close-btn" class="px-4 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+                    Đóng
+                </button>
                 </div>
             </div>
         </div>

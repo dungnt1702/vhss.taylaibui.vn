@@ -19,7 +19,6 @@ class ReadyVehicles extends VehicleBase {
         super.init();
         this.setupReadySpecificFeatures();
         this.setupBulkActions();
-        console.log('Ready Vehicles page fully initialized');
     }
 
     /**
@@ -122,24 +121,24 @@ class ReadyVehicles extends VehicleBase {
      * Setup bulk assign timer
      */
     setupBulkAssignTimer() {
-        const bulkStartButtons = document.querySelectorAll('[data-action="start-timer-bulk"]');
-        bulkStartButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const duration = parseInt(e.target.dataset.duration);
-                if (duration) {
-                    this.assignTimerBulk(duration);
-                }
-            });
-        });
+        // assign-timer action is handled by VehicleBase.js setupActionListener
     }
 
     /**
      * Setup bulk route assignment
      */
     setupBulkRouteAssignment() {
-        const bulkRouteButtons = document.querySelectorAll('[data-action="assign-route-bulk"]');
+        const bulkRouteButtons = document.querySelectorAll('[data-action="assign-route"]');
         bulkRouteButtons.forEach(button => {
             button.addEventListener('click', (e) => {
+                // Kiểm tra xem có xe nào được chọn không
+                const selectedVehicles = this.getSelectedVehicles();
+                if (selectedVehicles.length === 0) {
+                    console.log('ReadyVehicles: Không có xe nào được chọn, hiển thị modal cảnh báo');
+                    VehicleBase.prototype.showNotificationModal.call(this, 'Cảnh báo', 'Bạn phải chọn xe trước!', 'warning');
+                    return;
+                }
+
                 this.assignRouteBulk();
             });
         });
@@ -149,9 +148,17 @@ class ReadyVehicles extends VehicleBase {
      * Setup bulk workshop transfer
      */
     setupBulkWorkshopTransfer() {
-        const bulkWorkshopButtons = document.querySelectorAll('[data-action="move-workshop-bulk"]');
+        const bulkWorkshopButtons = document.querySelectorAll('[data-action="move-workshop"]');
         bulkWorkshopButtons.forEach(button => {
             button.addEventListener('click', (e) => {
+                // Kiểm tra xem có xe nào được chọn không
+                const selectedVehicles = this.getSelectedVehicles();
+                if (selectedVehicles.length === 0) {
+                    console.log('ReadyVehicles: Không có xe nào được chọn, hiển thị modal cảnh báo');
+                    VehicleBase.prototype.showNotificationModal.call(this, 'Cảnh báo', 'Bạn phải chọn xe trước!', 'warning');
+                    return;
+                }
+
                 this.moveToWorkshopBulk();
             });
         });
@@ -163,14 +170,19 @@ class ReadyVehicles extends VehicleBase {
     async assignTimerBulk(duration) {
         const selectedVehicles = this.getSelectedVehicles();
         if (selectedVehicles.length === 0) {
-            this.showNotification('Vui lòng chọn ít nhất một xe.', 'warning');
+            VehicleBase.prototype.showNotificationModal.call(this, 'Cảnh báo', 'Vui lòng chọn ít nhất một xe.', 'warning');
             return;
         }
 
         if (confirm(`Bạn có chắc muốn bấm giờ cho ${selectedVehicles.length} xe trong ${duration} phút?`)) {
             // Use the bulk timer function from VehicleBase
             const button = document.querySelector('[data-action="assign-timer"]');
-            await this.assignTimerBulk(selectedVehicles, duration, button);
+            const response = await super.assignTimerBulk(selectedVehicles, duration, button);
+            
+            // Cập nhật bảng "Xe chạy đường 1-2" sau khi thành công
+            if (response && response.success) {
+                this.updateTimerVehiclesTable(selectedVehicles, duration, response.vehicles);
+            }
         }
     }
 
@@ -180,7 +192,7 @@ class ReadyVehicles extends VehicleBase {
     async assignRouteBulk() {
         const selectedVehicles = this.getSelectedVehicles();
         if (selectedVehicles.length === 0) {
-            this.showNotification('Vui lòng chọn ít nhất một xe.', 'warning');
+            VehicleBase.prototype.showNotificationModal.call(this, 'Cảnh báo', 'Vui lòng chọn ít nhất một xe.', 'warning');
             return;
         }
 
@@ -194,14 +206,14 @@ class ReadyVehicles extends VehicleBase {
                 });
 
                 if (response.success) {
-                    this.showNotification(`Phân tuyến thành công cho ${selectedVehicles.length} xe!`, 'success');
+                    VehicleBase.prototype.showNotificationModal.call(this, 'Thành công', `Phân tuyến thành công cho ${selectedVehicles.length} xe!`, 'success');
                     setTimeout(() => window.location.reload(), 1000);
                 } else {
-                    this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+                    VehicleBase.prototype.showNotificationModal.call(this, 'Lỗi', response.message || 'Có lỗi xảy ra', 'error');
                 }
             } catch (error) {
                 console.error('Error assigning bulk route:', error);
-                this.showNotification('Có lỗi xảy ra khi phân tuyến hàng loạt', 'error');
+                VehicleBase.prototype.showNotificationModal.call(this, 'Lỗi', 'Có lỗi xảy ra khi phân tuyến hàng loạt', 'error');
             }
         }
     }
@@ -212,7 +224,7 @@ class ReadyVehicles extends VehicleBase {
     async moveToWorkshopBulk() {
         const selectedVehicles = this.getSelectedVehicles();
         if (selectedVehicles.length === 0) {
-            this.showNotification('Vui lòng chọn ít nhất một xe.', 'warning');
+            VehicleBase.prototype.showNotificationModal.call(this, 'Cảnh báo', 'Vui lòng chọn ít nhất một xe.', 'warning');
             return;
         }
 
@@ -226,14 +238,14 @@ class ReadyVehicles extends VehicleBase {
                 });
 
                 if (response.success) {
-                    this.showNotification(`Chuyển xưởng thành công cho ${selectedVehicles.length} xe!`, 'success');
+                    VehicleBase.prototype.showNotificationModal.call(this, 'Thành công', `Chuyển xưởng thành công cho ${selectedVehicles.length} xe!`, 'success');
                     setTimeout(() => window.location.reload(), 1000);
                 } else {
-                    this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+                    VehicleBase.prototype.showNotificationModal.call(this, 'Lỗi', response.message || 'Có lỗi xảy ra', 'error');
                 }
             } catch (error) {
                 console.error('Error moving bulk to workshop:', error);
-                this.showNotification('Có lỗi xảy ra khi chuyển xưởng hàng loạt', 'error');
+                VehicleBase.prototype.showNotificationModal.call(this, 'Lỗi', 'Có lỗi xảy ra khi chuyển xưởng hàng loạt', 'error');
             }
         }
     }
@@ -258,18 +270,79 @@ class ReadyVehicles extends VehicleBase {
     returnSelectedVehiclesToYard() {
         this.returnToYard();
     }
+
+    /**
+     * Update timer vehicles table after successful bulk assign timer
+     */
+    updateTimerVehiclesTable(vehicleIds, duration, vehicles) {
+        const timerTableBody = document.getElementById('timer-vehicles');
+        if (!timerTableBody) return;
+
+        vehicles.forEach(vehicle => {
+            // Tính toán thời gian bắt đầu và kết thúc
+            const startTime = new Date();
+            const endTime = new Date(startTime.getTime() + (duration * 60 * 1000));
+            
+            // Format thời gian
+            const startTimeStr = startTime.toLocaleTimeString('vi-VN', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            const endTimeStr = endTime.toLocaleTimeString('vi-VN', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+
+            // Tạo row mới
+            const newRow = document.createElement('tr');
+            newRow.className = 'hover:bg-gray-50';
+            newRow.innerHTML = `
+                <td class="px-3 py-2">
+                    <input type="checkbox" class="vehicle-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500" value="${vehicle.id}">
+                </td>
+                <td class="px-3 py-2 text-sm text-gray-900">Xe số ${vehicle.name}</td>
+                <td class="px-3 py-2">
+                    <div class="w-4 h-4 rounded border border-gray-300" style="background-color: ${vehicle.color};" title="${vehicle.color}"></div>
+                </td>
+                <td class="px-3 py-2 text-sm text-gray-900">${startTimeStr}</td>
+                <td class="px-3 py-2 text-sm text-gray-900">${endTimeStr}</td>
+                <td class="px-3 py-2 text-sm text-gray-900">
+                    <div class="countdown-display" data-end-time="${endTime.getTime()}">
+                        <span class="countdown-minutes">${duration.toString().padStart(2, '0')}</span>:<span class="countdown-seconds">00</span>
+                    </div>
+                </td>
+            `;
+
+            // Thêm row vào đầu bảng
+            timerTableBody.insertBefore(newRow, timerTableBody.firstChild);
+            
+            // Start countdown timer cho row mới
+            this.startCountdownTimer(newRow);
+        });
+
+        console.log(`Đã cập nhật bảng timer vehicles với ${vehicles.length} xe`);
+    }
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Ready Vehicles page loaded');
+    console.log('🔍 ReadyVehicles DOMContentLoaded event fired');
     
-    // Create and initialize ReadyVehicles instance
-    const readyVehicles = new ReadyVehicles();
-    readyVehicles.init();
-    
-    // Make it available globally for debugging
-    window.readyVehicles = readyVehicles;
+    try {
+        // Create and initialize ReadyVehicles instance
+        console.log('🔍 Creating ReadyVehicles instance...');
+        const readyVehicles = new ReadyVehicles();
+        console.log('🔍 ReadyVehicles instance created:', readyVehicles);
+        
+        console.log('🔍 Calling readyVehicles.init()...');
+        readyVehicles.init();
+        
+        // Make it available globally for debugging
+        window.readyVehicles = readyVehicles;
+        console.log('✅ ReadyVehicles initialized and available as window.readyVehicles');
+    } catch (error) {
+        console.error('❌ Error initializing ReadyVehicles:', error);
+    }
 });
 
 // Export for ES6 modules

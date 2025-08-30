@@ -9,7 +9,7 @@
 // Import VehicleBase class first (from the actual class file)
 import { VehicleBase } from './VehicleBase.js';
 
-console.log('VehicleClasses.js loaded - detecting page type...');
+
 
 /**
  * Detect current page type and load corresponding JS
@@ -27,10 +27,8 @@ async function loadPageSpecificJS() {
     }
 
     const pageType = pageElement.dataset.pageType;
-    console.log('Detected page type:', pageType);
 
     if (!pageType) {
-        console.log('No page type specified, loading basic VehicleBase only');
         // Make VehicleBase available globally for backward compatibility
         if (typeof window !== 'undefined') {
             window.VehicleBase = VehicleBase;
@@ -106,7 +104,6 @@ async function loadPageSpecificJS() {
                 break;
             
             default:
-                console.log(`Unknown page type: ${pageType}, loading basic VehicleBase only`);
                 // Make VehicleBase available globally for backward compatibility
                 if (typeof window !== 'undefined') {
                     window.VehicleBase = VehicleBase;
@@ -117,7 +114,6 @@ async function loadPageSpecificJS() {
 
         // Initialize the specific vehicle class
         if (VehicleClass) {
-            console.log(`Initializing ${className} for page type: ${pageType}`);
             const vehicleInstance = new VehicleClass();
             vehicleInstance.init();
             
@@ -129,8 +125,6 @@ async function loadPageSpecificJS() {
                 window.VehicleBase = VehicleBase;
                 window.vehicleBase = new VehicleBase('Global Vehicle Base');
             }
-            
-            console.log(`${className} initialized successfully`);
         }
 
     } catch (error) {
@@ -145,7 +139,6 @@ async function loadPageSpecificJS() {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, starting smart JS loading...');
     loadPageSpecificJS();
 });
 
