@@ -295,7 +295,7 @@ export class VehicleBase {
             const ids = Array.isArray(vehicleIds) ? vehicleIds : [vehicleIds];
             
             if (ids.length === 0) {
-                console.log('Không có xe nào được chọn để đưa về bãi');
+                this.showWarning('Không có xe nào được chọn để đưa về bãi');
                 return;
             }
 
@@ -312,12 +312,16 @@ export class VehicleBase {
             });
 
             if (response.success) {
-                console.log(`Đã đưa ${ids.length} xe về bãi thành công`);
+                if (ids.length === 1) {
+                    this.showSuccess('Đã đưa xe về bãi thành công!');
+                } else {
+                    this.showSuccess(`Đã đưa ${ids.length} xe về bãi thành công!`);
+                }
                 // Simple success - just reload page
-                window.location.reload();
+                setTimeout(() => window.location.reload(), 1500);
             } else {
                 // Show error if needed
-                console.error('Return to yard failed:', response.message);
+                this.showError(response.message || 'Có lỗi xảy ra khi đưa xe về bãi');
                 if (button) {
                     this.restoreButtonState(button);
                     button.textContent = 'Lỗi - Thử lại';
@@ -328,6 +332,7 @@ export class VehicleBase {
             }
         } catch (error) {
             console.error('Error returning vehicle(s) to yard:', error);
+            this.showError('Có lỗi xảy ra khi đưa xe về bãi');
             if (button) {
                 this.restoreButtonState(button);
                 button.textContent = 'Lỗi - Thử lại';
@@ -421,16 +426,101 @@ export class VehicleBase {
     }
 
     /**
-     * Show notification to user
+     * Show notification to user with Vietnamese messages
      */
     showNotification(message, type = 'info') {
-        // Try to use browser notifications if available
-        if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification(message);
-        } else {
-            // Fallback to alert
-            alert(message);
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
+        
+        // Set background color based on type
+        let bgColor, textColor, icon;
+        switch (type) {
+            case 'success':
+                bgColor = 'bg-green-500';
+                textColor = 'text-white';
+                icon = '✅';
+                break;
+            case 'error':
+                bgColor = 'bg-red-500';
+                textColor = 'text-white';
+                icon = '❌';
+                break;
+            case 'warning':
+                bgColor = 'bg-yellow-500';
+                textColor = 'text-white';
+                icon = '⚠️';
+                break;
+            case 'info':
+            default:
+                bgColor = 'bg-blue-500';
+                textColor = 'text-white';
+                icon = 'ℹ️';
+                break;
         }
+        
+        notification.className += ` ${bgColor} ${textColor}`;
+        
+        // Set content
+        notification.innerHTML = `
+            <div class="flex items-center">
+                <span class="text-lg mr-2">${icon}</span>
+                <span class="font-medium">${message}</span>
+                <button class="ml-auto text-white hover:text-gray-200" onclick="this.parentElement.parentElement.remove()">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        `;
+        
+        // Add to page
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }
+        }, 5000);
+    }
+
+    /**
+     * Show success notification
+     */
+    showSuccess(message) {
+        this.showNotification(message, 'success');
+    }
+
+    /**
+     * Show error notification
+     */
+    showError(message) {
+        this.showNotification(message, 'error');
+    }
+
+    /**
+     * Show warning notification
+     */
+    showWarning(message) {
+        this.showNotification(message, 'warning');
+    }
+
+    /**
+     * Show info notification
+     */
+    showInfo(message) {
+        this.showNotification(message, 'info');
     }
 
     /**
