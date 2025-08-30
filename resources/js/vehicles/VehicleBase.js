@@ -553,39 +553,81 @@ export class VehicleBase {
     }
 
     /**
-     * Speak message using text-to-speech (Đọc thông báo)
+     * Speak message using text-to-speech
      */
     speakMessage(message) {
+        console.log('🔊 speakMessage được gọi với message:', message);
+        
         // Check if speech synthesis is available
         if ('speechSynthesis' in window) {
-            // Stop any current speech
-            window.speechSynthesis.cancel();
+            console.log('✅ Speech synthesis được hỗ trợ');
             
-            // Create speech utterance
-            const utterance = new SpeechSynthesisUtterance(message);
+            // Wait for voices to be loaded (fix for Chrome)
+            const speakWithVoices = () => {
+                const voices = window.speechSynthesis.getVoices();
+                console.log('🎤 Tổng số voices có sẵn:', voices.length);
+                console.log('🎤 Danh sách voices:', voices.map(v => `${v.name} (${v.lang})`));
+                
+                // Stop any current speech
+                window.speechSynthesis.cancel();
+                console.log('🛑 Đã dừng speech cũ');
+                
+                // Create speech utterance
+                const utterance = new SpeechSynthesisUtterance(message);
+                console.log('📝 Đã tạo utterance:', utterance);
+                
+                // Set Vietnamese language and voice
+                utterance.lang = 'vi-VN';
+                utterance.rate = 0.9;
+                utterance.pitch = 1.0;
+                utterance.volume = 0.8;
+                console.log('🌏 Đã set language:', utterance.lang);
+                
+                const vietnameseVoice = voices.find(voice => 
+                    voice.lang.includes('vi') || 
+                    voice.lang.includes('VN') || 
+                    voice.name.toLowerCase().includes('vietnamese')
+                );
+                
+                if (vietnameseVoice) {
+                    utterance.voice = vietnameseVoice;
+                    console.log('🇻🇳 Đã tìm thấy voice tiếng Việt:', vietnameseVoice.name);
+                } else {
+                    console.log('🌍 Không tìm thấy voice tiếng Việt, sử dụng voice mặc định');
+                }
+                
+                // Add event listeners for debugging
+                utterance.onstart = () => console.log('🎬 Bắt đầu đọc thông báo');
+                utterance.onend = () => console.log('✅ Đã đọc xong thông báo');
+                utterance.onerror = (event) => console.error('❌ Lỗi khi đọc:', event.error);
+                
+                // Speak the message
+                window.speechSynthesis.speak(utterance);
+                console.log('🔊 Đã gọi speak()');
+            };
             
-            // Set Vietnamese language and voice
-            utterance.lang = 'vi-VN';
-            utterance.rate = 0.9; // Slightly slower for clarity
-            utterance.pitch = 1.0;
-            utterance.volume = 0.8;
-            
-            // Try to find Vietnamese voice
-            const voices = window.speechSynthesis.getVoices();
-            const vietnameseVoice = voices.find(voice => 
-                voice.lang.includes('vi') || 
-                voice.lang.includes('VN') ||
-                voice.name.toLowerCase().includes('vietnamese')
-            );
-            
-            if (vietnameseVoice) {
-                utterance.voice = vietnameseVoice;
+            // Check if voices are already loaded
+            if (window.speechSynthesis.getVoices().length > 0) {
+                speakWithVoices();
+            } else {
+                // Wait for voices to load (Chrome issue)
+                console.log('⏳ Đang chờ voices load...');
+                window.speechSynthesis.onvoiceschanged = () => {
+                    console.log('🎯 Voices đã load xong, bắt đầu đọc');
+                    speakWithVoices();
+                };
+                
+                // Fallback: try to speak anyway after a short delay
+                setTimeout(() => {
+                    if (window.speechSynthesis.getVoices().length > 0) {
+                        console.log('⏰ Fallback: voices đã sẵn sàng');
+                        speakWithVoices();
+                    } else {
+                        console.log('❌ Không thể load voices sau timeout');
+                    }
+                }, 1000);
             }
             
-            // Speak the message
-            window.speechSynthesis.speak(utterance);
-            
-            console.log('🔊 Đang đọc thông báo:', message);
         } else {
             console.log('❌ Text-to-speech không được hỗ trợ trên trình duyệt này');
         }
@@ -676,4 +718,25 @@ export class VehicleBase {
 // Make VehicleBase available globally for backward compatibility
 if (typeof window !== 'undefined') {
     window.VehicleBase = VehicleBase;
+    
+    // Add global test functions for debugging
+    window.testSpeech = () => {
+        if (window.vehicleBase) {
+            window.vehicleBase.testSpeech();
+        } else {
+            console.log('❌ VehicleBase not available. Try refreshing the page.');
+        }
+    };
+    
+    window.testSpeak = (message) => {
+        if (window.vehicleBase) {
+            window.vehicleBase.speakMessage(message || 'Test message tiếng Việt');
+        } else {
+            console.log('❌ VehicleBase not available. Try refreshing the page.');
+        }
+    };
+    
+    console.log('🧪 Text-to-speech test functions available:');
+    console.log('  - testSpeech() - Test with default message');
+    console.log('  - testSpeak("Your message") - Test with custom message');
 }
