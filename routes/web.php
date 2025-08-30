@@ -54,7 +54,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/waiting-vehicles', [WaitingVehiclesController::class, 'index'])->name('waiting-vehicles.index');
     
     // Running Vehicles (Xe đang chạy)
-    Route::get('/running-vehicles', [RunningVehiclesController::class, 'index'])->name('running-vehicles.index');
+    Route::get('/running-vehicles', [RunningVehiclesController::class, 'index'])
+        ->middleware('update.expired.vehicles')
+        ->name('running-vehicles.index');
     
     // Paused Vehicles (Xe tạm dừng)
     Route::get('/paused-vehicles', [PausedVehiclesController::class, 'index'])->name('paused-vehicles.index');
@@ -93,6 +95,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/api/vehicles/return-yard', [VehicleOperationsController::class, 'returnToYard'])->name('api.vehicles.return-yard');
     Route::patch('/api/vehicles/{vehicle}/pause', [VehicleOperationsController::class, 'pause'])->name('api.vehicles.pause');
     Route::patch('/api/vehicles/{vehicle}/resume', [VehicleOperationsController::class, 'resume'])->name('api.vehicles.resume');
+    Route::post('/api/vehicles/add-time', [VehicleOperationsController::class, 'addTime'])->name('api.vehicles.add-time');
     Route::post('/api/vehicles/move-workshop', [VehicleOperationsController::class, 'moveToWorkshop'])->name('api.vehicles.move-workshop');
     Route::get('/api/vehicles/by-status', [VehicleOperationsController::class, 'getVehiclesByStatus'])->name('api.vehicles.by-status');
     

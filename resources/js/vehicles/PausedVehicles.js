@@ -31,7 +31,7 @@ class PausedVehicles extends VehicleBase {
      * Setup resume timer functionality
      */
     setupResumeTimer() {
-        const resumeButtons = document.querySelectorAll('[data-action="resume-timer"]');
+        const resumeButtons = document.querySelectorAll('[data-action="resume-vehicle"]');
         resumeButtons.forEach(button => {
             button.addEventListener('click', (e) => {
                 const vehicleId = e.target.dataset.vehicleId;
@@ -56,6 +56,39 @@ class PausedVehicles extends VehicleBase {
                 }
             });
         });
+    }
+
+    /**
+     * Resume timer for a vehicle
+     */
+    async resumeTimer(vehicleId, button) {
+        try {
+            this.showButtonLoading(button, 'Đang tiếp tục...');
+            
+            const response = await this.makeApiCall(`/api/vehicles/${vehicleId}/resume`, {
+                method: 'PATCH',
+                body: JSON.stringify({})
+            });
+
+            if (response.success) {
+                this.showNotification('Tiếp tục thành công!', 'success');
+                
+                // Clear countdown interval trước khi ẩn card
+                this.clearCountdownInterval(vehicleId);
+                
+                // Ẩn vehicle card thay vì reload page
+                // (Xe sẽ xuất hiện lại ở màn hình running)
+                this.hideVehicleCard(vehicleId);
+                
+            } else {
+                this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+            }
+        } catch (error) {
+            console.error('Error resuming timer:', error);
+            this.showNotification('Có lỗi xảy ra khi tiếp tục', 'error');
+        } finally {
+            this.restoreButtonState(button);
+        }
     }
 }
 

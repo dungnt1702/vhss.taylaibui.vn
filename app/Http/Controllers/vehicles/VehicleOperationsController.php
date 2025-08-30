@@ -251,6 +251,52 @@ class VehicleOperationsController extends Controller
     }
 
     /**
+     * Add time to vehicle timer
+     */
+    public function addTime(Request $request)
+    {
+        try {
+            $request->validate([
+                'vehicle_ids' => 'required|array',
+                'vehicle_ids.*' => 'exists:vehicles,id',
+                'duration' => 'required|integer|min:1|max:120'
+            ]);
+
+            $vehicleIds = $request->vehicle_ids;
+            $duration = $request->duration;
+
+            // Validate vehicle IDs exist
+            $this->validateVehicleIds($vehicleIds);
+
+            $vehicles = Vehicle::whereIn('id', $vehicleIds)->get();
+            
+            foreach ($vehicles as $vehicle) {
+                // Chỉ thêm thời gian cho xe đang chạy
+                if ($vehicle->status === Vehicle::STATUS_RUNNING && $vehicle->end_time) {
+                    $newEndTime = $vehicle->end_time->addMinutes($duration);
+                    $vehicle->update([
+                        'end_time' => $newEndTime,
+                        'status_changed_at' => now()
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã thêm ' . $duration . ' phút cho ' . count($vehicles) . ' xe',
+                'new_end_time' => $newEndTime ? $newEndTime->timestamp * 1000 : null,
+                'vehicles' => $vehicles
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi thêm thời gian: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi thêm thời gian'
+            ], 500);
+        }
+    }
+
+    /**
      * Get vehicles by status for API
      */
     public function getVehiclesByStatus(Request $request)

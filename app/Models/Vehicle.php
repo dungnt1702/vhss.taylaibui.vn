@@ -98,14 +98,22 @@ class Vehicle extends Model
         return $query->where('status', self::STATUS_WORKSHOP);
     }
 
-    // Scope for running vehicles
+    // Scope for running vehicles (chỉ những xe còn thời gian để chạy)
     public function scopeRunning($query)
     {
-        return $query->where('status', self::STATUS_RUNNING);
+        return $query->where('status', self::STATUS_RUNNING)
+                    ->where('end_time', '>', now()); // Chỉ lấy xe còn thời gian
     }
 
-    // Scope for expired vehicles
+    // Scope for expired vehicles (xe đã hết giờ nhưng vẫn có status running)
     public function scopeExpired($query)
+    {
+        return $query->where('status', self::STATUS_RUNNING)
+                    ->where('end_time', '<=', now()); // Lấy xe đã hết giờ
+    }
+
+    // Scope for truly expired vehicles (status = expired)
+    public function scopeTrulyExpired($query)
     {
         return $query->where('status', self::STATUS_EXPIRED);
     }

@@ -85,12 +85,6 @@ export class VehicleBase {
                     this.handleAssignTimer(e);
                 });
                 break;
-            case 'pause-timer':
-                button.addEventListener('click', (e) => this.handlePauseTimer(e));
-                break;
-            case 'resume-timer':
-                button.addEventListener('click', (e) => this.handleResumeTimer(e));
-                break;
             case 'return-yard':
                 button.addEventListener('click', (e) => this.handleReturnYard(e));
                 break;
@@ -105,15 +99,6 @@ export class VehicleBase {
                 break;
             case 'toggle-vehicle':
                 button.addEventListener('click', (e) => this.handleToggleVehicle(e));
-                break;
-            case 'resume-vehicle':
-                button.addEventListener('click', (e) => this.handleResumeVehicle(e));
-                break;
-            case 'add-time':
-                button.addEventListener('click', (e) => this.handleAddTime(e));
-                break;
-            case 'pause-vehicle':
-                button.addEventListener('click', (e) => this.handlePauseVehicle(e));
                 break;
             case 'open-workshop-modal':
                 button.addEventListener('click', (e) => this.handleOpenWorkshopModal(e));
@@ -154,6 +139,24 @@ export class VehicleBase {
             return;
         }
 
+        // Kiểm tra vehicle status - chỉ start countdown cho running vehicles
+        const vehicleStatus = card.dataset.status;
+        if (vehicleStatus !== 'running') {
+            console.log(`${this.pageName}: Vehicle ${vehicleId} is ${vehicleStatus}, not starting countdown timer`);
+            
+            // Với paused vehicles, hiển thị thời gian còn lại từ paused_remaining_seconds
+            if (vehicleStatus === 'paused') {
+                this.displayPausedTime(timerElement, card);
+            }
+            
+            // Với expired vehicles, hiển thị 00:00
+            if (vehicleStatus === 'expired') {
+                this.displayExpiredTime(timerElement);
+            }
+            
+            return;
+        }
+
         console.log(`${this.pageName}: Starting countdown for vehicle ${vehicleId}, end time: ${endTime}`);
 
         // Update ngay lập tức
@@ -166,6 +169,46 @@ export class VehicleBase {
 
         // Lưu interval ID để có thể clear sau này
         card.dataset.countdownInterval = intervalId;
+    }
+
+    /**
+     * Display paused time (static, not counting down)
+     */
+    displayPausedTime(timerElement, card) {
+        const pausedRemainingSeconds = card.dataset.pausedRemainingSeconds;
+        if (pausedRemainingSeconds) {
+            const minutes = Math.floor(pausedRemainingSeconds / 60);
+            const seconds = pausedRemainingSeconds % 60;
+            
+            const minutesElement = timerElement.querySelector('.countdown-minutes');
+            const secondsElement = timerElement.querySelector('.countdown-seconds');
+            
+            if (minutesElement) {
+                minutesElement.textContent = minutes.toString().padStart(2, '0');
+            }
+            if (secondsElement) {
+                secondsElement.textContent = seconds.toString().padStart(2, '0');
+            }
+            
+            // Thêm class xám cho paused vehicles
+            timerElement.classList.add('text-gray-500');
+            console.log(`Displaying paused time for vehicle: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+        }
+    }
+
+    /**
+     * Display expired time (00:00)
+     */
+    displayExpiredTime(timerElement) {
+        const minutesElement = timerElement.querySelector('.countdown-minutes');
+        const secondsElement = timerElement.querySelector('.countdown-seconds');
+        
+        if (minutesElement) minutesElement.textContent = '00';
+        if (secondsElement) secondsElement.textContent = '00';
+        
+        // Thêm class đỏ cho expired vehicles
+        timerElement.classList.add('text-red-500');
+        console.log('Displaying expired time: 00:00');
     }
 
     /**
@@ -234,25 +277,7 @@ export class VehicleBase {
         this.assignTimer(vehicleId, duration, e.target);
     }
 
-    /**
-     * Handle pause timer action
-     */
-    handlePauseTimer(e) {
-        const vehicleId = e.target.dataset.vehicleId;
-        if (vehicleId) {
-            this.pauseTimer(vehicleId, e.target);
-        }
-    }
 
-    /**
-     * Handle resume timer action
-     */
-    handleResumeTimer(e) {
-        const vehicleId = e.target.dataset.vehicleId;
-        if (vehicleId) {
-            this.resumeTimer(vehicleId, e.target);
-        }
-    }
 
     /**
      * Handle return yard action
@@ -317,7 +342,7 @@ export class VehicleBase {
         const duration = parseInt(e.target.dataset.duration);
         if (vehicleId && duration) {
             console.log('Adding', duration, 'minutes to vehicle', vehicleId);
-            // TODO: Implement add time logic
+            this.addTime(vehicleId, duration, e.target);
         }
     }
 
@@ -342,6 +367,8 @@ export class VehicleBase {
             // TODO: Implement workshop modal logic
         }
     }
+
+
 
     /**
      * Hide vehicle card after successful action
@@ -502,61 +529,7 @@ export class VehicleBase {
         }
     }
 
-    /**
-     * Pause timer for a vehicle
-     */
-    async pauseTimer(vehicleId, button) {
-        try {
-            this.showButtonLoading(button, 'Đang tạm dừng...');
-            
-            const response = await this.makeApiCall('/api/vehicles/pause-timer', {
-                method: 'POST',
-                body: JSON.stringify({
-                    vehicle_ids: [vehicleId]
-                })
-            });
 
-            if (response.success) {
-                this.showNotification('Tạm dừng thành công!', 'success');
-                setTimeout(() => window.location.reload(), 1000);
-            } else {
-                this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
-            }
-        } catch (error) {
-            console.error('Error pausing timer:', error);
-            this.showNotification('Có lỗi xảy ra khi tạm dừng', 'error');
-        } finally {
-            this.restoreButtonState(button);
-        }
-    }
-
-    /**
-     * Resume timer for a vehicle
-     */
-    async resumeTimer(vehicleId, button) {
-        try {
-            this.showButtonLoading(button, 'Đang tiếp tục...');
-            
-            const response = await this.makeApiCall('/api/vehicles/resume-timer', {
-                method: 'POST',
-                body: JSON.stringify({
-                    vehicle_ids: [vehicleId]
-                })
-            });
-
-            if (response.success) {
-                this.showNotification('Tiếp tục thành công!', 'success');
-                setTimeout(() => window.location.reload(), 1000);
-            } else {
-                this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
-            }
-        } catch (error) {
-            console.error('Error resuming timer:', error);
-            this.showNotification('Có lỗi xảy ra khi tiếp tục', 'error');
-        } finally {
-            this.restoreButtonState(button);
-        }
-    }
 
     /**
      * Return vehicle(s) to yard (handles both single and multiple vehicles)
