@@ -387,7 +387,17 @@ export class VehicleBase {
      * Handle assign timer action
      */
     handleAssignTimer(e) {
-        // Kiểm tra xem có xe nào được chọn không
+        const button = e.target;
+        const vehicleId = button.dataset.vehicleId;
+        const duration = parseInt(button.dataset.duration);
+        
+        // Nếu có vehicleId và duration trực tiếp trên button (single vehicle action)
+        if (vehicleId && duration) {
+            this.assignTimer(vehicleId, duration, button);
+            return;
+        }
+        
+        // Nếu không có vehicleId (bulk action - cần chọn xe từ bảng)
         const selectedVehicles = this.getSelectedVehicles();
         
         if (selectedVehicles.length === 0) {
@@ -397,12 +407,12 @@ export class VehicleBase {
 
         // Lấy duration từ select box
         const timeSelect = document.getElementById('time-select');
-        const duration = parseInt(timeSelect.value);
+        const durationFromSelect = parseInt(timeSelect.value);
         
-        if (duration) {
+        if (durationFromSelect) {
             // Gọi method từ ReadyVehicles nếu có
             if (this.assignTimerBulk && typeof this.assignTimerBulk === 'function') {
-                this.assignTimerBulk(duration);
+                this.assignTimerBulk(durationFromSelect);
             }
         } else {
             this.showNotificationModal('Cảnh báo', 'Vui lòng chọn thời gian.', 'warning');
@@ -459,15 +469,21 @@ export class VehicleBase {
      */
     async assignTimer(vehicleId, duration, button) {
         try {
+            console.log(`Assigning timer: vehicleId=${vehicleId}, duration=${duration}`);
             this.showButtonLoading(button, 'Đang bấm giờ...');
+            
+            const requestBody = {
+                vehicle_ids: [vehicleId],
+                duration: duration
+            };
+            console.log('Request body:', requestBody);
             
             const response = await this.makeApiCall('/api/vehicles/start-timer', {
                 method: 'POST',
-                body: JSON.stringify({
-                    vehicle_ids: [vehicleId],
-                    duration: duration
-                })
+                body: JSON.stringify(requestBody)
             });
+
+            console.log('API response:', response);
 
             if (response.success) {
                 this.showNotificationModal('Thành công', 'Bấm giờ thành công!', 'success');
@@ -478,7 +494,7 @@ export class VehicleBase {
             }
         } catch (error) {
             console.error('Error assigning timer:', error);
-            this.showNotification('Có lỗi xảy ra khi bấm giờ', 'error');
+            this.showNotificationModal('Lỗi', `Có lỗi xảy ra khi bấm giờ: ${error.message}`, 'error');
         } finally {
             this.restoreButtonState(button);
         }
@@ -911,6 +927,8 @@ export class VehicleBase {
      * Show loading state on button
      */
     showButtonLoading(button, text) {
+        if (!button) return;
+        
         button.dataset.originalText = button.textContent;
         button.textContent = text;
         button.disabled = true;
@@ -920,6 +938,8 @@ export class VehicleBase {
      * Restore button to original state
      */
     restoreButtonState(button) {
+        if (!button) return;
+        
         if (button.dataset.originalText) {
             button.textContent = button.dataset.originalText;
             delete button.dataset.originalText;
