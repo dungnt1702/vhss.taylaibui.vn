@@ -208,8 +208,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
                     
                 case 'return-yard':
-                    console.log('Returning vehicle', vehicleId, 'to yard');
-                    window.returnVehicleToYard(vehicleId, button);
+                    console.log('Returning vehicle', vehicleId, 'to yard - handled by VehicleClasses.js');
+                    // Let VehicleClasses.js handle this action to avoid conflicts
                     break;
                     
                 case 'add-time':

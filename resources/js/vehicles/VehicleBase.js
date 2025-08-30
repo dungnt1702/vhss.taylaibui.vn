@@ -291,7 +291,12 @@ export class VehicleBase {
      */
     async returnToYard(vehicleId, button) {
         try {
-            this.showButtonLoading(button, 'Đang trả về bãi...');
+            // Simple loading state
+            if (button) {
+                const originalText = button.textContent;
+                button.textContent = 'Đang xử lý...';
+                button.disabled = true;
+            }
             
             const response = await this.makeApiCall('/api/vehicles/return-yard', {
                 method: 'POST',
@@ -301,16 +306,28 @@ export class VehicleBase {
             });
 
             if (response.success) {
-                this.showNotification('Trả về bãi thành công!', 'success');
-                setTimeout(() => window.location.reload(), 1000);
+                // Simple success - just reload page
+                window.location.reload();
             } else {
-                this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+                // Show error if needed
+                console.error('Return to yard failed:', response.message);
+                if (button) {
+                    button.textContent = 'Lỗi - Thử lại';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.disabled = false;
+                    }, 2000);
+                }
             }
         } catch (error) {
             console.error('Error returning to yard:', error);
-            this.showNotification('Có lỗi xảy ra khi trả về bãi', 'error');
-        } finally {
-            this.restoreButtonState(button);
+            if (button) {
+                button.textContent = 'Lỗi - Thử lại';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }, 2000);
+            }
         }
     }
 
