@@ -186,45 +186,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Handle other vehicle actions
-        if (e.target.closest('[data-action]')) {
-            e.preventDefault();
-            const button = e.target.closest('[data-action]');
-            const action = button.getAttribute('data-action');
-            const vehicleId = button.getAttribute('data-vehicle-id');
-            
-            console.log('Vehicle action clicked:', action, 'for vehicle:', vehicleId);
-            
-            switch(action) {
-                case 'start-timer':
-                    const duration = button.getAttribute('data-duration');
-                    console.log('Starting timer for vehicle', vehicleId, 'with duration', duration, 'minutes');
-                    // TODO: Implement timer start logic
-                    break;
-                    
-                case 'resume-vehicle':
-                    console.log('Resuming vehicle', vehicleId);
-                    // TODO: Implement resume logic
-                    break;
-                    
-                case 'add-time':
-                    const addDuration = button.getAttribute('data-duration');
-                    console.log('Adding', addDuration, 'minutes to vehicle', vehicleId);
-                    // TODO: Implement add time logic
-                    break;
-                case 'pause-vehicle':
-                    console.log('Pausing vehicle', vehicleId);
-                    // TODO: Implement pause logic
-                    break;
-                case 'open-workshop-modal':
-                    console.log('Opening workshop modal for vehicle', vehicleId);
-                    // TODO: Implement workshop modal logic
-                    break;
-                    
-                default:
-                    console.log('Unknown action:', action);
-            }
-        }
+        // Vehicle actions are handled by VehicleBase.js, not here
+        // This prevents conflicts and keeps vehicle logic centralized
     });
 
     // Active link highlighting

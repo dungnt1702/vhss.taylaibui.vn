@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
+    <!-- Page identifier for VehicleClasses.js -->
+    <div id="vehicle-page" data-page-type="waiting" style="display: none;"></div>
 
     <!-- Header for Waiting Vehicles -->
     <div class="mb-6">
@@ -42,10 +44,10 @@
                     
                     <!-- Action Buttons for waiting vehicles -->
                     <div class="flex flex-wrap gap-2 justify-center">
-                        <button data-action="start-timer" data-vehicle-id="{{ $vehicle->id }}" data-duration="30" class="btn btn-success btn-sm">
+                        <button data-action="assign-timer" data-vehicle-id="{{ $vehicle->id }}" data-duration="30" class="btn btn-success btn-sm">
                             🚗 30p
                         </button>
-                        <button data-action="start-timer" data-vehicle-id="{{ $vehicle->id }}" data-duration="45" class="btn btn-primary btn-sm">
+                        <button data-action="assign-timer" data-vehicle-id="{{ $vehicle->id }}" data-duration="45" class="btn btn-primary btn-sm">
                             🚙 45p
                         </button>
                         <button data-action="open-workshop-modal" data-vehicle-id="{{ $vehicle->id }}" class="btn btn-secondary btn-sm">

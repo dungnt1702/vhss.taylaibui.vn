@@ -23,49 +23,9 @@ class RunningVehicles extends VehicleBase {
      * Setup running-specific features
      */
     setupRunningSpecificFeatures() {
-        this.setupPauseResume();
-        this.setupReturnYard();
-    }
-
-    /**
-     * Setup pause and resume functionality
-     */
-    setupPauseResume() {
-        const pauseButtons = document.querySelectorAll('[data-action="pause-timer"]');
-        const resumeButtons = document.querySelectorAll('[data-action="resume-timer"]');
-        
-        pauseButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const vehicleId = e.target.dataset.vehicleId;
-                if (vehicleId) {
-                    this.pauseTimer(vehicleId, e.target);
-                }
-            });
-        });
-
-        resumeButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const vehicleId = e.target.dataset.vehicleId;
-                if (vehicleId) {
-                    this.resumeTimer(vehicleId, e.target);
-                }
-            });
-        });
-    }
-
-    /**
-     * Setup return to yard functionality
-     */
-    setupReturnYard() {
-        const returnButtons = document.querySelectorAll('[data-action="return-yard"]');
-        returnButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const vehicleId = e.target.dataset.vehicleId;
-                if (vehicleId) {
-                    this.returnToYard(vehicleId, e.target);
-                }
-            });
-        });
+        // Tất cả actions đã được xử lý bởi VehicleBase
+        // Không cần setup riêng nữa
+        console.log('Running Vehicles: All actions handled by VehicleBase');
     }
 }
 

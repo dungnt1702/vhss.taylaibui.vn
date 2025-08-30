@@ -43,7 +43,7 @@ class ReadyVehicles extends VehicleBase {
                 const vehicleId = e.target.dataset.vehicleId;
                 
                 if (duration && vehicleId) {
-                    this.startTimer(vehicleId, duration, e.target);
+                    this.assignTimer(vehicleId, duration, e.target);
                 }
             });
         });
@@ -113,21 +113,21 @@ class ReadyVehicles extends VehicleBase {
      * Setup bulk actions
      */
     setupBulkActions() {
-        this.setupBulkStartTimer();
+        this.setupBulkAssignTimer();
         this.setupBulkRouteAssignment();
         this.setupBulkWorkshopTransfer();
     }
 
     /**
-     * Setup bulk start timer
+     * Setup bulk assign timer
      */
-    setupBulkStartTimer() {
+    setupBulkAssignTimer() {
         const bulkStartButtons = document.querySelectorAll('[data-action="start-timer-bulk"]');
         bulkStartButtons.forEach(button => {
             button.addEventListener('click', (e) => {
                 const duration = parseInt(e.target.dataset.duration);
                 if (duration) {
-                    this.startTimerBulk(duration);
+                    this.assignTimerBulk(duration);
                 }
             });
         });
@@ -158,35 +158,19 @@ class ReadyVehicles extends VehicleBase {
     }
 
     /**
-     * Start timer for multiple vehicles
+     * Assign timer for multiple vehicles
      */
-    async startTimerBulk(duration) {
+    async assignTimerBulk(duration) {
         const selectedVehicles = this.getSelectedVehicles();
         if (selectedVehicles.length === 0) {
             this.showNotification('Vui lòng chọn ít nhất một xe.', 'warning');
             return;
         }
 
-        if (confirm(`Bạn có chắc muốn bắt đầu bấm giờ cho ${selectedVehicles.length} xe trong ${duration} phút?`)) {
-            try {
-                const response = await this.makeApiCall('/api/vehicles/start-timer', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        vehicle_ids: selectedVehicles,
-                        duration: duration
-                    })
-                });
-
-                if (response.success) {
-                    this.showNotification(`Bấm giờ thành công cho ${selectedVehicles.length} xe!`, 'success');
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
-                }
-            } catch (error) {
-                console.error('Error starting bulk timer:', error);
-                this.showNotification('Có lỗi xảy ra khi bấm giờ hàng loạt', 'error');
-            }
+        if (confirm(`Bạn có chắc muốn bấm giờ cho ${selectedVehicles.length} xe trong ${duration} phút?`)) {
+            // Use the bulk timer function from VehicleBase
+            const button = document.querySelector('[data-action="assign-timer"]');
+            await this.assignTimerBulk(selectedVehicles, duration, button);
         }
     }
 

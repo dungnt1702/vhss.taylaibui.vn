@@ -9,6 +9,7 @@ export class VehicleBase {
         this.vehicleCards = [];
         this.actionButtons = [];
         this.initialized = false;
+        this.isSpeaking = false; // Track if a speech is currently in progress
         console.log(`${this.pageName} class initialized`);
     }
 
@@ -38,29 +39,51 @@ export class VehicleBase {
         }
         
         console.log(`${this.pageName}: Found ${this.vehicleCards.length} vehicle cards`);
+        console.log(`${this.pageName}: Found ${this.actionButtons.length} action buttons`);
+        
+        // Debug: Log all action buttons found
+        this.actionButtons.forEach((button, index) => {
+            const action = button.dataset.action;
+            const vehicleId = button.dataset.vehicleId;
+            console.log(`${this.pageName}: Button ${index + 1} - action: ${action}, vehicleId: ${vehicleId}`);
+        });
     }
 
     /**
      * Initialize event listeners for common actions
      */
     initializeEventListeners() {
-        if (this.actionButtons.length === 0) return;
+        if (this.actionButtons.length === 0) {
+            console.log(`${this.pageName}: No action buttons to bind events to`);
+            return;
+        }
         
-        this.actionButtons.forEach(button => {
+        console.log(`${this.pageName}: Binding events to ${this.actionButtons.length} action buttons`);
+        
+        this.actionButtons.forEach((button, index) => {
             const action = button.dataset.action;
             if (action) {
+                console.log(`${this.pageName}: Binding event for button ${index + 1} - action: ${action}`);
                 this.setupActionListener(button, action);
             }
         });
+        
+        console.log(`${this.pageName}: Event binding completed`);
     }
 
     /**
      * Setup action listener for a specific button
      */
     setupActionListener(button, action) {
+        console.log(`${this.pageName}: Setting up listener for action: ${action}`);
+        
         switch (action) {
-            case 'start-timer':
-                button.addEventListener('click', (e) => this.handleStartTimer(e));
+            case 'assign-timer':
+                console.log(`${this.pageName}: Adding click listener for assign-timer`);
+                button.addEventListener('click', (e) => {
+                    console.log(`${this.pageName}: assign-timer button clicked!`);
+                    this.handleAssignTimer(e);
+                });
                 break;
             case 'pause-timer':
                 button.addEventListener('click', (e) => this.handlePauseTimer(e));
@@ -80,6 +103,23 @@ export class VehicleBase {
             case 'close-notification':
                 button.addEventListener('click', (e) => this.closeNotification(e));
                 break;
+            case 'toggle-vehicle':
+                button.addEventListener('click', (e) => this.handleToggleVehicle(e));
+                break;
+            case 'resume-vehicle':
+                button.addEventListener('click', (e) => this.handleResumeVehicle(e));
+                break;
+            case 'add-time':
+                button.addEventListener('click', (e) => this.handleAddTime(e));
+                break;
+            case 'pause-vehicle':
+                button.addEventListener('click', (e) => this.handlePauseVehicle(e));
+                break;
+            case 'open-workshop-modal':
+                button.addEventListener('click', (e) => this.handleOpenWorkshopModal(e));
+                break;
+            default:
+                console.log(`${this.pageName}: Unknown action: ${action}`);
         }
     }
 
@@ -134,9 +174,9 @@ export class VehicleBase {
     }
 
     /**
-     * Handle start timer action
+     * Handle assign timer action
      */
-    handleStartTimer(e) {
+    handleAssignTimer(e) {
         const vehicleId = e.target.dataset.vehicleId;
         const duration = parseInt(e.target.dataset.duration);
         
@@ -145,9 +185,9 @@ export class VehicleBase {
             return;
         }
 
-        if (confirm(`Bạn có chắc muốn bắt đầu bấm giờ cho xe ${vehicleId} trong ${duration} phút?`)) {
-            this.startTimer(vehicleId, duration, e.target);
-        }
+        // Bỏ confirm dialog, gọi trực tiếp assignTimer
+        console.log(`Assigning timer for vehicle ${vehicleId} with duration ${duration} minutes`);
+        this.assignTimer(vehicleId, duration, e.target);
     }
 
     /**
@@ -201,9 +241,159 @@ export class VehicleBase {
     }
 
     /**
-     * Start timer for a vehicle
+     * Handle toggle vehicle action
      */
-    async startTimer(vehicleId, duration, button) {
+    handleToggleVehicle(e) {
+        const vehicleId = e.target.dataset.vehicleId;
+        if (vehicleId) {
+            console.log('Toggle vehicle content for vehicle:', vehicleId);
+            // This is handled by app.js toggleVehicleSimple function
+            if (window.toggleVehicleSimple) {
+                window.toggleVehicleSimple(vehicleId);
+            }
+        }
+    }
+
+    /**
+     * Handle resume vehicle action
+     */
+    handleResumeVehicle(e) {
+        const vehicleId = e.target.dataset.vehicleId;
+        if (vehicleId) {
+            console.log('Resuming vehicle:', vehicleId);
+            // TODO: Implement resume logic
+        }
+    }
+
+    /**
+     * Handle add time action
+     */
+    handleAddTime(e) {
+        const vehicleId = e.target.dataset.vehicleId;
+        const duration = parseInt(e.target.dataset.duration);
+        if (vehicleId && duration) {
+            console.log('Adding', duration, 'minutes to vehicle', vehicleId);
+            // TODO: Implement add time logic
+        }
+    }
+
+    /**
+     * Handle pause vehicle action
+     */
+    handlePauseVehicle(e) {
+        const vehicleId = e.target.dataset.vehicleId;
+        if (vehicleId) {
+            console.log('Pausing vehicle:', vehicleId);
+            // TODO: Implement pause logic
+        }
+    }
+
+    /**
+     * Handle open workshop modal action
+     */
+    handleOpenWorkshopModal(e) {
+        const vehicleId = e.target.dataset.vehicleId;
+        if (vehicleId) {
+            console.log('Opening workshop modal for vehicle:', vehicleId);
+            // TODO: Implement workshop modal logic
+        }
+    }
+
+    /**
+     * Hide vehicle card after successful action
+     */
+    hideVehicleCard(vehicleId) {
+        const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
+        if (vehicleCard) {
+            // Animate out
+            vehicleCard.style.transition = 'all 0.3s ease';
+            vehicleCard.style.transform = 'scale(0.8)';
+            vehicleCard.style.opacity = '0';
+            
+            // Remove after animation
+            setTimeout(() => {
+                vehicleCard.remove();
+                
+                // Check if no more vehicles
+                const remainingCards = document.querySelectorAll('.vehicle-card');
+                if (remainingCards.length === 0) {
+                    this.showEmptyState();
+                }
+            }, 300);
+        }
+    }
+
+    /**
+     * Show empty state when no vehicles remain
+     */
+    showEmptyState() {
+        const vehicleList = document.getElementById('vehicle-list');
+        if (vehicleList) {
+            vehicleList.innerHTML = `
+                <div class="col-span-full">
+                    <div class="text-center py-12">
+                        <svg class="mx-auto h-12 w-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-neutral-900">Không có xe nào</h3>
+                        <p class="mt-1 text-sm text-neutral-500">
+                            Hiện tại không có xe nào đang chờ.
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Handle custom actions - can be overridden by child classes
+     */
+    handleCustomAction(action, vehicleId, button) {
+        console.log(`VehicleBase: Handling custom action: ${action} for vehicle: ${vehicleId}`);
+        
+        switch (action) {
+            case 'assign-timer':
+                this.handleAssignTimer({ target: button });
+                break;
+            case 'pause-timer':
+                this.handlePauseTimer({ target: button });
+                break;
+            case 'resume-timer':
+                this.handleResumeTimer({ target: button });
+                break;
+            case 'return-yard':
+                this.handleReturnYard({ target: button });
+                break;
+            case 'move-workshop':
+                this.handleMoveWorkshop({ target: button });
+                break;
+            case 'assign-route':
+                this.handleAssignRoute({ target: button });
+                break;
+            case 'toggle-vehicle':
+                this.handleToggleVehicle({ target: button });
+                break;
+            case 'resume-vehicle':
+                this.handleResumeVehicle({ target: button });
+                break;
+            case 'add-time':
+                this.handleAddTime({ target: button });
+                break;
+            case 'pause-vehicle':
+                this.handlePauseVehicle({ target: button });
+                break;
+            case 'open-workshop-modal':
+                this.handleOpenWorkshopModal({ target: button });
+                break;
+            default:
+                console.log(`VehicleBase: Unknown action: ${action}`);
+        }
+    }
+
+    /**
+     * Assign timer for a vehicle
+     */
+    async assignTimer(vehicleId, duration, button) {
         try {
             this.showButtonLoading(button, 'Đang bấm giờ...');
             
@@ -217,13 +407,48 @@ export class VehicleBase {
 
             if (response.success) {
                 this.showNotification('Bấm giờ thành công!', 'success');
-                // Reload page to show updated status
-                setTimeout(() => window.location.reload(), 1000);
+                // Không reload page, chỉ ẩn vehicle card
+                this.hideVehicleCard(vehicleId);
             } else {
                 this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
             }
         } catch (error) {
-            console.error('Error starting timer:', error);
+            console.error('Error assigning timer:', error);
+            this.showNotification('Có lỗi xảy ra khi bấm giờ', 'error');
+        } finally {
+            this.restoreButtonState(button);
+        }
+    }
+
+    /**
+     * Assign timer for multiple vehicles (bulk action)
+     */
+    async assignTimerBulk(vehicleIds, duration, button) {
+        try {
+            if (!Array.isArray(vehicleIds) || vehicleIds.length === 0) {
+                this.showWarning('Không có xe nào được chọn để bấm giờ');
+                return;
+            }
+
+            this.showButtonLoading(button, `Đang bấm giờ ${vehicleIds.length} xe...`);
+            
+            const response = await this.makeApiCall('/api/vehicles/start-timer', {
+                method: 'POST',
+                body: JSON.stringify({
+                    vehicle_ids: vehicleIds,
+                    duration: duration
+                })
+            });
+
+            if (response.success) {
+                this.showNotification(`Đã bấm giờ thành công cho ${vehicleIds.length} xe!`, 'success');
+                // Không reload page, ẩn tất cả vehicle cards
+                vehicleIds.forEach(id => this.hideVehicleCard(id));
+            } else {
+                this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+            }
+        } catch (error) {
+            console.error('Error assigning timer for multiple vehicles:', error);
             this.showNotification('Có lỗi xảy ra khi bấm giờ', 'error');
         } finally {
             this.restoreButtonState(button);
@@ -562,11 +787,27 @@ export class VehicleBase {
         if ('speechSynthesis' in window) {
             console.log('✅ Speech synthesis được hỗ trợ');
             
+            // Prevent multiple calls to the same message
+            if (this.isSpeaking) {
+                console.log('⏸️ Đang đọc rồi, bỏ qua lần gọi này');
+                return;
+            }
+            
+            this.isSpeaking = true;
+            let hasSpoken = false; // Track if we've already spoken
+            
             // Wait for voices to be loaded (fix for Chrome)
             const speakWithVoices = () => {
+                // Prevent multiple executions
+                if (hasSpoken) {
+                    console.log('🔄 Đã đọc rồi, bỏ qua lần gọi này');
+                    return;
+                }
+                
+                hasSpoken = true;
+                
                 const voices = window.speechSynthesis.getVoices();
                 console.log('🎤 Tổng số voices có sẵn:', voices.length);
-                console.log('🎤 Danh sách voices:', voices.map(v => `${v.name} (${v.lang})`));
                 
                 // Stop any current speech
                 window.speechSynthesis.cancel();
@@ -597,9 +838,19 @@ export class VehicleBase {
                 }
                 
                 // Add event listeners for debugging
-                utterance.onstart = () => console.log('🎬 Bắt đầu đọc thông báo');
-                utterance.onend = () => console.log('✅ Đã đọc xong thông báo');
-                utterance.onerror = (event) => console.error('❌ Lỗi khi đọc:', event.error);
+                utterance.onstart = () => {
+                    console.log('🎬 Bắt đầu đọc thông báo');
+                };
+                
+                utterance.onend = () => {
+                    console.log('✅ Đã đọc xong thông báo');
+                    this.isSpeaking = false;
+                };
+                
+                utterance.onerror = (event) => {
+                    console.error('❌ Lỗi khi đọc:', event.error);
+                    this.isSpeaking = false;
+                };
                 
                 // Speak the message
                 window.speechSynthesis.speak(utterance);
@@ -619,11 +870,14 @@ export class VehicleBase {
                 
                 // Fallback: try to speak anyway after a short delay
                 setTimeout(() => {
-                    if (window.speechSynthesis.getVoices().length > 0) {
+                    if (window.speechSynthesis.getVoices().length > 0 && this.isSpeaking && !hasSpoken) {
                         console.log('⏰ Fallback: voices đã sẵn sàng');
                         speakWithVoices();
-                    } else {
+                    } else if (this.isSpeaking && !hasSpoken) {
                         console.log('❌ Không thể load voices sau timeout');
+                        this.isSpeaking = false;
+                    } else {
+                        console.log('⏸️ Fallback: đã đọc rồi hoặc không còn active');
                     }
                 }, 1000);
             }

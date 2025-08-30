@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
+    <!-- Page identifier for VehicleClasses.js -->
+    <div id="vehicle-page" data-page-type="running" style="display: none;"></div>
 
     <!-- Header for Running Vehicles -->
     <div class="mb-6">
