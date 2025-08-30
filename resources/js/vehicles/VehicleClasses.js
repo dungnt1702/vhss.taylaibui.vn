@@ -150,4 +150,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Export for ES6 modules
-export default VehicleClasses;
+export { loadPageSpecificJS };
+export default loadPageSpecificJS;
