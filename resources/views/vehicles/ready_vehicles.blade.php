@@ -162,8 +162,8 @@
 @endsection
 
 @push('scripts')
-    <!-- Load ready-vehicles.js -->
-    @vite(['resources/js/vehicles/ready-vehicles.js'])
+    <!-- Load VehicleClasses.js for all vehicle functionality -->
+    @vite(['resources/js/vehicles/VehicleClasses.js'])
 @endpush
 
 @push('styles')

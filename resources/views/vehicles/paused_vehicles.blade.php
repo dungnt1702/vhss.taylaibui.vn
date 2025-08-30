@@ -76,7 +76,8 @@
 @endsection
 
 @push('scripts')
-@vite(['resources/js/app.js', 'resources/js/vehicles/paused-vehicles.js'])
+    <!-- Load VehicleClasses.js for all vehicle functionality -->
+    @vite(['resources/js/vehicles/VehicleClasses.js'])
 @endpush
 
 @push('styles')

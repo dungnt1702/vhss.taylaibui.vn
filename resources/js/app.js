@@ -227,6 +227,8 @@ window.resumeVehicle = function(vehicleId) {
 import './vehicles/vehicles';
 import './vehicles/vehicle-forms';
 import './vehicles/vehicle-operations';
+// Import the vehicle classes entry point for proper dependency management
+import './vehicles/VehicleClasses';
 // vehicle-wrappers.js will be loaded after vehicleOperations is initialized
 
 // Import vehicles list functionality
