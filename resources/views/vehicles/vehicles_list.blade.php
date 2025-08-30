@@ -1,3 +1,9 @@
+<!-- Header for Vehicles List -->
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-neutral-900">Danh sách xe</h1>
+    <p class="text-neutral-600 mt-2">Quản lý và xem danh sách tất cả xe trong hệ thống</p>
+</div>
+
 <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <!-- Table -->
     <div class="overflow-x-auto">

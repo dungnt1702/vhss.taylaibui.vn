@@ -5,7 +5,13 @@
 @section('content')
 <div class="container mx-auto px-4 py-6">
 
-    <!-- Vehicle Grid -->
+    <!-- Header for Repairing Vehicles -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-neutral-900">Xe đang sửa chữa</h1>
+        <p class="text-neutral-600 mt-2">Quản lý xe đang được sửa chữa</p>
+    </div>
+
+    <!-- Grid Display for repairing vehicles -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="repairing-vehicles-grid">
         @foreach($vehicles as $vehicle)
         <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-purple-500" data-vehicle-id="{{ $vehicle->id }}" data-status="{{ $vehicle->status }}">

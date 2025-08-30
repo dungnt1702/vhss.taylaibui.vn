@@ -5,6 +5,12 @@
 @section('content')
 <div class="container mx-auto px-4 py-6">
 
+    <!-- Header for Paused Vehicles -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-neutral-900">Xe tạm dừng</h1>
+        <p class="text-neutral-600 mt-2">Quản lý xe đang tạm dừng hoạt động</p>
+    </div>
+
     <!-- Grid Display for paused vehicles -->
     <div id="vehicle-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @forelse($vehicles as $vehicle)

@@ -4,60 +4,6 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
-    <!-- Header -->
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-neutral-900">Quản lý xe</h1>
-        <p class="text-neutral-600 mt-2">Quản lý tất cả xe trong hệ thống</p>
-    </div>
-
-    <!-- Filter Tabs -->
-    <div class="mb-6">
-        <div class="border-b border-neutral-200">
-            <nav class="-mb-px flex space-x-8">
-                <a href="{{ route('vehicles.index', ['filter' => 'ready']) }}" 
-                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'ready' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
-                    Xe sẵn sàng chạy
-                </a>
-                <a href="{{ route('vehicles.index', ['filter' => 'waiting']) }}" 
-                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'waiting' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
-                    Xe đang chờ
-                </a>
-                <a href="{{ route('vehicles.index', ['filter' => 'running']) }}" 
-                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'running' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
-                    Xe đang chạy
-                </a>
-                <a href="{{ route('vehicles.index', ['filter' => 'paused']) }}" 
-                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'paused' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
-                    Xe tạm dừng
-                </a>
-                <a href="{{ route('vehicles.index', ['filter' => 'expired']) }}" 
-                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'expired' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
-                    Xe hết giờ
-                </a>
-                <a href="{{ route('vehicles.index', ['filter' => 'workshop']) }}" 
-                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'workshop' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
-                    Xe trong xưởng
-                </a>
-                <a href="{{ route('vehicles.index', ['filter' => 'repairing']) }}" 
-                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'repairing' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
-                    Xe đang sửa chữa
-                </a>
-                <a href="{{ route('vehicles.index', ['filter' => 'maintaining']) }}" 
-                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'maintaining' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
-                    Xe đang bảo trì
-                </a>
-                <a href="{{ route('vehicles.index', ['filter' => 'attributes']) }}" 
-                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'attributes' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
-                    Thuộc tính xe
-                </a>
-                <a href="{{ route('vehicles.index', ['filter' => 'vehicles_list']) }}" 
-                   class="py-2 px-1 border-b-2 font-medium text-sm {{ $filter === 'vehicles_list' ? 'border-brand-500 text-brand-600' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300' }}">
-                    Danh sách xe
-                </a>
-            </nav>
-        </div>
-    </div>
-
     <!-- Content based on filter -->
     @if($filter === 'ready')
         @include('vehicles.ready_vehicles')

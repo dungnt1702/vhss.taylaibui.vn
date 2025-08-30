@@ -1,12 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Thuộc tính xe')
+@section('title', 'Danh sách thuộc tính xe')
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
+
+    <!-- Header for Vehicle Attributes -->
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-neutral-900">Quản lý thuộc tính xe</h1>
-        <p class="text-neutral-600 mt-2">Thêm, sửa, xóa các thuộc tính của xe</p>
+        <h1 class="text-2xl font-bold text-neutral-900">Danh sách thuộc tính xe</h1>
+        <p class="text-neutral-600 mt-2">Quản lý các thuộc tính và cấu hình của xe</p>
     </div>
 
     <!-- Action Buttons -->
