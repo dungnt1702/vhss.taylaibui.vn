@@ -317,8 +317,10 @@ export class VehicleBase {
                 } else {
                     this.showSuccess(`Đã đưa ${ids.length} xe về bãi thành công!`);
                 }
-                // Simple success - just reload page
-                setTimeout(() => window.location.reload(), 1500);
+                
+                // Hide vehicle cards instead of reloading page
+                this.hideVehicleCards(ids);
+                
             } else {
                 // Show error if needed
                 this.showError(response.message || 'Có lỗi xảy ra khi đưa xe về bãi');
@@ -340,6 +342,57 @@ export class VehicleBase {
                     this.restoreButtonState(button);
                 }, 2000);
             }
+        }
+    }
+
+    /**
+     * Hide vehicle cards after successful return to yard
+     */
+    hideVehicleCards(vehicleIds) {
+        vehicleIds.forEach(vehicleId => {
+            // Find vehicle card by data-vehicle-id
+            const vehicleCard = document.querySelector(`[data-vehicle-id="${vehicleId}"]`);
+            if (vehicleCard) {
+                // Add fade-out animation
+                vehicleCard.style.transition = 'all 0.5s ease';
+                vehicleCard.style.opacity = '0';
+                vehicleCard.style.transform = 'scale(0.95)';
+                
+                // Remove card after animation
+                setTimeout(() => {
+                    if (vehicleCard.parentElement) {
+                        vehicleCard.remove();
+                        
+                        // Check if no more vehicles
+                        const remainingCards = document.querySelectorAll('[data-vehicle-id]');
+                        if (remainingCards.length === 0) {
+                            this.showEmptyState();
+                        }
+                    }
+                }, 500);
+            }
+        });
+    }
+
+    /**
+     * Show empty state when no vehicles remain
+     */
+    showEmptyState() {
+        const vehicleList = document.getElementById('vehicle-list');
+        if (vehicleList) {
+            vehicleList.innerHTML = `
+                <div class="col-span-full">
+                    <div class="text-center py-12">
+                        <svg class="mx-auto h-12 w-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-neutral-900">Không có xe nào</h3>
+                        <p class="mt-1 text-sm text-neutral-500">
+                            Tất cả xe đã được đưa về bãi.
+                        </p>
+                    </div>
+                </div>
+            `;
         }
     }
 
