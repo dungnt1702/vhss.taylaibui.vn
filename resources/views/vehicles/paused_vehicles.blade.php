@@ -52,10 +52,10 @@
                     
                     <!-- Action Buttons for paused vehicles -->
                     <div class="flex flex-wrap gap-2 justify-center">
-                        <button onclick="resumeVehicle({{ $vehicle->id }})" class="btn btn-success btn-sm">
+                        <button data-action="resume-vehicle" data-vehicle-id="{{ $vehicle->id }}" class="btn btn-success btn-sm">
                             ▶️ Tiếp tục
                         </button>
-                        <button onclick="returnToYard({{ $vehicle->id }})" class="btn btn-primary btn-sm">
+                        <button data-action="return-yard" data-vehicle-id="{{ $vehicle->id }}" class="btn btn-primary btn-sm">
                             🏠 Về bãi
                         </button>
                     </div>

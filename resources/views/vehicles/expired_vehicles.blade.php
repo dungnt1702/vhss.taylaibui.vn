@@ -42,10 +42,10 @@
                     
                     <!-- Action Buttons for expired vehicles -->
                     <div class="flex flex-wrap gap-2 justify-center">
-                        <button onclick="addTime({{ $vehicle->id }}, 10)" class="btn btn-warning btn-sm">
+                        <button data-action="add-time" data-vehicle-id="{{ $vehicle->id }}" data-duration="10" class="btn btn-warning btn-sm">
                             ⏰ +10p
                         </button>
-                        <button onclick="returnToYard({{ $vehicle->id }})" class="btn btn-primary btn-sm">
+                        <button data-action="return-yard" data-vehicle-id="{{ $vehicle->id }}" class="btn btn-primary btn-sm">
                             🏠 Về bãi
                         </button>
                     </div>

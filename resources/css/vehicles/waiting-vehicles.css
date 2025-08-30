@@ -25,6 +25,11 @@
     display: none;
 }
 
+/* Icon animation for expand/collapse */
+.vehicle-header svg {
+    transition: transform 0.3s ease;
+}
+
 .countdown-display {
     font-family: 'Courier New', monospace;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
