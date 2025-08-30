@@ -16,16 +16,18 @@ This directory contains the refactored JavaScript code for the VHSS vehicle mana
 - **`PausedVehicles.js`** - Manages paused vehicles (extends VehicleBase)
 - **`ExpiredVehicles.js`** - Manages expired vehicles (extends VehicleBase)
 
-### Legacy Files (Still in use)
-- **`vehicle-forms.js`** - Vehicle form handling and modals
-- **`vehicle-operations.js`** - Core vehicle operations and API calls
-- **`vehicle-wrappers.js`** - UI wrapper functions and utilities
-- **`vehicles-list.js`** - Vehicle list management
-- **`vehicles.js`** - General vehicle utilities
-- **`workshop-vehicles.js`** - Workshop-specific functionality
-- **`repairing-vehicles.js`** - Repair-specific functionality
-- **`maintaining-vehicles.js`** - Maintenance-specific functionality
-- **`attributes-list.js`** - Vehicle attributes management
+### Workshop & Specialized Classes
+- **`WorkshopVehicles.js`** - Manages workshop vehicles (extends VehicleBase)
+- **`AttributesList.js`** - Manages vehicle attributes (extends VehicleBase)
+- **`MaintainingVehicles.js`** - Manages maintenance vehicles (extends VehicleBase)
+- **`RepairingVehicles.js`** - Manages repair vehicles (extends VehicleBase)
+
+### Core Management Classes
+- **`Vehicles.js`** - Main vehicle management class (extends VehicleBase)
+- **`VehicleForms.js`** - Vehicle forms and modals management (extends VehicleBase)
+- **`VehicleOperations.js`** - Vehicle control operations (extends VehicleBase)
+- **`VehicleWrappers.js`** - Vehicle wrapper functions and utilities (extends VehicleBase)
+- **`VehiclesList.js`** - Vehicle list management (extends VehicleBase)
 
 ## Architecture Benefits
 
@@ -81,6 +83,19 @@ readyVehicles.init();
 - **PausedVehicles**: Timer resume, return to yard
 - **ExpiredVehicles**: Timer extension, return to yard
 
+### Workshop & Specialized Classes
+- **WorkshopVehicles**: Repair management, testing, parts ordering
+- **AttributesList**: Attribute CRUD operations, import/export, bulk operations
+- **MaintainingVehicles**: Maintenance tracking, progress monitoring, status updates
+- **RepairingVehicles**: Repair workflow, parts management, testing integration
+
+### Core Management Classes
+- **Vehicles**: General vehicle management, filtering, search, export/import
+- **VehicleForms**: Form handling, modals, validation, data management
+- **VehicleOperations**: Vehicle control, countdown timers, status updates
+- **VehicleWrappers**: UI wrapper functions, toggle functionality, animations
+- **VehiclesList**: List management, detail modals, expansion controls
+
 ## Migration Notes
 
 ### What Was Changed
@@ -95,10 +110,18 @@ readyVehicles.init();
 - `running-vehicles.js` (old)
 - `paused-vehicles.js` (old)
 - `expired-vehicles.js` (old)
+- `workshop-vehicles.js` (old)
+- `attributes-list.js` (old)
+- `maintaining-vehicles.js` (old)
+- `repairing-vehicles.js` (old)
+- `vehicles.js` (old)
+- `vehicle-forms.js` (old)
+- `vehicle-operations.js` (old)
+- `vehicle-wrappers.js` (old)
+- `vehicles-list.js` (old)
 
 ### What Was Kept
 - All CSS files remain unchanged
-- Non-vehicle-status JavaScript files remain unchanged
 - All existing functionality is preserved
 
 ## Future Enhancements
@@ -130,3 +153,29 @@ All classes log initialization and key operations to console for debugging:
 console.log('Ready Vehicles page loaded');
 console.log('Ready Vehicles page fully initialized');
 ```
+
+## Class Hierarchy
+
+```
+VehicleBase (Base Class)
+         ↑
+┌─────────────────────────────────────────────────────────┐
+│                    Child Classes                        │
+├─────────────────────────────────────────────────────────┤
+│ ReadyVehicles    │ RunningVehicles  │ ReadyVehicles    │
+│ WaitingVehicles  │ PausedVehicles   │ ExpiredVehicles  │
+│ WorkshopVehicles │ AttributesList   │ MaintainingVehicles │
+│ RepairingVehicles│                  │                  │
+├─────────────────────────────────────────────────────────┤
+│ Vehicles        │ VehicleForms      │ VehicleOperations │
+│ VehicleWrappers │ VehiclesList      │                  │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Performance Benefits
+
+- **Event Delegation**: Efficient event handling for dynamic content
+- **Modular Loading**: Only load necessary functionality per page
+- **Memory Management**: Proper cleanup and resource management
+- **Optimized DOM**: Reduced DOM queries and manipulations
+- **Class-based Architecture**: Better code organization and maintainability

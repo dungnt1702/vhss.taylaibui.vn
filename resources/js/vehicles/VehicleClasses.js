@@ -15,6 +15,15 @@ import WaitingVehicles from './WaitingVehicles.js';
 import RunningVehicles from './RunningVehicles.js';
 import PausedVehicles from './PausedVehicles.js';
 import ExpiredVehicles from './ExpiredVehicles.js';
+import WorkshopVehicles from './WorkshopVehicles.js';
+import AttributesList from './AttributesList.js';
+import MaintainingVehicles from './MaintainingVehicles.js';
+import RepairingVehicles from './RepairingVehicles.js';
+import Vehicles from './Vehicles.js';
+import VehicleForms from './VehicleForms.js';
+import VehicleOperations from './VehicleOperations.js';
+import VehicleWrappers from './VehicleWrappers.js';
+import VehiclesList from './VehiclesList.js';
 
 console.log('All vehicle classes loaded successfully from VehicleClasses.js entry point');
 
