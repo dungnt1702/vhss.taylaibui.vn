@@ -264,26 +264,8 @@ class ReadyVehicles extends VehicleBase {
             return;
         }
 
-        console.log('Đang đưa', selectedVehicles.length, 'xe được chọn về bãi...');
-        
-        try {
-            const response = await this.makeApiCall('/api/vehicles/return-yard', {
-                method: 'POST',
-                body: JSON.stringify({
-                    vehicle_ids: selectedVehicles
-                })
-            });
-
-            if (response.success) {
-                console.log('Đã đưa', selectedVehicles.length, 'xe về bãi thành công');
-                // Reload page to show updated status
-                window.location.reload();
-            } else {
-                console.error('Return to yard failed:', response.message);
-            }
-        } catch (error) {
-            console.error('Error returning vehicles to yard:', error);
-        }
+        // Use VehicleBase function for multiple vehicles
+        await this.returnMultipleVehiclesToYard(selectedVehicles);
     }
 
     /**

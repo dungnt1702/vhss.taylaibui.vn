@@ -478,6 +478,80 @@ export class VehicleBase {
             });
         });
     }
+
+    /**
+     * Return single vehicle to yard (for paused/expired screens)
+     */
+    async returnSingleVehicleToYard(vehicleId, button) {
+        try {
+            // Show loading state
+            if (button) {
+                this.showButtonLoading(button, 'Đang xử lý...');
+            }
+            
+            const response = await this.makeApiCall('/api/vehicles/return-yard', {
+                method: 'POST',
+                body: JSON.stringify({
+                    vehicle_ids: [vehicleId]
+                })
+            });
+            
+            if (response.success) {
+                // Simple success - just reload page
+                window.location.reload();
+            } else {
+                // Show error if needed
+                console.error('Return to yard failed:', response.message);
+                if (button) {
+                    this.restoreButtonState(button);
+                    button.textContent = 'Lỗi - Thử lại';
+                    setTimeout(() => {
+                        this.restoreButtonState(button);
+                    }, 2000);
+                }
+            }
+        } catch (error) {
+            console.error('Error returning vehicle to yard:', error);
+            if (button) {
+                this.restoreButtonState(button);
+                button.textContent = 'Lỗi - Thử lại';
+                setTimeout(() => {
+                    this.restoreButtonState(button);
+                }, 2000);
+            }
+        }
+    }
+
+    /**
+     * Return multiple vehicles to yard (for ready screen)
+     */
+    async returnMultipleVehiclesToYard(selectedVehicleIds) {
+        try {
+            if (!selectedVehicleIds || selectedVehicleIds.length === 0) {
+                console.log('Không có xe nào được chọn để đưa về bãi');
+                return;
+            }
+            
+            console.log('Đang đưa', selectedVehicleIds.length, 'xe về bãi...');
+            
+            const response = await this.makeApiCall('/api/vehicles/return-yard', {
+                method: 'POST',
+                body: JSON.stringify({
+                    vehicle_ids: selectedVehicleIds
+                })
+            });
+            
+            if (response.success) {
+                console.log('Đã đưa', selectedVehicleIds.length, 'xe về bãi thành công');
+                // Reload page to show updated status
+                window.location.reload();
+            } else {
+                console.error('Return to yard failed:', response.message);
+            }
+        } catch (error) {
+            console.error('Error returning vehicles to yard:', error);
+        }
+    }
 }
 
 // Make VehicleBase available globally for backward compatibility

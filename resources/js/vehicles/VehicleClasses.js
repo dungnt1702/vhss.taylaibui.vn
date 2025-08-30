@@ -31,4 +31,7 @@ console.log('All vehicle classes loaded successfully from VehicleClasses.js entr
 if (typeof window !== 'undefined') {
     window.VehicleBase = VehicleBase;
     window.VehiclesList = VehiclesList;
+    
+    // Create VehicleBase instance for global use
+    window.vehicleBase = new VehicleBase('Global Vehicle Base');
 }

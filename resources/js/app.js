@@ -208,8 +208,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
                     
                 case 'return-yard':
-                    console.log('Returning vehicle', vehicleId, 'to yard - handled by VehicleClasses.js');
-                    // Let VehicleClasses.js handle this action to avoid conflicts
+                    console.log('Returning vehicle', vehicleId, 'to yard - handled by VehicleBase');
+                    // Use VehicleBase function for single vehicle return
+                    if (window.vehicleBase) {
+                        window.vehicleBase.returnSingleVehicleToYard(vehicleId, button);
+                    } else {
+                        console.error('VehicleBase not available');
+                    }
                     break;
                     
                 case 'add-time':
@@ -268,89 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Navigation JavaScript loaded successfully');
 });
 
-// Global function to return single vehicle to yard (for paused/expired screens)
-window.returnSingleVehicleToYard = async function(vehicleId, button) {
-    try {
-        // Show loading state
-        if (button) {
-            const originalText = button.textContent;
-            button.textContent = 'Đang xử lý...';
-            button.disabled = true;
-        }
-        
-        const response = await fetch('/api/vehicles/return-yard', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-            },
-            body: JSON.stringify({
-                vehicle_ids: [vehicleId]
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            // Simple success - just reload page
-            window.location.reload();
-        } else {
-            // Show error if needed
-            console.error('Return to yard failed:', result.message);
-            if (button) {
-                button.textContent = 'Lỗi - Thử lại';
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.disabled = false;
-                }, 2000);
-            }
-        }
-    } catch (error) {
-        console.error('Error returning vehicle to yard:', error);
-        if (button) {
-            button.textContent = 'Lỗi - Thử lại';
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.disabled = false;
-            }, 2000);
-        }
-    }
-};
 
-// Global function to return multiple vehicles to yard (for ready screen)
-window.returnMultipleVehiclesToYard = async function(selectedVehicleIds) {
-    try {
-        if (!selectedVehicleIds || selectedVehicleIds.length === 0) {
-            console.log('Không có xe nào được chọn để đưa về bãi');
-            return;
-        }
-        
-        console.log('Đang đưa', selectedVehicleIds.length, 'xe về bãi...');
-        
-        const response = await fetch('/api/vehicles/return-yard', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-            },
-            body: JSON.stringify({
-                vehicle_ids: selectedVehicleIds
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            console.log('Đã đưa', selectedVehicleIds.length, 'xe về bãi thành công');
-            // Reload page to show updated status
-            window.location.reload();
-        } else {
-            console.error('Return to yard failed:', result.message);
-        }
-    } catch (error) {
-        console.error('Error returning vehicles to yard:', error);
-    }
-};
 
 // Initialize Alpine.js
 window.Alpine = Alpine;
