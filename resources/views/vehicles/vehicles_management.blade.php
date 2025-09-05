@@ -8,24 +8,24 @@
     @if($filter === 'ready')
         @include('vehicles.ready_vehicles')
     @elseif($filter === 'waiting')
-        @include('vehicles.waiting_vehicles')
-    @elseif($filter === 'running')
-        @include('vehicles.running_vehicles')
+                @include('vehicles.waiting_vehicles')
+            @elseif($filter === 'running')
+                @include('vehicles.running_vehicles')
     @elseif($filter === 'paused')
         @include('vehicles.paused_vehicles')
-    @elseif($filter === 'expired')
-        @include('vehicles.expired_vehicles')
-    @elseif($filter === 'workshop')
-        @include('vehicles.workshop_vehicles')
-    @elseif($filter === 'repairing')
-        @include('vehicles.repairing_vehicles')
-    @elseif($filter === 'maintaining')
-        @include('vehicles.maintaining_vehicles')
+            @elseif($filter === 'expired')
+                @include('vehicles.expired_vehicles')
+            @elseif($filter === 'workshop')
+                @include('vehicles.workshop_vehicles')
+            @elseif($filter === 'repairing')
+                @include('vehicles.repairing_vehicles')
+            @elseif($filter === 'maintaining')
+                @include('vehicles.maintaining_vehicles')
     @elseif($filter === 'attributes')
         @include('vehicles.attributes_list')
-    @elseif($filter === 'vehicles_list')
-        @include('vehicles.vehicles_list')
-    @else
+            @elseif($filter === 'vehicles_list')
+                @include('vehicles.vehicles_list')
+            @else
         <!-- Default view -->
         <div class="text-center py-12">
             <svg class="mx-auto h-12 w-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,14 +36,14 @@
                 Vui lòng chọn một bộ lọc để xem danh sách xe.
             </p>
         </div>
-    @endif
-</div>
-
+                                            @endif
+                                    </div>
+                                    
 @include('vehicles.partials.vehicle_modals')
 
 @endsection
-
-@push('scripts')
+    
+    @push('scripts')
     <!-- Load VehicleClasses.js for all vehicle functionality -->
     @vite(['resources/js/vehicles/VehicleClasses.js'])
 @endpush
@@ -71,4 +71,4 @@
     @elseif($filter === 'vehicles_list')
         @vite(['resources/css/vehicles/vehicles-list.css'])
     @endif
-@endpush
+    @endpush

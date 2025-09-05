@@ -15,6 +15,7 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Hidden data for JavaScript -->
         <div id="vehicle-data" data-vehicles='@json($vehicles)' style="display: none;"></div>
+        <div id="running-vehicles-data" data-vehicles='@json($runningVehicles)' style="display: none;"></div>
 
         <!-- Three Column Layout -->
         <div class="xl:grid xl:grid-cols-3 gap-6">

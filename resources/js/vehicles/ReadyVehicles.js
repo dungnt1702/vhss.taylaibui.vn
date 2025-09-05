@@ -19,6 +19,7 @@ class ReadyVehicles extends VehicleBase {
         super.init();
         this.setupReadySpecificFeatures();
         this.setupBulkActions();
+        this.loadRunningVehiclesOnInit();
     }
 
     /**
@@ -296,11 +297,15 @@ class ReadyVehicles extends VehicleBase {
             // Tạo row mới
             const newRow = document.createElement('tr');
             newRow.className = 'hover:bg-gray-50';
+            newRow.dataset.vehicleId = vehicle.id;
+            newRow.dataset.endTime = endTime.getTime();
+            newRow.dataset.status = 'running';
+            
             newRow.innerHTML = `
                 <td class="px-3 py-2">
                     <input type="checkbox" class="vehicle-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500" value="${vehicle.id}">
                 </td>
-                <td class="px-3 py-2 text-sm text-gray-900">Xe số ${vehicle.name}</td>
+                <td class="px-3 py-2 text-sm text-gray-900">${vehicle.name}</td>
                 <td class="px-3 py-2">
                     <div class="w-4 h-4 rounded border border-gray-300" style="background-color: ${vehicle.color};" title="${vehicle.color}"></div>
                 </td>
@@ -321,6 +326,88 @@ class ReadyVehicles extends VehicleBase {
         });
 
         console.log(`Đã cập nhật bảng timer vehicles với ${vehicles.length} xe`);
+    }
+
+    /**
+     * Load running vehicles on page initialization
+     */
+    loadRunningVehiclesOnInit() {
+        const runningData = document.getElementById('running-vehicles-data');
+        if (runningData) {
+            try {
+                const runningVehicles = JSON.parse(runningData.dataset.vehicles);
+                if (runningVehicles && runningVehicles.length > 0) {
+                    this.populateTimerTable(runningVehicles);
+                }
+            } catch (error) {
+                console.error('Error parsing running vehicles data:', error);
+            }
+        }
+    }
+
+    /**
+     * Populate timer table with running vehicles data
+     */
+    populateTimerTable(runningVehicles) {
+        const timerTableBody = document.getElementById('timer-vehicles');
+        if (!timerTableBody) return;
+
+        // Clear existing content
+        timerTableBody.innerHTML = '';
+
+        runningVehicles.forEach(vehicle => {
+            // Parse end_time from database
+            const endTime = new Date(vehicle.end_time);
+            const startTime = new Date(vehicle.start_time || vehicle.created_at);
+            
+            // Calculate remaining time
+            const now = new Date();
+            const remainingMs = endTime.getTime() - now.getTime();
+            const remainingMinutes = Math.max(0, Math.floor(remainingMs / (1000 * 60)));
+            const remainingSeconds = Math.max(0, Math.floor((remainingMs % (1000 * 60)) / 1000));
+            
+            // Format times
+            const startTimeStr = startTime.toLocaleTimeString('vi-VN', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            const endTimeStr = endTime.toLocaleTimeString('vi-VN', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+
+            // Create row
+            const newRow = document.createElement('tr');
+            newRow.className = 'hover:bg-gray-50';
+            newRow.dataset.vehicleId = vehicle.id;
+            newRow.dataset.endTime = endTime.getTime();
+            newRow.dataset.status = 'running';
+            
+            newRow.innerHTML = `
+                <td class="px-3 py-2">
+                    <input type="checkbox" class="vehicle-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500" value="${vehicle.id}">
+                </td>
+                <td class="px-3 py-2 text-sm text-gray-900">${vehicle.name}</td>
+                <td class="px-3 py-2">
+                    <div class="w-4 h-4 rounded border border-gray-300" style="background-color: ${vehicle.color};" title="${vehicle.color}"></div>
+                </td>
+                <td class="px-3 py-2 text-sm text-gray-900">${startTimeStr}</td>
+                <td class="px-3 py-2 text-sm text-gray-900">${endTimeStr}</td>
+                <td class="px-3 py-2 text-sm text-gray-900">
+                    <div class="countdown-display" data-end-time="${endTime.getTime()}">
+                        <span class="countdown-minutes">${remainingMinutes.toString().padStart(2, '0')}</span>:<span class="countdown-seconds">${remainingSeconds.toString().padStart(2, '0')}</span>
+                    </div>
+                </td>
+            `;
+
+            // Add row to table
+            timerTableBody.appendChild(newRow);
+            
+            // Start countdown timer for this row
+            this.startCountdownTimer(newRow);
+        });
+
+        console.log(`Đã load ${runningVehicles.length} xe đang chạy vào bảng timer`);
     }
 }
 

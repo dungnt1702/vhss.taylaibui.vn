@@ -723,7 +723,7 @@ export class VehicleBase {
                 this.restoreButtonState(button);
                 button.textContent = 'Lỗi - Thử lại';
                 setTimeout(() => {
-                    this.restoreButtonState(button);
+            this.restoreButtonState(button);
                 }, 2000);
             }
         }

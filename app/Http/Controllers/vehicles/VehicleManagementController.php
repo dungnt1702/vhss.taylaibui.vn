@@ -53,8 +53,10 @@ class VehicleManagementController extends Controller
 
         // Get ready vehicles for ready_vehicles.blade.php when filter = 'ready'
         $activeVehicles = null;
+        $runningVehicles = null;
         if ($filter === 'ready') {
             $activeVehicles = Vehicle::active()->latest()->get();
+            $runningVehicles = Vehicle::running()->latest()->get();
         }
 
         // Get vehicle attributes for modal
@@ -66,6 +68,7 @@ class VehicleManagementController extends Controller
         return view('vehicles.vehicles_management', compact(
             'vehicles', 
             'activeVehicles',
+            'runningVehicles',
             'filter', 
             'pageTitle', 
             'displayMode', 

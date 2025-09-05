@@ -17,8 +17,11 @@ class ReadyVehiclesController extends Controller
     {
         // Lấy xe có trạng thái ready (sẵn sàng chạy)
         $vehicles = Vehicle::active()->latest()->get();
+        
+        // Lấy xe đang chạy để hiển thị trong bảng "Xe chạy đường 1-2"
+        $runningVehicles = Vehicle::running()->latest()->get();
 
-        return view('vehicles.ready_vehicles', compact('vehicles'));
+        return view('vehicles.ready_vehicles', compact('vehicles', 'runningVehicles'));
     }
 
     /**
