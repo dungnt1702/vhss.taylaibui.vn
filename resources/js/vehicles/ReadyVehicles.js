@@ -105,7 +105,7 @@ class ReadyVehicles extends VehicleBase {
      * Setup vehicle selection functionality
      */
     setupVehicleSelection() {
-        this.setupSelectAll('ready', 'vehicle-checkbox');
+        this.setupSelectAll('waiting', 'waiting-checkbox');
         this.setupSelectAll('timer', 'vehicle-checkbox');
     }
 
@@ -171,19 +171,29 @@ class ReadyVehicles extends VehicleBase {
     async assignTimerBulk(duration) {
         const selectedVehicles = this.getSelectedVehicles();
         if (selectedVehicles.length === 0) {
-            VehicleBase.prototype.showNotificationModal.call(this, 'Cảnh báo', 'Vui lòng chọn ít nhất một xe.', 'warning');
+            // Hiển thị thông báo "Bạn phải chọn xe trước!" khi chưa chọn xe nào
+            VehicleBase.prototype.showNotificationModal.call(this, 'Cảnh báo', 'Bạn phải chọn xe trước!', 'warning');
             return;
         }
 
-        if (confirm(`Bạn có chắc muốn bấm giờ cho ${selectedVehicles.length} xe trong ${duration} phút?`)) {
+        try {
             // Use the bulk timer function from VehicleBase
             const button = document.querySelector('[data-action="assign-timer"]');
             const response = await super.assignTimerBulk(selectedVehicles, duration, button);
             
             // Cập nhật bảng "Xe chạy đường 1-2" sau khi thành công
             if (response && response.success) {
+                // Không hiển thị thông báo ở đây vì VehicleBase.js đã hiển thị rồi
+                
+                // Cập nhật bảng timer
                 this.updateTimerVehiclesTable(selectedVehicles, duration, response.vehicles);
+                
+                // Ẩn xe khỏi bảng "Xe đang chờ"
+                this.hideSelectedVehiclesFromWaitingTable(selectedVehicles);
             }
+        } catch (error) {
+            console.error('Error in assignTimerBulk:', error);
+            VehicleBase.prototype.showNotificationModal.call(this, 'Lỗi', 'Có lỗi xảy ra khi bấm giờ', 'error');
         }
     }
 
@@ -408,6 +418,57 @@ class ReadyVehicles extends VehicleBase {
         });
 
         console.log(`Đã load ${runningVehicles.length} xe đang chạy vào bảng timer`);
+    }
+
+    /**
+     * Hide selected vehicles from waiting table after successful timer assignment
+     */
+    hideSelectedVehiclesFromWaitingTable(vehicleIds) {
+        vehicleIds.forEach(vehicleId => {
+            // Tìm row trong bảng "Xe đang chờ" bằng checkbox value với class waiting-checkbox
+            const waitingTableBody = document.getElementById('waiting-vehicles');
+            if (waitingTableBody) {
+                const checkbox = waitingTableBody.querySelector(`.waiting-checkbox[value="${vehicleId}"]`);
+                if (checkbox) {
+                    const row = checkbox.closest('tr');
+                    if (row) {
+                        // Thêm animation fade out
+                        row.style.transition = 'all 0.3s ease';
+                        row.style.opacity = '0';
+                        row.style.transform = 'scale(0.95)';
+                        
+                        // Xóa row sau animation
+                        setTimeout(() => {
+                            if (row.parentElement) {
+                                row.remove();
+                                
+                                // Kiểm tra nếu không còn xe nào trong bảng chờ
+                                const remainingRows = waitingTableBody.querySelectorAll('tr');
+                                if (remainingRows.length === 0) {
+                                    this.showEmptyWaitingState();
+                                }
+                            }
+                        }, 300);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Show empty state for waiting vehicles table
+     */
+    showEmptyWaitingState() {
+        const waitingTableBody = document.getElementById('waiting-vehicles');
+        if (waitingTableBody) {
+            waitingTableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-3 py-8 text-center text-gray-500">
+                        Không có xe nào đang chờ
+                    </td>
+                </tr>
+            `;
+        }
     }
 }
 

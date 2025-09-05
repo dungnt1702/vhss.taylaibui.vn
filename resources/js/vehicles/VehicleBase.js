@@ -528,6 +528,7 @@ export class VehicleBase {
         const selectedVehicles = this.getSelectedVehicles();
         
         if (selectedVehicles.length === 0) {
+            // Hiển thị thông báo "Bạn phải chọn xe trước!" khi chưa chọn xe nào
             this.showNotificationModal('Cảnh báo', 'Bạn phải chọn xe trước!', 'warning');
             return;
         }
@@ -613,7 +614,9 @@ export class VehicleBase {
             console.log('API response:', response);
 
             if (response.success) {
-                this.showNotificationModal('Thành công', 'Bấm giờ thành công!', 'success');
+                // Hiển thị thông báo "Xe số ... đã xuất phát với ... phút"
+                const vehicleName = response.vehicles && response.vehicles[0] ? response.vehicles[0].name : vehicleId;
+                this.showNotificationModal('Thành công', `Xe số ${vehicleName} đã xuất phát với ${duration} phút`, 'success');
                 // Không reload page, chỉ ẩn vehicle card
                 this.hideVehicleCard(vehicleId);
             } else {
@@ -633,7 +636,8 @@ export class VehicleBase {
     async assignTimerBulk(vehicleIds, duration, button) {
         try {
             if (!Array.isArray(vehicleIds) || vehicleIds.length === 0) {
-                this.showWarning('Không có xe nào được chọn để bấm giờ');
+                // Hiển thị thông báo "Bạn phải chọn xe trước!" khi không có xe nào được chọn
+                this.showNotificationModal('Cảnh báo', 'Bạn phải chọn xe trước!', 'warning');
                 return;
             }
 
@@ -648,7 +652,9 @@ export class VehicleBase {
             });
 
             if (response.success) {
-                this.showNotificationModal('Thành công', `Đã bấm giờ thành công cho ${vehicleIds.length} xe!`, 'success');
+                // Hiển thị thông báo "Xe số ... đã xuất phát với ... phút"
+                const vehicleNames = response.vehicles ? response.vehicles.map(v => v.name).join(', ') : vehicleIds.join(', ');
+                this.showNotificationModal('Thành công', `Xe số ${vehicleNames} đã xuất phát với ${duration} phút`, 'success');
                 
                 // Không reload page, ẩn tất cả vehicle cards
                 vehicleIds.forEach(id => this.hideVehicleCard(id));
@@ -1175,8 +1181,15 @@ export class VehicleBase {
      * Get selected vehicles
      */
     getSelectedVehicles() {
-        const checkboxes = document.querySelectorAll('.vehicle-checkbox:checked');
-        return Array.from(checkboxes).map(cb => cb.value);
+        // Tìm checkbox trong bảng "Xe đang chờ" (waiting-checkbox) và bảng timer (vehicle-checkbox)
+        const waitingCheckboxes = document.querySelectorAll('.waiting-checkbox:checked');
+        const vehicleCheckboxes = document.querySelectorAll('.vehicle-checkbox:checked');
+        
+        const waitingIds = Array.from(waitingCheckboxes).map(cb => cb.value);
+        const vehicleIds = Array.from(vehicleCheckboxes).map(cb => cb.value);
+        
+        // Kết hợp cả hai loại checkbox
+        return [...waitingIds, ...vehicleIds];
     }
 
     /**

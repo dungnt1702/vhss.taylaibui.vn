@@ -112,7 +112,7 @@
                 <div class="p-6 border-b border-gray-200">
                     <h2 class="text-lg font-semibold text-gray-900 mb-4">Xe chạy đường 1-2</h2>
                     
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table class="table min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr>
                                 <th class="px-3 py-2 text-left">

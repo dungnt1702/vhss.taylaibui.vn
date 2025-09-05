@@ -215,6 +215,62 @@ main {
     text-align: center;
 }
 
+/* Table countdown display - compact version for tables */
+.table .countdown-display {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1d4ed8;
+    min-width: 60px;
+    text-align: center;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.table .countdown-minutes, 
+.table .countdown-seconds {
+    display: inline-block;
+    min-width: 1.5em;
+    text-align: center;
+}
+
+/* Responsive table countdown - ensure single line on all screen sizes */
+@media (max-width: 640px) {
+    .table .countdown-display {
+        font-size: 0.75rem;
+        padding: 0.125rem 0.25rem;
+        min-width: 50px;
+        letter-spacing: 0.5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .table .countdown-display {
+        font-size: 0.625rem;
+        padding: 0.125rem 0.25rem;
+        min-width: 45px;
+        letter-spacing: 0.25px;
+    }
+}
+
+/* Ensure countdown column doesn't wrap */
+.table td:last-child {
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+/* Allow other columns to wrap normally */
+.table td:not(:last-child) {
+    white-space: normal;
+}
+
 /* Font Lexend for entire website */
 
 * {
