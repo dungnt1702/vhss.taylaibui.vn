@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
+    <!-- Page identifier for VehicleClasses.js -->
+    <div id="vehicle-page" data-page-type="workshop" style="display: none;"></div>
 
     <!-- Header for Workshop Vehicles -->
     <div class="mb-6">
@@ -11,66 +13,220 @@
         <p class="text-neutral-600 mt-2">Quản lý xe đang ở trong xưởng</p>
     </div>
 
-    <!-- Vehicle Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="workshop-vehicles-grid">
-        @foreach($vehicles as $vehicle)
-        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-red-500" data-vehicle-id="{{ $vehicle->id }}" data-status="{{ $vehicle->status }}">
-            <div class="flex justify-between items-start mb-3">
-                <h3 class="text-lg font-semibold text-neutral-900">{{ $vehicle->name }}</h3>
-                <span class="px-2 py-1 text-xs font-medium rounded-full {{ $vehicle->status_color_class }}">
-                    {{ $vehicle->status_display_name }}
-                </span>
-            </div>
-            
-            <div class="space-y-2 mb-4">
-                <div class="flex items-center text-sm text-neutral-600">
-                    <div class="w-4 h-4 rounded-full mr-2" style="background-color: {{ $vehicle->color }};"></div>
-                    <span>{{ $vehicle->color }}</span>
-                </div>
-                <div class="text-sm text-neutral-600">
-                    <span class="font-medium">Ghế:</span> {{ $vehicle->seats }}
-                </div>
-                <div class="text-sm text-neutral-600">
-                    <span class="font-medium">Công suất:</span> {{ $vehicle->power }}
-                </div>
-                <div class="text-sm text-neutral-600">
-                    <span class="font-medium">Ghi chú:</span> {{ $vehicle->notes ?? 'Không có' }}
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex flex-wrap gap-2" id="vehicle-buttons-{{ $vehicle->id }}">
-                <button onclick="vehicleOperations.returnToYard({{ $vehicle->id }})" class="btn btn-success btn-sm">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Về bãi
-                </button>
-                <button onclick="vehicleOperations.editVehicle({{ $vehicle->id }})" class="btn btn-info btn-sm">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Chỉnh sửa
-                </button>
-            </div>
+    <!-- Vehicle Table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="vehicle-table w-full">
+                <thead class="bg-neutral-50">
+                    <tr class="hidden md:table-row">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Xe số</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Màu sắc</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Ghế</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Công suất</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Trạng thái</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Ghi chú</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-neutral-200">
+                    @forelse($vehicles as $vehicle)
+                        <!-- Desktop Layout: 1 dòng cho 1 xe -->
+                        <tr class="hover:bg-neutral-50 hidden md:table-row" 
+                            data-vehicle-id="{{ $vehicle->id }}"
+                            data-vehicle-name="{{ $vehicle->name }}"
+                            data-vehicle-color="{{ $vehicle->color }}"
+                            data-vehicle-seats="{{ $vehicle->seats }}"
+                            data-vehicle-power="{{ $vehicle->power }}"
+                            data-vehicle-wheel-size="{{ $vehicle->wheel_size }}"
+                            data-vehicle-notes="{{ $vehicle->notes ?? 'Không có ghi chú' }}">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">
+                                {{ $vehicle->name }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                <div class="w-6 h-6 rounded border border-neutral-300" style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}"></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                {{ $vehicle->seats }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                {{ $vehicle->power }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full {{ $vehicle->status_color_class }}">
+                                    {{ $vehicle->status_display_name }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                {{ $vehicle->notes ?? 'Không có ghi chú' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                <div class="flex items-center space-x-2">
+                                    <!-- Nút Về bãi -->
+                                    <button onclick="vehicleOperations.openReturnToYardModal({{ $vehicle->id }})" 
+                                            class="text-green-600 hover:text-green-900 transition-colors duration-200 p-1 rounded hover:bg-green-50"
+                                            title="Về bãi">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                        </svg>
+                                    </button>
+                                    
+                                    <!-- Nút Chỉnh sửa -->
+                                    <button onclick="vehicleOperations.editVehicle({{ $vehicle->id }})" 
+                                            class="text-blue-600 hover:text-blue-900 transition-colors duration-200 p-1 rounded hover:bg-blue-50"
+                                            title="Chỉnh sửa">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Mobile Layout: 3 dòng cho 1 xe với màu xen kẽ -->
+                        <tr class="md:hidden {{ $loop->even ? 'bg-neutral-100' : 'bg-white' }}" 
+                            data-vehicle-id="{{ $vehicle->id }}"
+                            data-vehicle-name="{{ $vehicle->name }}"
+                            data-vehicle-color="{{ $vehicle->color }}"
+                            data-vehicle-seats="{{ $vehicle->seats }}"
+                            data-vehicle-power="{{ $vehicle->power }}"
+                            data-vehicle-wheel-size="{{ $vehicle->wheel_size }}"
+                            data-vehicle-notes="{{ $vehicle->notes ?? 'Không có ghi chú' }}">
+                            <!-- Dòng 1: Xe số, Màu sắc, Ghế, Công suất, Trạng thái -->
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">
+                                {{ $vehicle->name }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                <div class="w-6 h-6 rounded border border-neutral-300" style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}"></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                {{ $vehicle->seats }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                {{ $vehicle->power }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full {{ $vehicle->status_color_class }}">
+                                    {{ $vehicle->status_display_name }}
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <!-- Dòng 2: Ghi chú -->
+                        <tr class="md:hidden {{ $loop->even ? 'bg-neutral-100' : 'bg-white' }}">
+                            <td colspan="5" class="px-6 py-3">
+                                <div class="flex items-start space-x-2">
+                                    <span class="text-xs font-medium text-neutral-500 uppercase tracking-wider flex-shrink-0">Ghi chú:</span>
+                                    <span class="text-sm text-neutral-700">{{ $vehicle->notes ?? 'Không có ghi chú' }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Dòng 3: Các nút thao tác -->
+                        <tr class="md:hidden {{ $loop->even ? 'bg-neutral-100' : 'bg-white' }}">
+                            <td colspan="5" class="px-6 py-3">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs font-medium text-neutral-500 uppercase tracking-wider flex-shrink-0">Thao tác:</span>
+                                    <div class="flex space-x-2">
+                                        <!-- Nút Về bãi -->
+                                        <button onclick="vehicleOperations.openReturnToYardModal({{ $vehicle->id }})" 
+                                                class="text-green-600 hover:text-green-900 transition-colors duration-200 p-1 rounded hover:bg-green-50"
+                                                title="Về bãi">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                            </svg>
+                                        </button>
+                                        
+                                        <!-- Nút Chỉnh sửa -->
+                                        <button onclick="vehicleOperations.editVehicle({{ $vehicle->id }})" 
+                                                class="text-blue-600 hover:text-blue-900 transition-colors duration-200 p-1 rounded hover:bg-blue-50"
+                                                title="Chỉnh sửa">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="px-6 py-4 text-center text-sm text-neutral-500">
+                                Không có xe nào trong xưởng
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-        @endforeach
     </div>
 
-    <!-- Empty State -->
-    @if($vehicles->isEmpty())
-    <div class="text-center py-12">
-        <svg class="mx-auto h-12 w-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-        </svg>
-        <h3 class="mt-2 text-sm font-medium text-neutral-900">Không có xe nào</h3>
-        <p class="mt-1 text-sm text-neutral-500">Hiện tại không có xe nào trong xưởng.</p>
-    </div>
-    @endif
 </div>
 
 <!-- Modals -->
 @include('vehicles.partials.vehicle_modals')
+
+<!-- Return to Yard Modal -->
+<div id="return-to-yard-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div class="relative min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-neutral-900">Đưa xe về bãi</h3>
+                    <button onclick="vehicleOperations.closeReturnToYardModal()" class="text-neutral-400 hover:text-neutral-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <form id="return-to-yard-form">
+                    <input type="hidden" id="return-vehicle-id" name="vehicle_id">
+                    
+                    <div class="mb-4">
+                        <label for="return-notes" class="block text-sm font-medium text-neutral-700 mb-2">
+                            Ghi chú về tình trạng xe
+                        </label>
+                        <textarea 
+                            id="return-notes" 
+                            name="notes" 
+                            rows="4" 
+                            class="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                            placeholder="Nhập ghi chú về tình trạng xe..."
+                        >Xe hoạt động tốt</textarea>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <button 
+                            type="button" 
+                            onclick="vehicleOperations.resetReturnNotes()" 
+                            class="text-sm text-neutral-500 hover:text-neutral-700 underline"
+                        >
+                            Xóa nội dung
+                        </button>
+                        
+                        <div class="flex space-x-3">
+                            <button 
+                                type="button" 
+                                onclick="vehicleOperations.closeReturnToYardModal()" 
+                                class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-neutral-500"
+                            >
+                                Hủy
+                            </button>
+                            <button 
+                                type="submit" 
+                                class="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                            >
+                                Đưa về bãi
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
 

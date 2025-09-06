@@ -154,6 +154,55 @@ class VehicleOperationsController extends Controller
     }
 
     /**
+     * Return vehicles to yard with notes (for workshop)
+     */
+    public function returnToYardWithNotes(Request $request)
+    {
+        try {
+            // Validate request data
+            $request->validate([
+                'vehicle_ids' => 'required|array|min:1',
+                'vehicle_ids.*' => 'integer|exists:vehicles,id',
+                'notes' => 'nullable|string|max:500'
+            ]);
+
+            $vehicleIds = $request->input('vehicle_ids');
+            $notes = $request->input('notes', '');
+
+            $vehicles = Vehicle::whereIn('id', $vehicleIds)->get();
+            
+            foreach ($vehicles as $vehicle) {
+                $vehicle->update([
+                    'status' => Vehicle::STATUS_READY,
+                    'start_time' => null,
+                    'end_time' => null,
+                    'paused_at' => null,
+                    'paused_remaining_seconds' => null,
+                    'route_number' => null,
+                    'notes' => $notes, // Always update notes for workshop
+                    'status_changed_at' => now()
+                ]);
+            }
+
+            $message = !empty($notes) ? 
+                'Đã đưa ' . count($vehicles) . ' xe về bãi và cập nhật ghi chú' : 
+                'Đã đưa ' . count($vehicles) . ' xe về bãi';
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'vehicles' => $vehicles
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi đưa xe về bãi với ghi chú: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi đưa xe về bãi'
+            ], 500);
+        }
+    }
+
+    /**
      * Pause vehicle
      */
     public function pause(Request $request, Vehicle $vehicle)

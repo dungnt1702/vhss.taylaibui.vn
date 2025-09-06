@@ -16,6 +16,7 @@ class WorkshopVehicles extends VehicleBase {
     init() {
         super.init();
         this.setupWorkshopSpecificFeatures();
+        this.setupGlobalFunctions();
         console.log('Workshop Vehicles page fully initialized');
     }
 
@@ -26,6 +27,20 @@ class WorkshopVehicles extends VehicleBase {
         this.setupReturnToYard();
         this.setupEditVehicle();
         this.setupWorkshopActions();
+        this.setupReturnToYardModal();
+    }
+
+    /**
+     * Setup global functions for backward compatibility
+     */
+    setupGlobalFunctions() {
+        // Make functions available globally for onclick handlers
+        window.vehicleOperations = {
+            openReturnToYardModal: (vehicleId) => this.openReturnToYardModal(vehicleId),
+            closeReturnToYardModal: () => this.closeReturnToYardModal(),
+            resetReturnNotes: () => this.resetReturnNotes(),
+            editVehicle: (vehicleId) => this.editVehicle(vehicleId)
+        };
     }
 
     /**
@@ -214,6 +229,122 @@ class WorkshopVehicles extends VehicleBase {
      */
     editVehicle(vehicleId) {
         window.location.href = `/vehicles/${vehicleId}/edit`;
+    }
+
+    /**
+     * Setup return to yard modal
+     */
+    setupReturnToYardModal() {
+        const form = document.getElementById('return-to-yard-form');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleReturnToYardSubmit();
+            });
+        }
+    }
+
+    /**
+     * Open return to yard modal
+     */
+    openReturnToYardModal(vehicleId) {
+        const modal = document.getElementById('return-to-yard-modal');
+        const vehicleIdInput = document.getElementById('return-vehicle-id');
+        const notesTextarea = document.getElementById('return-notes');
+        
+        if (modal && vehicleIdInput && notesTextarea) {
+            vehicleIdInput.value = vehicleId;
+            notesTextarea.value = 'Xe hoạt động tốt';
+            modal.classList.remove('hidden');
+            notesTextarea.focus();
+        }
+    }
+
+    /**
+     * Close return to yard modal
+     */
+    closeReturnToYardModal() {
+        const modal = document.getElementById('return-to-yard-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Reset return notes to empty
+     */
+    resetReturnNotes() {
+        const notesTextarea = document.getElementById('return-notes');
+        if (notesTextarea) {
+            notesTextarea.value = '';
+            notesTextarea.focus();
+        }
+    }
+
+    /**
+     * Handle return to yard form submission
+     */
+    async handleReturnToYardSubmit() {
+        const vehicleIdInput = document.getElementById('return-vehicle-id');
+        const notesTextarea = document.getElementById('return-notes');
+        const submitButton = document.querySelector('#return-to-yard-form button[type="submit"]');
+        
+        if (!vehicleIdInput || !notesTextarea || !submitButton) {
+            console.error('Required elements not found');
+            return;
+        }
+
+        const vehicleId = vehicleIdInput.value;
+        const notes = notesTextarea.value.trim();
+
+        if (!vehicleId) {
+            this.showError('Không tìm thấy ID xe');
+            return;
+        }
+
+        // Debug logging
+        console.log('Returning vehicle to yard:', {
+            vehicleId: vehicleId,
+            notes: notes
+        });
+
+        try {
+            // Show loading state
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Đang xử lý...';
+            submitButton.disabled = true;
+            
+            const requestData = {
+                vehicle_ids: [vehicleId],
+                notes: notes || '' // Đảm bảo gửi chuỗi rỗng nếu notes trống
+            };
+            
+            console.log('Sending request data:', requestData);
+            
+            const response = await this.makeApiCall('/api/vehicles/return-yard-with-notes', {
+                method: 'POST',
+                body: JSON.stringify(requestData)
+            });
+
+            if (response.success) {
+                const message = notes ? 
+                    'Đưa xe về bãi và cập nhật ghi chú thành công!' : 
+                    'Đưa xe về bãi thành công!';
+                this.showNotification(message, 'success');
+                this.closeReturnToYardModal();
+                // Reload page to update the list
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                this.showError(response.message || 'Có lỗi xảy ra khi đưa xe về bãi');
+            }
+        } catch (error) {
+            console.error('Error returning vehicle to yard:', error);
+            this.showError('Có lỗi xảy ra khi đưa xe về bãi');
+        } finally {
+            // Restore button state
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+        }
     }
 
     /**
