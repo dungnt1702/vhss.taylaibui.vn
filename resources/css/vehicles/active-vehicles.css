@@ -86,6 +86,57 @@
     background-color: #e2e8f0 !important;
 }
 
+/* Desktop: Show separate columns */
+@media (min-width: 769px) {
+    .mobile-time-content {
+        display: none;
+    }
+    
+    .desktop-start-time {
+        display: inline;
+    }
+}
+
+/* Mobile responsive table for timer vehicles */
+@media (max-width: 768px) {
+    /* Hide the separate "Kết thúc" column on mobile, keep "Bắt đầu" as combined column */
+    #timer-vehicles th:nth-child(6),
+    #timer-vehicles td:nth-child(6) {
+        display: none;
+    }
+    
+    /* Style the combined time cell */
+    #timer-vehicles td:nth-child(5) {
+        display: table-cell !important;
+        vertical-align: top;
+        padding: 0.5rem;
+    }
+    
+    /* Hide desktop time display on mobile */
+    .desktop-start-time {
+        display: none;
+    }
+    
+    /* Show mobile time content */
+    .mobile-time-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .mobile-start-time {
+        font-size: 0.75rem;
+        color: #374151;
+        font-weight: 500;
+    }
+    
+    .mobile-end-time {
+        font-size: 0.75rem;
+        color: #6b7280;
+        font-weight: 400;
+    }
+}
+
 .vehicle-card {
     transition: all 0.3s ease;
     border: 1px solid #e5e7eb;

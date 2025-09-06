@@ -122,6 +122,9 @@ class ActiveVehicles extends VehicleBase {
         
         // Setup row click for route vehicles table
         this.setupTableRowClick('route-vehicles', 'route-checkbox');
+        
+        // Setup mobile responsive headers
+        this.setupMobileHeaders();
     }
 
     /**
@@ -152,6 +155,47 @@ class ActiveVehicles extends VehicleBase {
                 checkbox.dispatchEvent(new Event('change', { bubbles: true }));
             }
         });
+    }
+
+    /**
+     * Setup mobile responsive headers
+     */
+    setupMobileHeaders() {
+        // Check if we're on mobile
+        const checkMobile = () => {
+            return window.innerWidth <= 768;
+        };
+
+        // Update headers based on screen size
+        const updateHeaders = () => {
+            const timerTable = document.querySelector('#timer-vehicles');
+            if (!timerTable) return;
+
+            const headers = timerTable.parentElement.querySelectorAll('th');
+            
+            if (checkMobile()) {
+                // Mobile headers
+                if (headers[1]) headers[1].textContent = 'Xe số';
+                if (headers[2]) headers[2].textContent = 'Màu sắc';
+                if (headers[3]) headers[3].textContent = 'Trạng thái';
+                if (headers[4]) headers[4].innerHTML = '⏰'; // Clock icon for start/end time
+                if (headers[6]) headers[6].textContent = 'Đếm ngược';
+            } else {
+                // Desktop headers
+                if (headers[1]) headers[1].textContent = 'Xe số';
+                if (headers[2]) headers[2].textContent = 'Màu sắc';
+                if (headers[3]) headers[3].textContent = 'Trạng thái';
+                if (headers[4]) headers[4].textContent = 'Bắt đầu';
+                if (headers[5]) headers[5].textContent = 'Kết thúc';
+                if (headers[6]) headers[6].textContent = 'Đếm ngược';
+            }
+        };
+
+        // Update on load
+        updateHeaders();
+
+        // Update on resize
+        window.addEventListener('resize', updateHeaders);
     }
 
     /**
@@ -503,7 +547,16 @@ class ActiveVehicles extends VehicleBase {
                 <td class="px-3 py-2">
                     <div class="w-4 h-4 rounded border border-gray-300" style="background-color: ${vehicle.color};" title="${vehicle.color}"></div>
                 </td>
-                <td class="px-3 py-2 text-sm text-gray-900">${startTimeStr}</td>
+                <td class="px-3 py-2">
+                    <span class="status-badge status-running">Đang chạy</span>
+                </td>
+                <td class="px-3 py-2 text-sm text-gray-900">
+                    <div class="mobile-time-content">
+                        <div class="mobile-start-time">${startTimeStr}</div>
+                        <div class="mobile-end-time">${endTimeStr}</div>
+                    </div>
+                    <span class="desktop-start-time">${startTimeStr}</span>
+                </td>
                 <td class="px-3 py-2 text-sm text-gray-900">${endTimeStr}</td>
                 <td class="px-3 py-2 text-sm text-gray-900">
                     <div class="countdown-display" data-end-time="${endTime.getTime()}">
@@ -696,7 +749,13 @@ class ActiveVehicles extends VehicleBase {
                 <td class="px-3 py-2">
                     <span class="${statusClass}">${statusText}</span>
                 </td>
-                <td class="px-3 py-2 text-sm text-gray-900">${startTimeStr}</td>
+                <td class="px-3 py-2 text-sm text-gray-900">
+                    <div class="mobile-time-content">
+                        <div class="mobile-start-time">${startTimeStr}</div>
+                        <div class="mobile-end-time">${endTimeStr}</div>
+                    </div>
+                    <span class="desktop-start-time">${startTimeStr}</span>
+                </td>
                 <td class="px-3 py-2 text-sm text-gray-900">${endTimeStr}</td>
                 <td class="px-3 py-2 text-sm text-gray-900">
                     <div class="countdown-display" data-end-time="${endTime.getTime()}" data-status="${vehicle.status}">
