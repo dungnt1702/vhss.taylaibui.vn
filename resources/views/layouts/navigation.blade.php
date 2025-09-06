@@ -62,12 +62,12 @@
                                         Xe hoạt động
                                     </div>
                                 </a>
-                                <a href="{{ route('vehicles.index', ['filter' => 'waiting']) }}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors duration-150">
+                                <a href="{{ route('vehicles.index', ['filter' => 'ready']) }}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors duration-150">
                                     <div class="flex items-center">
                                         <svg class="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
-                                        Xe đang chờ
+                                        Xe sẵn sàng
                                     </div>
                                 </a>
                                 <a href="{{ route('vehicles.index', ['filter' => 'running']) }}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors duration-150">
@@ -258,8 +258,8 @@
                      <a href="{{ route('vehicles.index', ['filter' => 'active']) }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
                          Xe hoạt động
                      </a>
-                     <a href="{{ route('vehicles.index', ['filter' => 'waiting']) }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
-                         Xe đang chờ
+                     <a href="{{ route('vehicles.index', ['filter' => 'ready']) }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
+                         Xe sẵn sàng
                      </a>
                      <a href="{{ route('vehicles.index', ['filter' => 'running']) }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
                          Xe đang chạy

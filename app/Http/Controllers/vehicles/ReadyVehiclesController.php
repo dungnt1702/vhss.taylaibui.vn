@@ -5,21 +5,21 @@ namespace App\Http\Controllers\vehicles;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 
-class WaitingVehiclesController extends VehicleBaseController
+class ReadyVehiclesController extends VehicleBaseController
 {
     /**
-     * Display waiting vehicles (xe đang chờ)
+     * Display ready vehicles (xe sẵn sàng)
      */
     public function index()
     {
         $vehicles = Vehicle::waiting()->latest()->get();
-        return view('vehicles.waiting_vehicles', compact('vehicles'));
+        return view('vehicles.ready_vehicles', compact('vehicles'));
     }
 
     /**
-     * Get waiting vehicles for API
+     * Get ready vehicles for API
      */
-    public function getWaitingVehicles()
+    public function getReadyVehicles()
     {
         $vehicles = Vehicle::waiting()->latest()->get();
         return response()->json(['success' => true, 'vehicles' => $vehicles]);

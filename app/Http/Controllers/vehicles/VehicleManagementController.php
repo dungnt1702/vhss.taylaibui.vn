@@ -22,7 +22,7 @@ class VehicleManagementController extends Controller
         $vehicles = match($filter) {
             'vehicles_list' => Vehicle::latest()->paginate($perPage),
             'active' => Vehicle::active()->latest()->paginate($perPage),
-            'ready' => Vehicle::active()->latest()->paginate($perPage),
+            'ready' => Vehicle::waiting()->latest()->paginate($perPage),
             'workshop' => Vehicle::inactive()->latest()->paginate($perPage),
             'running' => Vehicle::running()->latest()->paginate($perPage),
             'waiting' => Vehicle::waiting()->latest()->paginate($perPage),
@@ -38,7 +38,7 @@ class VehicleManagementController extends Controller
         $pageTitle = match($filter) {
             'vehicles_list' => 'Danh sách xe',
             'active' => 'Xe hoạt động',
-            'ready' => 'Xe sẵn sàng chạy',
+            'ready' => 'Xe sẵn sàng',
             'workshop' => 'Xe trong xưởng',
             'running' => 'Xe đang chạy',
             'waiting' => 'Xe đang chờ',
@@ -63,7 +63,7 @@ class VehicleManagementController extends Controller
         
         // Get ready vehicles for ready_vehicles.blade.php when filter = 'ready'
         if ($filter === 'ready') {
-            $activeVehicles = Vehicle::active()->latest()->get();
+            $activeVehicles = Vehicle::waiting()->latest()->get();
             $runningVehicles = Vehicle::running()->latest()->get();
         }
 

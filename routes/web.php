@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 // ActiveVehiclesController đã được migration sang VehicleOperationsController
 use App\Http\Controllers\vehicles\ActiveVehiclesController;
-use App\Http\Controllers\vehicles\WaitingVehiclesController;
+use App\Http\Controllers\vehicles\ReadyVehiclesController;
 use App\Http\Controllers\vehicles\RunningVehiclesController;
 use App\Http\Controllers\vehicles\PausedVehiclesController;
 use App\Http\Controllers\vehicles\ExpiredVehiclesController;
@@ -50,8 +50,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/active-vehicles/assign-route', [ActiveVehiclesController::class, 'assignRoute'])->name('active-vehicles.assign-route');
     Route::post('/active-vehicles/move-workshop', [ActiveVehiclesController::class, 'moveToWorkshop'])->name('active-vehicles.move-workshop');
     
-    // Waiting Vehicles (Xe đang chờ)
-    Route::get('/waiting-vehicles', [WaitingVehiclesController::class, 'index'])->name('waiting-vehicles.index');
+    // Ready Vehicles (Xe sẵn sàng)
+    Route::get('/ready-vehicles', [ReadyVehiclesController::class, 'index'])->name('ready-vehicles.index');
     
     // Running Vehicles (Xe đang chạy)
     Route::get('/running-vehicles', [RunningVehiclesController::class, 'index'])

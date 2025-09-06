@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Xe đang chờ')
+@section('title', 'Xe sẵn sàng')
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <!-- Page identifier for VehicleClasses.js -->
-    <div id="vehicle-page" data-page-type="waiting" style="display: none;"></div>
+    <div id="vehicle-page" data-page-type="ready" style="display: none;"></div>
 
-    <!-- Header for Waiting Vehicles -->
+    <!-- Header for Ready Vehicles -->
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-neutral-900">Xe đang chờ</h1>
-        <p class="text-neutral-600 mt-2">Quản lý xe đang chờ để được phân công tuyến đường</p>
+        <h1 class="text-2xl font-bold text-neutral-900">Xe sẵn sàng</h1>
+        <p class="text-neutral-600 mt-2">Quản lý xe sẵn sàng để được phân công tuyến đường</p>
     </div>
 
-    <!-- Grid Display for waiting vehicles -->
+    <!-- Grid Display for ready vehicles -->
     <div id="vehicle-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @forelse($vehicles as $vehicle)
             <div class="vehicle-card bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition-shadow duration-200 border-l-4 border-yellow-500" data-vehicle-id="{{ $vehicle->id }}" data-vehicle-name="{{ $vehicle->name }}" data-status="{{ $vehicle->status }}" data-start-time="{{ $vehicle->start_time ? strtotime($vehicle->start_time) * 1000 : '' }}" data-end-time="{{ $vehicle->end_time ? strtotime($vehicle->end_time) * 1000 : '' }}" data-paused-at="{{ $vehicle->paused_at ? strtotime($vehicle->paused_at) * 1000 : '' }}" data-paused-remaining-seconds="{{ $vehicle->paused_remaining_seconds ?? '' }}">
@@ -82,5 +82,5 @@
 @endpush
 
 @push('styles')
-@vite(['resources/css/vehicles/waiting-vehicles.css'])
+@vite(['resources/css/vehicles/ready-vehicles.css'])
 @endpush

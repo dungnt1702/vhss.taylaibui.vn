@@ -12,7 +12,7 @@ export default defineConfig({
                 'resources/js/vehicles/VehicleClasses.js',
                 // Vehicle-specific CSS files
                 'resources/css/vehicles/active-vehicles.css',
-                'resources/css/vehicles/waiting-vehicles.css',
+                'resources/css/vehicles/ready-vehicles.css',
                 'resources/css/vehicles/running-vehicles.css',
                 'resources/css/vehicles/paused-vehicles.css',
                 'resources/css/vehicles/expired-vehicles.css',
