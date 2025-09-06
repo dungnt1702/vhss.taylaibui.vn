@@ -72,6 +72,20 @@
     color: #991b1b;
 }
 
+/* Clickable table rows */
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.clickable-row:hover {
+    background-color: #f8fafc !important;
+}
+
+.clickable-row:active {
+    background-color: #e2e8f0 !important;
+}
+
 .vehicle-card {
     transition: all 0.3s ease;
     border: 1px solid #e5e7eb;

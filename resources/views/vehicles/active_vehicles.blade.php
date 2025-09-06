@@ -47,7 +47,7 @@
                             </thead>
                             <tbody id="waiting-vehicles" class="divide-y divide-gray-200">
                                 @foreach($vehicles as $vehicle)
-                                    <tr class="hover:bg-gray-50">
+                                    <tr class="hover:bg-gray-50 clickable-row">
                                         <td class="px-3 py-2">
                                             <input type="checkbox" value="{{ $vehicle->id }}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                         </td>
@@ -210,6 +210,17 @@
                 section.classList.add('collapsed');
                 section.style.maxHeight = '0px';
                 arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+        
+        // Global function for return to yard button
+        function returnSelectedVehiclesToYard() {
+            // Check if ActiveVehicles instance exists
+            if (window.activeVehicles) {
+                window.activeVehicles.returnSelectedVehiclesToYard();
+            } else {
+                console.error('ActiveVehicles instance not found');
+                alert('Lỗi: Không thể thực hiện thao tác này');
             }
         }
         

@@ -702,14 +702,13 @@ export class VehicleBase {
             });
 
             if (response.success) {
-                if (ids.length === 1) {
-                    this.showSuccess('Đã đưa xe về bãi thành công!');
-                } else {
-                    this.showSuccess(`Đã đưa ${ids.length} xe về bãi thành công!`);
-                }
+                // Success message will be handled by calling function
+                // Don't show duplicate success messages
                 
-                // Hide vehicle cards instead of reloading page
-                this.hideVehicleCards(ids);
+                // Hide vehicle cards instead of reloading page (only if not handled by calling function)
+                if (!this.hideVehicleCardsHandled) {
+                    this.hideVehicleCards(ids);
+                }
                 
             } else {
                 // Show error if needed

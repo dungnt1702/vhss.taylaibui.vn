@@ -30,6 +30,7 @@ class ActiveVehicles extends VehicleBase {
         this.setupRouteAssignment();
         this.setupWorkshopTransfer();
         this.setupVehicleSelection();
+        this.setupRowClickHandlers();
     }
 
     /**
@@ -107,6 +108,50 @@ class ActiveVehicles extends VehicleBase {
     setupVehicleSelection() {
         this.setupSelectAll('waiting', 'waiting-checkbox');
         this.setupSelectAll('timer', 'vehicle-checkbox');
+    }
+
+    /**
+     * Setup row click handlers for all tables
+     */
+    setupRowClickHandlers() {
+        // Setup row click for waiting vehicles table
+        this.setupTableRowClick('waiting-vehicles', 'waiting-checkbox');
+        
+        // Setup row click for timer vehicles table
+        this.setupTableRowClick('timer-vehicles', 'vehicle-checkbox');
+        
+        // Setup row click for route vehicles table
+        this.setupTableRowClick('route-vehicles', 'route-checkbox');
+    }
+
+    /**
+     * Setup row click handler for a specific table
+     */
+    setupTableRowClick(tableId, checkboxClass) {
+        const tableBody = document.getElementById(tableId);
+        if (!tableBody) return;
+
+        // Use event delegation for dynamically added rows
+        tableBody.addEventListener('click', (e) => {
+            // Find the closest row
+            const row = e.target.closest('tr');
+            if (!row) return;
+
+            // Don't trigger if clicking on checkbox or button
+            if (e.target.type === 'checkbox' || e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
+                return;
+            }
+
+            // Find checkbox in this row
+            const checkbox = row.querySelector(`.${checkboxClass}`);
+            if (checkbox) {
+                // Toggle checkbox
+                checkbox.checked = !checkbox.checked;
+                
+                // Trigger change event to update select all checkboxes
+                checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
     }
 
     /**
@@ -272,14 +317,153 @@ class ActiveVehicles extends VehicleBase {
         }
 
         // Use VehicleBase function for multiple vehicles
-        await this.returnToYard(selectedVehicles);
+        await super.returnToYard(selectedVehicles);
     }
 
     /**
      * Return selected vehicles to yard (public function for HTML onclick)
      */
     returnSelectedVehiclesToYard() {
-        this.returnToYard();
+        // Get selected vehicles from timer table
+        const selectedCheckboxes = document.querySelectorAll('#timer-vehicles .vehicle-checkbox:checked');
+        
+        if (selectedCheckboxes.length === 0) {
+            this.showWarning('Bạn phải chọn xe trước');
+            return;
+        }
+        
+        // Get vehicle IDs and names
+        const selectedVehicleIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+        const selectedVehicleNames = Array.from(selectedCheckboxes).map(checkbox => {
+            const row = checkbox.closest('tr');
+            return row.querySelector('td:nth-child(2)').textContent; // Xe số column
+        });
+        
+        // Show confirmation message
+        const vehicleNamesText = selectedVehicleNames.join(', ');
+        this.showSuccess(`Xe số ${vehicleNamesText} đã được chuyển về bãi`);
+        
+        // Set flag to prevent duplicate handling
+        this.hideVehicleCardsHandled = true;
+        
+        // Call returnToYard with selected vehicle IDs
+        super.returnToYard(selectedVehicleIds);
+        
+        // Hide selected vehicles from timer table
+        this.hideSelectedVehiclesFromTimerTable(selectedVehicleIds);
+        
+        // Add vehicles back to waiting table
+        this.addVehiclesToWaitingTable(selectedVehicleIds, selectedVehicleNames);
+    }
+
+    /**
+     * Hide selected vehicles from timer table
+     */
+    hideSelectedVehiclesFromTimerTable(vehicleIds) {
+        vehicleIds.forEach(vehicleId => {
+            const timerTableBody = document.getElementById('timer-vehicles');
+            if (timerTableBody) {
+                const checkbox = timerTableBody.querySelector(`.vehicle-checkbox[value="${vehicleId}"]`);
+                if (checkbox) {
+                    const row = checkbox.closest('tr');
+                    if (row) {
+                        // Add animation fade out
+                        row.style.transition = 'all 0.3s ease';
+                        row.style.opacity = '0';
+                        row.style.transform = 'scale(0.95)';
+                        
+                        // Remove row after animation
+                        setTimeout(() => {
+                            row.remove();
+                        }, 300);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Add vehicles back to waiting table
+     */
+    addVehiclesToWaitingTable(vehicleIds, vehicleNames) {
+        const waitingTableBody = document.getElementById('waiting-vehicles');
+        if (!waitingTableBody) return;
+
+        vehicleIds.forEach((vehicleId, index) => {
+            const vehicleName = vehicleNames[index];
+            
+            // Get vehicle details from timer table before hiding
+            const timerTableBody = document.getElementById('timer-vehicles');
+            let vehicleSeats = '-';
+            let vehicleColor = '#3b82f6';
+            let vehicleNotes = 'Không có ghi chú';
+            
+            if (timerTableBody) {
+                const checkbox = timerTableBody.querySelector(`.vehicle-checkbox[value="${vehicleId}"]`);
+                if (checkbox) {
+                    const row = checkbox.closest('tr');
+                    if (row) {
+                        // Get color from the row (3rd column in timer table)
+                        const colorCell = row.querySelector('td:nth-child(3) div');
+                        if (colorCell) {
+                            vehicleColor = colorCell.style.backgroundColor || '#3b82f6';
+                        }
+                        
+                        // Get vehicle data from the original data arrays
+                        // We need to find the vehicle in our data arrays
+                        const allVehicles = [
+                            ...(this.runningVehicles || []),
+                            ...(this.pausedVehicles || []),
+                            ...(this.expiredVehicles || [])
+                        ];
+                        
+                        const vehicleData = allVehicles.find(v => v.id == vehicleId);
+                        if (vehicleData) {
+                            vehicleSeats = vehicleData.seats || '-';
+                            vehicleNotes = vehicleData.notes || 'Không có ghi chú';
+                        }
+                    }
+                }
+            }
+            
+            // Create new row for waiting table
+            const newRow = document.createElement('tr');
+            newRow.className = 'hover:bg-gray-50 clickable-row';
+            newRow.dataset.vehicleId = vehicleId;
+            
+            newRow.innerHTML = `
+                <td class="px-3 py-2">
+                    <input type="checkbox" value="${vehicleId}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                </td>
+                <td class="px-3 py-2 text-sm text-gray-900">${vehicleName}</td>
+                <td class="px-3 py-2">
+                    <div class="w-6 h-6 rounded border border-gray-300" style="background-color: ${vehicleColor};" title="${vehicleColor}"></div>
+                </td>
+                <td class="px-3 py-2 text-sm text-gray-500">${vehicleSeats}</td>
+                <td class="px-3 py-2">
+                    ${vehicleNotes ? 
+                        `<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                            ${vehicleNotes}
+                        </span>` : 
+                        `<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                            Không có ghi chú
+                        </span>`
+                    }
+                </td>
+            `;
+            
+            // Add animation fade in
+            newRow.style.opacity = '0';
+            newRow.style.transform = 'scale(0.95)';
+            waitingTableBody.appendChild(newRow);
+            
+            // Trigger animation
+            setTimeout(() => {
+                newRow.style.transition = 'all 0.3s ease';
+                newRow.style.opacity = '1';
+                newRow.style.transform = 'scale(1)';
+            }, 100);
+        });
     }
 
     /**
@@ -306,7 +490,7 @@ class ActiveVehicles extends VehicleBase {
 
             // Tạo row mới
             const newRow = document.createElement('tr');
-            newRow.className = 'hover:bg-gray-50';
+            newRow.className = 'hover:bg-gray-50 clickable-row';
             newRow.dataset.vehicleId = vehicle.id;
             newRow.dataset.endTime = endTime.getTime();
             newRow.dataset.status = 'running';
@@ -345,6 +529,11 @@ class ActiveVehicles extends VehicleBase {
         // Load all vehicle types: running, paused, expired
         const allVehicles = [];
         
+        // Initialize arrays
+        this.runningVehicles = [];
+        this.pausedVehicles = [];
+        this.expiredVehicles = [];
+        
         // Load running vehicles
         const runningData = document.getElementById('running-vehicles-data');
         if (runningData) {
@@ -355,6 +544,7 @@ class ActiveVehicles extends VehicleBase {
                     runningVehicles.forEach(vehicle => {
                         // Force status to running for vehicles from running query
                         vehicle.status = 'running';
+                        this.runningVehicles.push(vehicle);
                         allVehicles.push(vehicle);
                     });
                 }
@@ -373,6 +563,7 @@ class ActiveVehicles extends VehicleBase {
                     pausedVehicles.forEach(vehicle => {
                         // Force status to paused for vehicles from paused query
                         vehicle.status = 'paused';
+                        this.pausedVehicles.push(vehicle);
                         allVehicles.push(vehicle);
                     });
                 }
@@ -391,6 +582,7 @@ class ActiveVehicles extends VehicleBase {
                     expiredVehicles.forEach(vehicle => {
                         // Force status to expired for vehicles from expired query
                         vehicle.status = 'expired';
+                        this.expiredVehicles.push(vehicle);
                         allVehicles.push(vehicle);
                     });
                 }
@@ -488,7 +680,7 @@ class ActiveVehicles extends VehicleBase {
 
             // Create row
             const newRow = document.createElement('tr');
-            newRow.className = rowClass;
+            newRow.className = rowClass + ' clickable-row';
             newRow.dataset.vehicleId = vehicle.id;
             newRow.dataset.endTime = endTime.getTime();
             newRow.dataset.status = vehicle.status;
