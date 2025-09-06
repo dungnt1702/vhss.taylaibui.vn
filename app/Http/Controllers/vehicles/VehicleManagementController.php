@@ -21,6 +21,7 @@ class VehicleManagementController extends Controller
         
         $vehicles = match($filter) {
             'vehicles_list' => Vehicle::latest()->paginate($perPage),
+            'active' => Vehicle::active()->latest()->paginate($perPage),
             'ready' => Vehicle::active()->latest()->paginate($perPage),
             'workshop' => Vehicle::inactive()->latest()->paginate($perPage),
             'running' => Vehicle::running()->latest()->paginate($perPage),
@@ -36,6 +37,7 @@ class VehicleManagementController extends Controller
 
         $pageTitle = match($filter) {
             'vehicles_list' => 'Danh sách xe',
+            'active' => 'Xe hoạt động',
             'ready' => 'Xe sẵn sàng chạy',
             'workshop' => 'Xe trong xưởng',
             'running' => 'Xe đang chạy',
@@ -49,11 +51,17 @@ class VehicleManagementController extends Controller
         };
 
         // Get display mode based on filter
-        $displayMode = in_array($filter, ['ready', 'vehicles_list', 'attributes']) ? 'list' : 'grid';
+        $displayMode = in_array($filter, ['active', 'ready', 'vehicles_list', 'attributes']) ? 'list' : 'grid';
 
-        // Get ready vehicles for ready_vehicles.blade.php when filter = 'ready'
+        // Get active vehicles for active_vehicles.blade.php when filter = 'active'
         $activeVehicles = null;
         $runningVehicles = null;
+        if ($filter === 'active') {
+            $activeVehicles = Vehicle::active()->latest()->get();
+            $runningVehicles = Vehicle::running()->latest()->get();
+        }
+        
+        // Get ready vehicles for ready_vehicles.blade.php when filter = 'ready'
         if ($filter === 'ready') {
             $activeVehicles = Vehicle::active()->latest()->get();
             $runningVehicles = Vehicle::running()->latest()->get();

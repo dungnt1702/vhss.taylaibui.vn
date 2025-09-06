@@ -1,31 +1,31 @@
 /**
- * ReadyVehicles - Class for managing ready vehicles (waiting vehicles)
- * Extends VehicleBase with ready-specific functionality
+ * ActiveVehicles - Class for managing active vehicles
+ * Extends VehicleBase with active-specific functionality
  */
 
 import { VehicleBase } from './VehicleBase.js';
 
-class ReadyVehicles extends VehicleBase {
+class ActiveVehicles extends VehicleBase {
     constructor() {
-        super('Ready Vehicles');
+        super('Active Vehicles');
         this.durationOptions = [15, 30, 45, 60, 90, 120];
         this.bulkActions = [];
     }
 
     /**
-     * Initialize ready vehicles page
+     * Initialize active vehicles page
      */
     init() {
         super.init();
-        this.setupReadySpecificFeatures();
+        this.setupActiveSpecificFeatures();
         this.setupBulkActions();
         this.loadRunningVehiclesOnInit();
     }
 
     /**
-     * Setup ready-specific features
+     * Setup active-specific features
      */
-    setupReadySpecificFeatures() {
+    setupActiveSpecificFeatures() {
         this.setupDurationSelectors();
         this.setupRouteAssignment();
         this.setupWorkshopTransfer();
@@ -135,7 +135,7 @@ class ReadyVehicles extends VehicleBase {
                 // Kiểm tra xem có xe nào được chọn không
                 const selectedVehicles = this.getSelectedVehicles();
                 if (selectedVehicles.length === 0) {
-                    console.log('ReadyVehicles: Không có xe nào được chọn, hiển thị modal cảnh báo');
+                    console.log('ActiveVehicles: Không có xe nào được chọn, hiển thị modal cảnh báo');
                     VehicleBase.prototype.showNotificationModal.call(this, 'Cảnh báo', 'Bạn phải chọn xe trước!', 'warning');
                     return;
                 }
@@ -155,7 +155,7 @@ class ReadyVehicles extends VehicleBase {
                 // Kiểm tra xem có xe nào được chọn không
                 const selectedVehicles = this.getSelectedVehicles();
                 if (selectedVehicles.length === 0) {
-                    console.log('ReadyVehicles: Không có xe nào được chọn, hiển thị modal cảnh báo');
+                    console.log('ActiveVehicles: Không có xe nào được chọn, hiển thị modal cảnh báo');
                     VehicleBase.prototype.showNotificationModal.call(this, 'Cảnh báo', 'Bạn phải chọn xe trước!', 'warning');
                     return;
                 }
@@ -267,49 +267,12 @@ class ReadyVehicles extends VehicleBase {
     async returnToYard() {
         const selectedVehicles = this.getSelectedVehicles();
         if (selectedVehicles.length === 0) {
-            // Hiển thị thông báo "Bạn phải chọn xe trước" khi chưa chọn xe nào
-            this.showNotificationModal('Cảnh báo', 'Bạn phải chọn xe trước', 'warning');
+            console.log('Không có xe nào được chọn để đưa về bãi');
             return;
         }
 
-        try {
-            // Show loading state
-            const button = document.querySelector('button[onclick="returnSelectedVehiclesToYard()"]');
-            if (button) {
-                this.showButtonLoading(button, 'Đang xử lý...');
-            }
-            
-                const response = await this.makeApiCall('/api/vehicles/return-yard', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                    vehicle_ids: selectedVehicles
-                    })
-                });
-
-                if (response.success) {
-                // Hiển thị thông báo với tên xe cụ thể
-                const vehicleNames = response.vehicles ? response.vehicles.map(v => v.name).join(', ') : selectedVehicles.join(', ');
-                this.showNotificationModal('Thành công', `Các xe ${vehicleNames} đã về bãi`, 'success');
-                
-                // Ẩn xe khỏi bảng "Xe chạy đường 1-2"
-                this.hideSelectedVehiclesFromTimerTable(selectedVehicles);
-                
-                // Hiển thị xe lên bảng "Xe đang chờ"
-                this.showVehiclesInWaitingTable(response.vehicles || selectedVehicles);
-                
-                } else {
-                this.showNotificationModal('Lỗi', response.message || 'Có lỗi xảy ra khi đưa xe về bãi', 'error');
-            }
-        } catch (error) {
-            console.error('Error returning vehicles to yard:', error);
-            this.showNotificationModal('Lỗi', 'Có lỗi xảy ra khi đưa xe về bãi', 'error');
-        } finally {
-            // Restore button state
-            const button = document.querySelector('button[onclick="returnSelectedVehiclesToYard()"]');
-            if (button) {
-                this.restoreButtonState(button);
-            }
-        }
+        // Use VehicleBase function for multiple vehicles
+        await this.returnToYard(selectedVehicles);
     }
 
     /**
@@ -507,127 +470,28 @@ class ReadyVehicles extends VehicleBase {
             `;
         }
     }
-
-    /**
-     * Hide selected vehicles from timer table after returning to yard
-     */
-    hideSelectedVehiclesFromTimerTable(vehicleIds) {
-        vehicleIds.forEach(vehicleId => {
-            // Tìm row trong bảng "Xe chạy đường 1-2" bằng checkbox value với class vehicle-checkbox
-            const timerTableBody = document.getElementById('timer-vehicles');
-            if (timerTableBody) {
-                const checkbox = timerTableBody.querySelector(`.vehicle-checkbox[value="${vehicleId}"]`);
-                if (checkbox) {
-                    const row = checkbox.closest('tr');
-                    if (row) {
-                        // Thêm animation fade out
-                        row.style.transition = 'all 0.3s ease';
-                        row.style.opacity = '0';
-                        row.style.transform = 'scale(0.95)';
-                        
-                        // Xóa row sau animation
-                        setTimeout(() => {
-                            if (row.parentElement) {
-                                row.remove();
-                                
-                                // Kiểm tra nếu không còn xe nào trong bảng timer
-                                const remainingRows = timerTableBody.querySelectorAll('tr');
-                                if (remainingRows.length === 0) {
-                                    this.showEmptyTimerState();
-                                }
-                            }
-                        }, 300);
-                    }
-                }
-            }
-        });
-    }
-
-    /**
-     * Show empty state for timer vehicles table
-     */
-    showEmptyTimerState() {
-        const timerTableBody = document.getElementById('timer-vehicles');
-        if (timerTableBody) {
-            timerTableBody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="px-3 py-8 text-center text-gray-500">
-                        Không có xe nào đang chạy
-                    </td>
-                </tr>
-            `;
-        }
-    }
-
-    /**
-     * Show vehicles in waiting table after returning from timer
-     */
-    showVehiclesInWaitingTable(vehicles) {
-        const waitingTableBody = document.getElementById('waiting-vehicles');
-        if (!waitingTableBody) return;
-
-        // Xóa empty state nếu có
-        const emptyRow = waitingTableBody.querySelector('tr td[colspan="5"]');
-        if (emptyRow) {
-            emptyRow.closest('tr').remove();
-        }
-
-        vehicles.forEach(vehicle => {
-            // Tạo row mới cho bảng waiting
-            const newRow = document.createElement('tr');
-            newRow.className = 'hover:bg-gray-50';
-            
-            newRow.innerHTML = `
-                <td class="px-3 py-2">
-                    <input type="checkbox" value="${vehicle.id}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
-                </td>
-                <td class="px-3 py-2 text-sm text-gray-900">${vehicle.name}</td>
-                <td class="px-3 py-2">
-                    <div class="w-6 h-6 rounded border border-gray-300" style="background-color: ${vehicle.color};" title="${vehicle.color}"></div>
-                </td>
-                <td class="px-3 py-2 text-sm text-gray-500">${vehicle.seats}</td>
-                <td class="px-3 py-2">
-                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                        Không có ghi chú
-                    </span>
-                </td>
-            `;
-
-            // Thêm row vào bảng waiting
-            waitingTableBody.appendChild(newRow);
-        });
-
-        console.log(`Đã thêm ${vehicles.length} xe vào bảng waiting sau khi về bãi`);
-    }
 }
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔍 ReadyVehicles DOMContentLoaded event fired');
+    console.log('🔍 ActiveVehicles DOMContentLoaded event fired');
     
     try {
-    // Create and initialize ReadyVehicles instance
-        console.log('🔍 Creating ReadyVehicles instance...');
-    const readyVehicles = new ReadyVehicles();
-        console.log('🔍 ReadyVehicles instance created:', readyVehicles);
+        // Create and initialize ActiveVehicles instance
+        console.log('🔍 Creating ActiveVehicles instance...');
+        const activeVehicles = new ActiveVehicles();
+        console.log('🔍 ActiveVehicles instance created:', activeVehicles);
         
-        console.log('🔍 Calling readyVehicles.init()...');
-    readyVehicles.init();
-    
-    // Make it available globally for debugging
-    window.readyVehicles = readyVehicles;
+        console.log('🔍 Calling activeVehicles.init()...');
+        activeVehicles.init();
         
-        // Make returnSelectedVehiclesToYard available globally for HTML onclick
-        window.returnSelectedVehiclesToYard = function() {
-            readyVehicles.returnSelectedVehiclesToYard();
-        };
-        
-        console.log('✅ ReadyVehicles initialized and available as window.readyVehicles');
-        console.log('✅ returnSelectedVehiclesToYard available globally');
+        // Make it available globally for debugging
+        window.activeVehicles = activeVehicles;
+        console.log('✅ ActiveVehicles initialized and available as window.activeVehicles');
     } catch (error) {
-        console.error('❌ Error initializing ReadyVehicles:', error);
+        console.error('❌ Error initializing ActiveVehicles:', error);
     }
 });
 
 // Export for ES6 modules
-export default ReadyVehicles;
+export default ActiveVehicles;

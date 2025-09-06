@@ -8,26 +8,26 @@ use App\Models\VehicleAttribute;
 use Illuminate\Http\Request;
 use App\Http\Controllers\vehicles\VehicleOperationsController;
 
-class ReadyVehiclesController extends Controller
+class ActiveVehiclesController extends Controller
 {
     /**
-     * Display ready vehicles (xe sẵn sàng chạy)
+     * Display active vehicles (xe hoạt động)
      */
     public function index()
     {
-        // Lấy xe có trạng thái ready (sẵn sàng chạy)
+        // Lấy xe có trạng thái active (sẵn sàng chạy)
         $vehicles = Vehicle::active()->latest()->get();
         
         // Lấy xe đang chạy để hiển thị trong bảng "Xe chạy đường 1-2"
         $runningVehicles = Vehicle::running()->latest()->get();
 
-        return view('vehicles.ready_vehicles', compact('vehicles', 'runningVehicles'));
+        return view('vehicles.active_vehicles', compact('vehicles', 'runningVehicles'));
     }
 
     /**
-     * Get ready vehicles for API
+     * Get active vehicles for API
      */
-    public function getReadyVehicles()
+    public function getActiveVehicles()
     {
         $vehicles = Vehicle::active()->latest()->get();
 

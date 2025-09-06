@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 // ActiveVehiclesController đã được migration sang VehicleOperationsController
-use App\Http\Controllers\vehicles\ReadyVehiclesController;
+use App\Http\Controllers\vehicles\ActiveVehiclesController;
 use App\Http\Controllers\vehicles\WaitingVehiclesController;
 use App\Http\Controllers\vehicles\RunningVehiclesController;
 use App\Http\Controllers\vehicles\PausedVehiclesController;
@@ -44,11 +44,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/vehicles/{vehicle}/route', [VehicleManagementController::class, 'updateRoute'])->name('vehicles.updateRoute');
     Route::patch('/vehicles/{vehicle}/workshop', [VehicleManagementController::class, 'moveToWorkshop'])->name('vehicles.moveToWorkshop');
     
-    // Ready Vehicles (Xe sẵn sàng chạy)
-    Route::get('/ready-vehicles', [ReadyVehiclesController::class, 'index'])->name('ready-vehicles.index');
-    Route::post('/ready-vehicles/start-timer', [ReadyVehiclesController::class, 'startTimer'])->name('ready-vehicles.start-timer');
-    Route::post('/ready-vehicles/assign-route', [ReadyVehiclesController::class, 'assignRoute'])->name('ready-vehicles.assign-route');
-    Route::post('/ready-vehicles/move-workshop', [ReadyVehiclesController::class, 'moveToWorkshop'])->name('ready-vehicles.move-workshop');
+    // Active Vehicles (Xe hoạt động)
+    Route::get('/active-vehicles', [ActiveVehiclesController::class, 'index'])->name('active-vehicles.index');
+    Route::post('/active-vehicles/start-timer', [ActiveVehiclesController::class, 'startTimer'])->name('active-vehicles.start-timer');
+    Route::post('/active-vehicles/assign-route', [ActiveVehiclesController::class, 'assignRoute'])->name('active-vehicles.assign-route');
+    Route::post('/active-vehicles/move-workshop', [ActiveVehiclesController::class, 'moveToWorkshop'])->name('active-vehicles.move-workshop');
     
     // Waiting Vehicles (Xe đang chờ)
     Route::get('/waiting-vehicles', [WaitingVehiclesController::class, 'index'])->name('waiting-vehicles.index');

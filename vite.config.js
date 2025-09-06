@@ -11,7 +11,7 @@ export default defineConfig({
                 // Use the VehicleClasses.js entry point for proper dependency management
                 'resources/js/vehicles/VehicleClasses.js',
                 // Vehicle-specific CSS files
-                'resources/css/vehicles/ready-vehicles.css',
+                'resources/css/vehicles/active-vehicles.css',
                 'resources/css/vehicles/waiting-vehicles.css',
                 'resources/css/vehicles/running-vehicles.css',
                 'resources/css/vehicles/paused-vehicles.css',

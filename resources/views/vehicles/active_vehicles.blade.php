@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'Xe sẵn sàng')
+@section('title', 'Xe hoạt động')
 
 @section('content')
-<div class="container mx-auto px-4 py-6" id="vehicle-page" data-page-type="ready">
+<div class="container mx-auto px-4 py-6" id="vehicle-page" data-page-type="active">
 
-    <!-- Header for Ready Vehicles -->
+    <!-- Header for Active Vehicles -->
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-neutral-900">Xe sẵn sàng</h1>
+        <h1 class="text-2xl font-bold text-neutral-900">Xe hoạt động</h1>
         <p class="text-neutral-600 mt-2">Quản lý xe đã sẵn sàng để hoạt động</p>
     </div>
 
-    <!-- Grid Display for ready vehicles -->
+    <!-- Grid Display for active vehicles -->
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Hidden data for JavaScript -->
         <div id="vehicle-data" data-vehicles='@json($vehicles)' style="display: none;"></div>
@@ -164,6 +164,6 @@
 @endpush
 
 @push('styles')
-    <!-- Load ready-vehicles.css -->
-    @vite(['resources/css/vehicles/ready-vehicles.css'])
+    <!-- Load active-vehicles.css -->
+    @vite(['resources/css/vehicles/active-vehicles.css'])
 @endpush

@@ -5,8 +5,10 @@
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <!-- Content based on filter -->
-    @if($filter === 'ready')
-        @include('vehicles.ready_vehicles')
+    @if($filter === 'active')
+        @include('vehicles.active_vehicles')
+    @elseif($filter === 'ready')
+        @include('vehicles.active_vehicles')
     @elseif($filter === 'waiting')
                 @include('vehicles.waiting_vehicles')
             @elseif($filter === 'running')
@@ -50,8 +52,10 @@
 
 @push('styles')
     <!-- Load appropriate CSS based on filter -->
-    @if($filter === 'ready')
-        @vite(['resources/css/vehicles/ready-vehicles.css'])
+    @if($filter === 'active')
+        @vite(['resources/css/vehicles/active-vehicles.css'])
+    @elseif($filter === 'ready')
+        @vite(['resources/css/vehicles/active-vehicles.css'])
     @elseif($filter === 'waiting')
         @vite(['resources/css/vehicles/waiting-vehicles.css'])
     @elseif($filter === 'running')
