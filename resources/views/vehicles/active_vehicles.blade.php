@@ -43,6 +43,7 @@
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Màu sắc</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Chỗ ngồi</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Tình trạng</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">🔧</th>
                                 </tr>
                             </thead>
                             <tbody id="waiting-vehicles" class="divide-y divide-gray-200">
@@ -66,6 +67,14 @@
                                                     Không có ghi chú
                                                 </span>
                                             @endif
+                                        </td>
+                                        <td class="px-3 py-2">
+                                            <button onclick="openWorkshopModal({{ $vehicle->id }})" class="text-gray-600 hover:text-gray-900 transition-colors duration-200" title="Về xưởng">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -221,6 +230,146 @@
             } else {
                 console.error('ActiveVehicles instance not found');
                 alert('Lỗi: Không thể thực hiện thao tác này');
+            }
+        }
+        
+        // Global function for open workshop modal
+        function openWorkshopModal(vehicleId) {
+            console.log('Opening workshop modal for vehicle:', vehicleId);
+            const modal = document.getElementById('move-workshop-modal');
+            const vehicleIdInput = document.getElementById('workshop-vehicle-id');
+            
+            if (modal) {
+                console.log('Modal found, setting up...');
+                // Store vehicle ID in a hidden input or data attribute
+                if (vehicleIdInput) {
+                    vehicleIdInput.value = vehicleId;
+                } else {
+                    // Create hidden input if it doesn't exist
+                    const form = modal.querySelector('#move-workshop-form');
+                    if (form) {
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.id = 'workshop-vehicle-id';
+                        hiddenInput.name = 'vehicle_id';
+                        hiddenInput.value = vehicleId;
+                        form.appendChild(hiddenInput);
+                    }
+                }
+                
+                // Setup form validation with delay to ensure DOM is ready
+                console.log('Calling setupWorkshopFormValidation...');
+                setTimeout(() => {
+                    setupWorkshopFormValidation();
+                }, 100);
+                
+                modal.classList.remove('hidden');
+                console.log('Modal opened successfully');
+            } else {
+                console.error('Workshop modal not found');
+                alert('Lỗi: Không thể mở modal');
+            }
+        }
+        
+        // Global function for setup workshop form validation
+        function setupWorkshopFormValidation() {
+            console.log('Setting up workshop form validation...');
+            const form = document.getElementById('move-workshop-form');
+            const reasonSelect = document.getElementById('workshop-reason');
+            const notesTextarea = document.getElementById('workshop-notes');
+            const submitButton = document.getElementById('workshop-submit-btn');
+            
+            console.log('Elements found:', { form: !!form, reasonSelect: !!reasonSelect, notesTextarea: !!notesTextarea, submitButton: !!submitButton });
+            
+            if (!form || !reasonSelect || !notesTextarea || !submitButton) {
+                console.log('Some elements not found, validation setup failed');
+                return;
+            }
+
+            // Function to validate form
+            const validateForm = () => {
+                const reason = reasonSelect.value;
+                const notes = notesTextarea.value.trim();
+                
+                console.log('Validation check:', { reason, notes, disabled: submitButton.disabled });
+                
+                // If no reason selected, disable button
+                if (!reason || reason === '') {
+                    submitButton.disabled = true;
+                    submitButton.style.backgroundColor = '#9ca3af';
+                    submitButton.style.cursor = 'not-allowed';
+                    console.log('Button disabled - no reason selected');
+                    return false;
+                }
+                
+                // If no notes provided, disable button (regardless of reason)
+                if (!notes) {
+                    submitButton.disabled = true;
+                    submitButton.style.backgroundColor = '#9ca3af';
+                    submitButton.style.cursor = 'not-allowed';
+                    console.log('Button disabled - no notes provided');
+                    return false;
+                }
+                
+                // If both reason and notes are provided, enable button
+                if (reason && notes) {
+                    submitButton.disabled = false;
+                    submitButton.style.backgroundColor = '#ea580c';
+                    submitButton.style.cursor = 'pointer';
+                    console.log('Button enabled - both reason and notes provided');
+                    return true;
+                }
+                
+                // Default: disable button
+                submitButton.disabled = true;
+                submitButton.style.backgroundColor = '#9ca3af';
+                submitButton.style.cursor = 'not-allowed';
+                console.log('Button disabled - default state');
+                return false;
+            };
+
+            // Remove existing event listeners to avoid duplicates
+            reasonSelect.removeEventListener('change', validateForm);
+            notesTextarea.removeEventListener('input', validateForm);
+            
+            // Add event listeners
+            console.log('Adding event listeners...');
+            reasonSelect.addEventListener('change', function() {
+                console.log('Reason changed to:', reasonSelect.value);
+                validateForm();
+            });
+            notesTextarea.addEventListener('input', function() {
+                console.log('Notes changed to:', notesTextarea.value);
+                validateForm();
+            });
+            
+            // Initial validation
+            console.log('Running initial validation...');
+            validateForm();
+        }
+        
+        // Global function for close workshop modal
+        function closeMoveWorkshopModal() {
+            const modal = document.getElementById('move-workshop-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                // Reset form
+                const form = modal.querySelector('#move-workshop-form');
+                if (form) {
+                    form.reset();
+                    // Reset dropdown to empty value
+                    const reasonSelect = document.getElementById('workshop-reason');
+                    if (reasonSelect) {
+                        reasonSelect.value = '';
+                    }
+                    // Reset button state
+                    const submitButton = document.getElementById('workshop-submit-btn');
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                        submitButton.style.backgroundColor = '#9ca3af';
+                        submitButton.style.cursor = 'not-allowed';
+                    }
+                }
             }
         }
         

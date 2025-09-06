@@ -30,7 +30,9 @@ class ActiveVehicles extends VehicleBase {
         this.setupRouteAssignment();
         this.setupWorkshopTransfer();
         this.setupVehicleSelection();
+        console.log('Setting up row click handlers in ActiveVehicles...');
         this.setupRowClickHandlers();
+        this.setupWorkshopModal();
     }
 
     /**
@@ -120,9 +122,6 @@ class ActiveVehicles extends VehicleBase {
         // Setup row click for timer vehicles table
         this.setupTableRowClick('timer-vehicles', 'vehicle-checkbox');
         
-        // Setup row click for route vehicles table
-        this.setupTableRowClick('route-vehicles', 'route-checkbox');
-        
         // Setup mobile responsive headers
         this.setupMobileHeaders();
     }
@@ -132,29 +131,56 @@ class ActiveVehicles extends VehicleBase {
      */
     setupTableRowClick(tableId, checkboxClass) {
         const tableBody = document.getElementById(tableId);
-        if (!tableBody) return;
+        if (!tableBody) {
+            console.log('Table body not found:', tableId);
+            return;
+        }
+        
+        // Check if event listener already exists
+        if (tableBody.hasAttribute('data-row-click-setup')) {
+            console.log('Row click already setup for table:', tableId);
+            return;
+        }
+        
+        console.log('Setting up row click for table:', tableId, 'with checkbox class:', checkboxClass);
 
         // Use event delegation for dynamically added rows
         tableBody.addEventListener('click', (e) => {
+            console.log('Table row clicked:', e.target, 'Table:', tableId);
+            
             // Find the closest row
             const row = e.target.closest('tr');
-            if (!row) return;
+            if (!row) {
+                console.log('No row found');
+                return;
+            }
 
-            // Don't trigger if clicking on checkbox or button
-            if (e.target.type === 'checkbox' || e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
+            // Don't trigger if clicking on checkbox, button, or any element inside a button
+            if (e.target.type === 'checkbox' || 
+                e.target.tagName === 'BUTTON' || 
+                e.target.tagName === 'INPUT' || 
+                e.target.closest('button')) {
+                console.log('Click on interactive element, ignoring');
                 return;
             }
 
             // Find checkbox in this row
             const checkbox = row.querySelector(`.${checkboxClass}`);
+            console.log('Checkbox found:', checkbox, 'Class:', checkboxClass);
             if (checkbox) {
                 // Toggle checkbox
                 checkbox.checked = !checkbox.checked;
+                console.log('Checkbox toggled to:', checkbox.checked);
                 
                 // Trigger change event to update select all checkboxes
                 checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+            } else {
+                console.log('No checkbox found with class:', checkboxClass);
             }
-        });
+        }, true); // Use capture phase
+        
+        // Mark as setup to prevent duplicates
+        tableBody.setAttribute('data-row-click-setup', 'true');
     }
 
     /**
@@ -197,6 +223,75 @@ class ActiveVehicles extends VehicleBase {
         // Update on resize
         window.addEventListener('resize', updateHeaders);
     }
+
+    /**
+     * Setup workshop modal functionality
+     */
+    setupWorkshopModal() {
+        const form = document.getElementById('move-workshop-form');
+        if (!form) return;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const vehicleId = formData.get('vehicle_id');
+            const reason = formData.get('reason');
+            const notes = formData.get('notes');
+            
+            if (!vehicleId) {
+                this.showError('Không tìm thấy ID xe');
+                return;
+            }
+            
+            try {
+                // Show loading state
+                const submitButton = form.querySelector('button[type="submit"]');
+                const originalText = submitButton.textContent;
+                submitButton.textContent = 'Đang chuyển...';
+                submitButton.disabled = true;
+                
+                // Prepare reason text - get the display text of selected option
+                const reasonSelect = form.querySelector('#workshop-reason');
+                const selectedOption = reasonSelect.options[reasonSelect.selectedIndex];
+                const reasonText = selectedOption.textContent; // Get the display text (e.g., "Bảo trì", "Sửa chữa", etc.)
+                const fullReason = `${reasonText} - ${notes}`;
+                
+                // Call API
+                const response = await this.makeApiCall('/api/vehicles/move-workshop', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        vehicle_id: vehicleId,
+                        reason: fullReason
+                    })
+                });
+                
+                if (response.success) {
+                    this.showSuccess('Xe đã được chuyển về xưởng thành công!');
+                    
+                    // Close modal
+                    closeMoveWorkshopModal();
+                    
+                    // Hide vehicle from waiting table
+                    this.hideVehicleFromWaitingTable(vehicleId);
+                    
+                    // Reload page after delay
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    this.showError(response.message || 'Có lỗi xảy ra khi chuyển xe về xưởng');
+                }
+            } catch (error) {
+                console.error('Error moving vehicle to workshop:', error);
+                this.showError('Có lỗi xảy ra khi chuyển xe về xưởng');
+            } finally {
+                // Restore button state
+                const submitButton = form.querySelector('button[type="submit"]');
+                submitButton.textContent = 'Chuyển về xưởng';
+                submitButton.disabled = false;
+            }
+        });
+    }
+
 
     /**
      * Setup bulk actions
@@ -400,6 +495,39 @@ class ActiveVehicles extends VehicleBase {
         this.addVehiclesToWaitingTable(selectedVehicleIds, selectedVehicleNames);
     }
 
+
+    /**
+     * Hide single vehicle from waiting table
+     */
+    hideVehicleFromWaitingTable(vehicleId) {
+        const waitingTableBody = document.getElementById('waiting-vehicles');
+        if (!waitingTableBody) return;
+
+        const checkbox = waitingTableBody.querySelector(`.waiting-checkbox[value="${vehicleId}"]`);
+        if (checkbox) {
+            const row = checkbox.closest('tr');
+            if (row) {
+                // Add animation fade out
+                row.style.transition = 'all 0.3s ease';
+                row.style.opacity = '0';
+                row.style.transform = 'scale(0.95)';
+                
+                // Remove row after animation
+                setTimeout(() => {
+                    if (row.parentElement) {
+                        row.remove();
+                        
+                        // Check if no more vehicles in waiting table
+                        const remainingRows = waitingTableBody.querySelectorAll('tr');
+                        if (remainingRows.length === 0) {
+                            this.showEmptyWaitingState();
+                        }
+                    }
+                }, 300);
+            }
+        }
+    }
+
     /**
      * Hide selected vehicles from timer table
      */
@@ -493,6 +621,14 @@ class ActiveVehicles extends VehicleBase {
                             Không có ghi chú
                         </span>`
                     }
+                </td>
+                <td class="px-3 py-2">
+                    <button onclick="openWorkshopModal(${vehicleId})" class="text-gray-600 hover:text-gray-900 transition-colors duration-200" title="Về xưởng">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
                 </td>
             `;
             
@@ -827,7 +963,7 @@ class ActiveVehicles extends VehicleBase {
         if (waitingTableBody) {
             waitingTableBody.innerHTML = `
                 <tr>
-                    <td colspan="5" class="px-3 py-8 text-center text-gray-500">
+                    <td colspan="6" class="px-3 py-8 text-center text-gray-500">
                         Không có xe nào đang chờ
                     </td>
                 </tr>
@@ -841,6 +977,12 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('🔍 ActiveVehicles DOMContentLoaded event fired');
     
     try {
+        // Check if instance already exists to prevent duplicates
+        if (window.activeVehicles) {
+            console.log('🔍 ActiveVehicles instance already exists, skipping creation');
+            return;
+        }
+        
         // Create and initialize ActiveVehicles instance
         console.log('🔍 Creating ActiveVehicles instance...');
         const activeVehicles = new ActiveVehicles();

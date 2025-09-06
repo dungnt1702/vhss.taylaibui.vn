@@ -80,11 +80,13 @@
             <div class="p-6">
                 <h3 class="text-lg font-semibold text-neutral-900 mb-4">Chuyển xe về xưởng</h3>
                 <form id="move-workshop-form">
+                    <input type="hidden" id="workshop-vehicle-id" name="vehicle_id" value="">
                     <div class="mb-4">
                         <label for="workshop-reason" class="block text-sm font-medium text-neutral-700 mb-2">
                             Lý do
                         </label>
                         <select id="workshop-reason" name="reason" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                            <option value="">-- Chọn lý do --</option>
                             <option value="maintenance">Bảo trì</option>
                             <option value="repair">Sửa chữa</option>
                             <option value="inspection">Kiểm tra</option>
@@ -93,15 +95,15 @@
                     </div>
                     <div class="mb-4">
                         <label for="workshop-notes" class="block text-sm font-medium text-neutral-700 mb-2">
-                            Ghi chú
+                            Ghi chú <span class="text-red-500">*</span>
                         </label>
-                        <textarea id="workshop-notes" name="notes" rows="3" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500" placeholder="Nhập ghi chú (tùy chọn)"></textarea>
+                        <textarea id="workshop-notes" name="notes" rows="3" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500" placeholder="Nhập ghi chú (bắt buộc)"></textarea>
                     </div>
                     <div class="flex justify-end space-x-3">
                         <button type="button" onclick="closeMoveWorkshopModal()" class="px-4 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 border border-neutral-300 rounded-md hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500">
                             Hủy
                         </button>
-                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-warning-600 border border-transparent rounded-md hover:bg-warning-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-warning-500">
+                        <button type="submit" id="workshop-submit-btn" class="px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled style="background-color: #9ca3af; cursor: not-allowed;">
                             Chuyển về xưởng
                         </button>
                     </div>

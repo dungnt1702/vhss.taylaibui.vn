@@ -233,7 +233,7 @@ class VehicleOperationsController extends Controller
             $vehicle->update([
                 'status' => Vehicle::STATUS_WORKSHOP,
                 'status_changed_at' => now(),
-                'notes' => 'Chuyển về xưởng: ' . $request->reason,
+                'notes' => $request->reason,
             ]);
 
             return response()->json([

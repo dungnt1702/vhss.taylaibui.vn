@@ -79,6 +79,102 @@
 @push('scripts')
     <!-- Load VehicleClasses.js for all vehicle functionality -->
     @vite(['resources/js/vehicles/VehicleClasses.js'])
+    
+    <script>
+        // Global function for close workshop modal
+        function closeMoveWorkshopModal() {
+            const modal = document.getElementById('move-workshop-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                // Reset form
+                const form = modal.querySelector('#move-workshop-form');
+                if (form) {
+                    form.reset();
+                    // Reset dropdown to empty value
+                    const reasonSelect = document.getElementById('workshop-reason');
+                    if (reasonSelect) {
+                        reasonSelect.value = '';
+                    }
+                    // Reset button state
+                    const submitButton = document.getElementById('workshop-submit-btn');
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                        submitButton.style.backgroundColor = '#9ca3af';
+                        submitButton.style.cursor = 'not-allowed';
+                    }
+                }
+            }
+        }
+        
+        // Global function for setup workshop form validation
+        function setupWorkshopFormValidation() {
+            console.log('Setting up workshop form validation (ready)...');
+            const form = document.getElementById('move-workshop-form');
+            const reasonSelect = document.getElementById('workshop-reason');
+            const notesTextarea = document.getElementById('workshop-notes');
+            const submitButton = document.getElementById('workshop-submit-btn');
+            
+            console.log('Elements found (ready):', { form: !!form, reasonSelect: !!reasonSelect, notesTextarea: !!notesTextarea, submitButton: !!submitButton });
+            
+            if (!form || !reasonSelect || !notesTextarea || !submitButton) {
+                console.log('Some elements not found, validation setup failed (ready)');
+                return;
+            }
+
+            // Function to validate form
+            const validateForm = () => {
+                const reason = reasonSelect.value;
+                const notes = notesTextarea.value.trim();
+                
+                console.log('Validation check (ready):', { reason, notes, disabled: submitButton.disabled });
+                
+                // If no reason selected, disable button
+                if (!reason || reason === '') {
+                    submitButton.disabled = true;
+                    submitButton.style.backgroundColor = '#9ca3af';
+                    submitButton.style.cursor = 'not-allowed';
+                    console.log('Button disabled - no reason selected');
+                    return false;
+                }
+                
+                // If no notes provided, disable button (regardless of reason)
+                if (!notes) {
+                    submitButton.disabled = true;
+                    submitButton.style.backgroundColor = '#9ca3af';
+                    submitButton.style.cursor = 'not-allowed';
+                    console.log('Button disabled - no notes provided');
+                    return false;
+                }
+                
+                // If both reason and notes are provided, enable button
+                if (reason && notes) {
+                    submitButton.disabled = false;
+                    submitButton.style.backgroundColor = '#ea580c';
+                    submitButton.style.cursor = 'pointer';
+                    console.log('Button enabled - both reason and notes provided');
+                    return true;
+                }
+                
+                // Default: disable button
+                submitButton.disabled = true;
+                submitButton.style.backgroundColor = '#9ca3af';
+                submitButton.style.cursor = 'not-allowed';
+                console.log('Button disabled - default state');
+                return false;
+            };
+
+            // Remove existing event listeners to avoid duplicates
+            reasonSelect.removeEventListener('change', validateForm);
+            notesTextarea.removeEventListener('input', validateForm);
+            
+            // Add event listeners
+            reasonSelect.addEventListener('change', validateForm);
+            notesTextarea.addEventListener('input', validateForm);
+            
+            // Initial validation
+            validateForm();
+        }
+    </script>
 @endpush
 
 @push('styles')
