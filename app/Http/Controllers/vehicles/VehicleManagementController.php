@@ -53,12 +53,18 @@ class VehicleManagementController extends Controller
         // Get display mode based on filter
         $displayMode = in_array($filter, ['active', 'ready', 'vehicles_list', 'attributes']) ? 'list' : 'grid';
 
+        // Initialize all vehicle arrays
+        $activeVehicles = collect();
+        $runningVehicles = collect();
+        $pausedVehicles = collect();
+        $expiredVehicles = collect();
+        
         // Get active vehicles for active_vehicles.blade.php when filter = 'active'
-        $activeVehicles = null;
-        $runningVehicles = null;
         if ($filter === 'active') {
             $activeVehicles = Vehicle::active()->latest()->get();
             $runningVehicles = Vehicle::running()->latest()->get();
+            $pausedVehicles = Vehicle::paused()->latest()->get();
+            $expiredVehicles = Vehicle::expired()->latest()->get();
         }
         
         // Get ready vehicles for ready_vehicles.blade.php when filter = 'ready'
@@ -77,6 +83,8 @@ class VehicleManagementController extends Controller
             'vehicles', 
             'activeVehicles',
             'runningVehicles',
+            'pausedVehicles',
+            'expiredVehicles',
             'filter', 
             'pageTitle', 
             'displayMode', 

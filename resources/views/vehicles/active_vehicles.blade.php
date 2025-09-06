@@ -16,6 +16,8 @@
         <!-- Hidden data for JavaScript -->
         <div id="vehicle-data" data-vehicles='@json($vehicles)' style="display: none;"></div>
         <div id="running-vehicles-data" data-vehicles='@json($runningVehicles)' style="display: none;"></div>
+        <div id="paused-vehicles-data" data-vehicles='@json($pausedVehicles)' style="display: none;"></div>
+        <div id="expired-vehicles-data" data-vehicles='@json($expiredVehicles)' style="display: none;"></div>
 
         <!-- Single Column Layout -->
         <div class="space-y-6">
@@ -133,6 +135,7 @@
                                     </th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Xe số</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Màu sắc</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Trạng thái</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Bắt đầu</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Kết thúc</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Đếm ngược</th>

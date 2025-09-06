@@ -342,39 +342,108 @@ class ActiveVehicles extends VehicleBase {
      * Load running vehicles on page initialization
      */
     loadRunningVehiclesOnInit() {
+        // Load all vehicle types: running, paused, expired
+        const allVehicles = [];
+        
+        // Load running vehicles
         const runningData = document.getElementById('running-vehicles-data');
         if (runningData) {
             try {
                 const runningVehicles = JSON.parse(runningData.dataset.vehicles);
                 if (runningVehicles && runningVehicles.length > 0) {
-                    this.populateTimerTable(runningVehicles);
+                    console.log('Running vehicles data:', runningVehicles);
+                    runningVehicles.forEach(vehicle => {
+                        // Force status to running for vehicles from running query
+                        vehicle.status = 'running';
+                        allVehicles.push(vehicle);
+                    });
                 }
             } catch (error) {
                 console.error('Error parsing running vehicles data:', error);
             }
         }
+        
+        // Load paused vehicles
+        const pausedData = document.getElementById('paused-vehicles-data');
+        if (pausedData) {
+            try {
+                const pausedVehicles = JSON.parse(pausedData.dataset.vehicles);
+                if (pausedVehicles && pausedVehicles.length > 0) {
+                    console.log('Paused vehicles data:', pausedVehicles);
+                    pausedVehicles.forEach(vehicle => {
+                        // Force status to paused for vehicles from paused query
+                        vehicle.status = 'paused';
+                        allVehicles.push(vehicle);
+                    });
+                }
+            } catch (error) {
+                console.error('Error parsing paused vehicles data:', error);
+            }
+        }
+        
+        // Load expired vehicles
+        const expiredData = document.getElementById('expired-vehicles-data');
+        if (expiredData) {
+            try {
+                const expiredVehicles = JSON.parse(expiredData.dataset.vehicles);
+                if (expiredVehicles && expiredVehicles.length > 0) {
+                    console.log('Expired vehicles data:', expiredVehicles);
+                    expiredVehicles.forEach(vehicle => {
+                        // Force status to expired for vehicles from expired query
+                        vehicle.status = 'expired';
+                        allVehicles.push(vehicle);
+                    });
+                }
+            } catch (error) {
+                console.error('Error parsing expired vehicles data:', error);
+            }
+        }
+        
+        if (allVehicles.length > 0) {
+            this.populateTimerTable(allVehicles);
+        }
     }
 
     /**
-     * Populate timer table with running vehicles data
+     * Populate timer table with all vehicle types (running, paused, expired)
      */
-    populateTimerTable(runningVehicles) {
+    populateTimerTable(allVehicles) {
         const timerTableBody = document.getElementById('timer-vehicles');
         if (!timerTableBody) return;
 
         // Clear existing content
         timerTableBody.innerHTML = '';
 
-        runningVehicles.forEach(vehicle => {
-            // Parse end_time from database
+        allVehicles.forEach(vehicle => {
+            // Parse times
             const endTime = new Date(vehicle.end_time);
             const startTime = new Date(vehicle.start_time || vehicle.created_at);
             
-            // Calculate remaining time
-            const now = new Date();
-            const remainingMs = endTime.getTime() - now.getTime();
-            const remainingMinutes = Math.max(0, Math.floor(remainingMs / (1000 * 60)));
-            const remainingSeconds = Math.max(0, Math.floor((remainingMs % (1000 * 60)) / 1000));
+            // Calculate remaining time based on status
+            let remainingMinutes = 0;
+            let remainingSeconds = 0;
+            
+            if (vehicle.status === 'running') {
+                // Running vehicles: countdown continues
+                const now = new Date();
+                const remainingMs = endTime.getTime() - now.getTime();
+                remainingMinutes = Math.max(0, Math.floor(remainingMs / (1000 * 60)));
+                remainingSeconds = Math.max(0, Math.floor((remainingMs % (1000 * 60)) / 1000));
+            } else if (vehicle.status === 'paused') {
+                // Paused vehicles: show paused remaining time
+                if (vehicle.paused_remaining_seconds) {
+                    const pausedSeconds = parseInt(vehicle.paused_remaining_seconds);
+                    remainingMinutes = Math.floor(pausedSeconds / 60);
+                    remainingSeconds = pausedSeconds % 60;
+                } else {
+                    remainingMinutes = 0;
+                    remainingSeconds = 0;
+                }
+            } else if (vehicle.status === 'expired') {
+                // Expired vehicles: show 00:00
+                remainingMinutes = 0;
+                remainingSeconds = 0;
+            }
             
             // Format times
             const startTimeStr = startTime.toLocaleTimeString('vi-VN', { 
@@ -386,12 +455,43 @@ class ActiveVehicles extends VehicleBase {
                 minute: '2-digit' 
             });
 
+            // Get status display text and CSS classes
+            let statusText = '';
+            let statusClass = '';
+            let rowClass = '';
+            
+            switch(vehicle.status) {
+                case 'running':
+                    statusText = 'Đang chạy';
+                    statusClass = 'status-badge status-running';
+                    rowClass = 'vehicle-row-running hover:bg-green-50';
+                    break;
+                case 'paused':
+                    statusText = 'Tạm dừng';
+                    statusClass = 'status-badge status-paused';
+                    rowClass = 'vehicle-row-paused hover:bg-yellow-50';
+                    break;
+                case 'expired':
+                    statusText = 'Hết giờ';
+                    statusClass = 'status-badge status-expired';
+                    rowClass = 'vehicle-row-expired hover:bg-red-50';
+                    break;
+                default:
+                    statusText = 'Không xác định';
+                    statusClass = 'status-badge';
+                    rowClass = 'hover:bg-gray-50';
+                    console.warn('Unknown vehicle status:', vehicle.status);
+            }
+            
+            // Debug log
+            console.log(`Vehicle ${vehicle.name} - Status: ${vehicle.status}, StatusText: ${statusText}, StatusClass: ${statusClass}`);
+
             // Create row
             const newRow = document.createElement('tr');
-            newRow.className = 'hover:bg-gray-50';
+            newRow.className = rowClass;
             newRow.dataset.vehicleId = vehicle.id;
             newRow.dataset.endTime = endTime.getTime();
-            newRow.dataset.status = 'running';
+            newRow.dataset.status = vehicle.status;
             
             newRow.innerHTML = `
                 <td class="px-3 py-2">
@@ -401,23 +501,36 @@ class ActiveVehicles extends VehicleBase {
                 <td class="px-3 py-2">
                     <div class="w-4 h-4 rounded border border-gray-300" style="background-color: ${vehicle.color};" title="${vehicle.color}"></div>
                 </td>
+                <td class="px-3 py-2">
+                    <span class="${statusClass}">${statusText}</span>
+                </td>
                 <td class="px-3 py-2 text-sm text-gray-900">${startTimeStr}</td>
                 <td class="px-3 py-2 text-sm text-gray-900">${endTimeStr}</td>
                 <td class="px-3 py-2 text-sm text-gray-900">
-                    <div class="countdown-display" data-end-time="${endTime.getTime()}">
+                    <div class="countdown-display" data-end-time="${endTime.getTime()}" data-status="${vehicle.status}">
                         <span class="countdown-minutes">${remainingMinutes.toString().padStart(2, '0')}</span>:<span class="countdown-seconds">${remainingSeconds.toString().padStart(2, '0')}</span>
                     </div>
                 </td>
             `;
+            
+            // Debug: Log the generated HTML for running vehicles
+            if (vehicle.status === 'running') {
+                console.log(`Generated HTML for running vehicle ${vehicle.name}:`, newRow.innerHTML);
+            }
 
             // Add row to table
             timerTableBody.appendChild(newRow);
             
-            // Start countdown timer for this row
-            this.startCountdownTimer(newRow);
+            // Start countdown timer only for running vehicles
+            if (vehicle.status === 'running') {
+                console.log(`Starting countdown timer for running vehicle: ${vehicle.name}`);
+                this.startCountdownTimer(newRow);
+            } else {
+                console.log(`Not starting countdown for ${vehicle.status} vehicle: ${vehicle.name}`);
+            }
         });
 
-        console.log(`Đã load ${runningVehicles.length} xe đang chạy vào bảng timer`);
+        console.log(`Đã load ${allVehicles.length} xe vào bảng timer (running: ${allVehicles.filter(v => v.status === 'running').length}, paused: ${allVehicles.filter(v => v.status === 'paused').length}, expired: ${allVehicles.filter(v => v.status === 'expired').length})`);
     }
 
     /**
