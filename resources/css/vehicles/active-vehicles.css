@@ -4,6 +4,31 @@
     min-height: 100vh;
 }
 
+/* Collapsible sections */
+.collapsible-section {
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.collapsible-section.collapsed {
+    max-height: 0 !important;
+    opacity: 0;
+}
+
+/* Section headers with hover effect */
+.section-header {
+    transition: background-color 0.2s ease-in-out;
+}
+
+.section-header:hover {
+    background-color: #f8fafc;
+}
+
+/* Arrow rotation animation */
+.arrow-rotate {
+    transition: transform 0.3s ease-in-out;
+}
+
 .vehicle-card {
     transition: all 0.3s ease;
     border: 1px solid #e5e7eb;

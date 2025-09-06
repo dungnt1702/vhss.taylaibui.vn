@@ -17,15 +17,21 @@
         <div id="vehicle-data" data-vehicles='@json($vehicles)' style="display: none;"></div>
         <div id="running-vehicles-data" data-vehicles='@json($runningVehicles)' style="display: none;"></div>
 
-        <!-- Three Column Layout -->
-        <div class="xl:grid xl:grid-cols-3 gap-6">
+        <!-- Single Column Layout -->
+        <div class="space-y-6">
             <!-- Block 1: Xe đang chờ -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Xe đang chờ</h2>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4 cursor-pointer flex items-center justify-between section-header px-3 py-2 rounded-md" onclick="toggleSection('waiting-section')">
+                        <span>Xe đang chờ</span>
+                        <svg id="waiting-arrow" class="w-5 h-5 arrow-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </h2>
                     
-                    @if($vehicles && count($vehicles) > 0)
-                        <table class="min-w-full divide-y divide-gray-200">
+                    <div id="waiting-section" class="transition-all duration-300 ease-in-out">
+                        @if($vehicles && count($vehicles) > 0)
+                            <table class="min-w-full divide-y divide-gray-200">
                             <thead>
                                 <tr>
                                     <th class="px-3 py-2 text-left">
@@ -62,15 +68,15 @@
                                     </tr>
                                 @endforeach
                             </tbody>
-                        </table>
-                    @else
-                        <div class="text-center py-8">
-                            <p class="text-gray-500">Không có xe nào đang chờ</p>
-                        </div>
-                    @endif
+                            </table>
+                        @else
+                            <div class="text-center py-8">
+                                <p class="text-gray-500">Không có xe nào đang chờ</p>
+                            </div>
+                        @endif
 
-                    <!-- Action Buttons -->
-                    <div class="mt-6">
+                        <!-- Action Buttons -->
+                        <div class="mt-6">
                         <div class="flex flex-col items-center gap-4 [1028px:flex-row] [1028px:justify-center] [1280px:flex-col] [1280px:items-center]">
                             <!-- Time Selection Button Group -->
                             <div class="flex items-stretch w-full max-w-xs [1028px:max-w-none] [1280px:max-w-xs]">
@@ -103,6 +109,7 @@
                                 </button>
                             </div>
                         </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -110,30 +117,37 @@
             <!-- Block 2: Xe chạy đường 1-2 -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Xe chạy đường 1-2</h2>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4 cursor-pointer flex items-center justify-between section-header px-3 py-2 rounded-md" onclick="toggleSection('timer-section')">
+                        <span>Xe chạy đường 1-2</span>
+                        <svg id="timer-arrow" class="w-5 h-5 arrow-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </h2>
                     
-                    <table class="table min-w-full divide-y divide-gray-200">
-                        <thead>
-                            <tr>
-                                <th class="px-3 py-2 text-left">
-                                    <input type="checkbox" id="select-all-timer" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
-                                </th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Xe số</th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Màu sắc</th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Bắt đầu</th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Kết thúc</th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Đếm ngược</th>
-                            </tr>
-                        </thead>
-                        <tbody id="timer-vehicles" class="divide-y divide-gray-200">
-                            <!-- Timer vehicles will be populated by JavaScript -->
-                        </tbody>
-                    </table>
+                    <div id="timer-section" class="transition-all duration-300 ease-in-out">
+                        <table class="table min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th class="px-3 py-2 text-left">
+                                        <input type="checkbox" id="select-all-timer" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                                    </th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Xe số</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Màu sắc</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Bắt đầu</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Kết thúc</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Đếm ngược</th>
+                                </tr>
+                            </thead>
+                            <tbody id="timer-vehicles" class="divide-y divide-gray-200">
+                                <!-- Timer vehicles will be populated by JavaScript -->
+                            </tbody>
+                        </table>
 
-                    <div class="mt-4">
-                        <button onclick="returnSelectedVehiclesToYard()" class="w-full px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                            Về bãi
-                        </button>
+                        <div class="mt-4">
+                            <button onclick="returnSelectedVehiclesToYard()" class="w-full px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                Về bãi
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -141,10 +155,17 @@
             <!-- Block 3: Xe theo Đường -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Xe theo Đường</h2>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4 cursor-pointer flex items-center justify-between section-header px-3 py-2 rounded-md" onclick="toggleSection('route-section')">
+                        <span>Xe theo Đường</span>
+                        <svg id="route-arrow" class="w-5 h-5 arrow-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </h2>
                     
-                    <div id="route-groups" class="space-y-4">
-                        <!-- Route groups will be populated by JavaScript -->
+                    <div id="route-section" class="transition-all duration-300 ease-in-out">
+                        <div id="route-groups" class="space-y-4">
+                            <!-- Route groups will be populated by JavaScript -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -161,6 +182,46 @@
 @push('scripts')
     <!-- Load VehicleClasses.js for smart vehicle functionality -->
     @vite(['resources/js/vehicles/VehicleClasses.js'])
+    
+    <script>
+        // Function to toggle section collapse/expand
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const arrow = document.getElementById(sectionId.replace('-section', '-arrow'));
+            
+            if (section.classList.contains('collapsed')) {
+                // Show section
+                section.classList.remove('collapsed');
+                section.style.maxHeight = section.scrollHeight + 'px';
+                arrow.style.transform = 'rotate(180deg)';
+                
+                // Remove maxHeight after animation to allow content to grow
+                setTimeout(() => {
+                    section.style.maxHeight = 'none';
+                }, 300);
+            } else {
+                // Hide section
+                section.style.maxHeight = section.scrollHeight + 'px';
+                // Force reflow
+                section.offsetHeight;
+                section.classList.add('collapsed');
+                section.style.maxHeight = '0px';
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+        
+        // Initialize all sections as expanded by default
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = ['waiting-section', 'timer-section', 'route-section'];
+            sections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.classList.add('collapsible-section');
+                    section.style.maxHeight = 'none';
+                }
+            });
+        });
+    </script>
 @endpush
 
 @push('styles')
