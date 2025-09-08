@@ -203,6 +203,36 @@ class VehicleOperationsController extends Controller
     }
 
     /**
+     * Update vehicle notes only
+     */
+    public function updateNotes(Request $request, Vehicle $vehicle)
+    {
+        try {
+            // Validate request data
+            $request->validate([
+                'notes' => 'nullable|string|max:500'
+            ]);
+
+            $vehicle->update([
+                'notes' => $request->input('notes', ''),
+                'status_changed_at' => now()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Ghi chú xe đã được cập nhật thành công!',
+                'vehicle' => $vehicle
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi cập nhật ghi chú xe: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi cập nhật ghi chú xe'
+            ], 500);
+        }
+    }
+
+    /**
      * Pause vehicle
      */
     public function pause(Request $request, Vehicle $vehicle)

@@ -42,8 +42,8 @@ class WorkshopVehicles extends VehicleBase {
             editVehicle: (vehicleId) => this.editVehicle(vehicleId)
         };
         
-        // Add closeVehicleModal function globally
-        window.closeVehicleModal = () => this.closeVehicleModal();
+        // Add closeEditNotesModal function globally
+        window.closeEditNotesModal = () => this.closeEditNotesModal();
     }
 
     /**
@@ -228,35 +228,35 @@ class WorkshopVehicles extends VehicleBase {
     }
 
     /**
-     * Edit vehicle - open modal popup
+     * Edit vehicle notes - open modal popup for notes only
      */
     async editVehicle(vehicleId) {
         try {
-            // Call API to get vehicle data for editing
+            // Call API to get vehicle data for editing notes
             const response = await fetch(`/api/vehicles/${vehicleId}/data`);
             const result = await response.json();
             
             if (result.success) {
                 const vehicleData = result.data;
-                console.log('Vehicle data for edit modal:', vehicleData);
+                console.log('Vehicle data for edit notes modal:', vehicleData);
                 
                 // Populate form with vehicle data
-                this.populateEditVehicleForm(vehicleData);
+                this.populateEditNotesForm(vehicleData);
                 
                 // Update modal title
-                const modalTitle = document.getElementById('vehicle-modal-title');
+                const modalTitle = document.getElementById('edit-notes-modal-title');
                 if (modalTitle) {
-                    modalTitle.textContent = 'Chỉnh sửa thông tin xe';
+                    modalTitle.textContent = 'Chỉnh sửa ghi chú xe';
                 }
                 
                 // Update vehicle ID in form
-                const vehicleEditId = document.getElementById('vehicle-edit-id');
+                const vehicleEditId = document.getElementById('edit-notes-vehicle-id');
                 if (vehicleEditId) {
                     vehicleEditId.value = vehicleId;
                 }
                 
                 // Show modal
-                const modal = document.getElementById('vehicle-modal');
+                const modal = document.getElementById('edit-notes-modal');
                 if (modal) {
                     modal.classList.remove('hidden');
                 }
@@ -271,100 +271,79 @@ class WorkshopVehicles extends VehicleBase {
     }
 
     /**
-     * Populate edit vehicle form with data
+     * Populate edit notes form with data
      */
-    populateEditVehicleForm(vehicleData) {
-        console.log('=== populateEditVehicleForm called with:', vehicleData, '===');
+    populateEditNotesForm(vehicleData) {
+        console.log('=== populateEditNotesForm called with:', vehicleData, '===');
         
-        // Populate form fields
-        const nameField = document.getElementById('vehicle-name');
-        const colorField = document.getElementById('vehicle-color');
-        const seatsField = document.getElementById('vehicle-seats');
-        const powerField = document.getElementById('vehicle-power');
-        const wheelSizeField = document.getElementById('vehicle-wheel-size');
-        const currentLocationField = document.getElementById('vehicle-current-location');
-        const notesField = document.getElementById('vehicle-notes');
+        // Populate notes field only
+        const notesField = document.getElementById('edit-notes-textarea');
+        if (notesField) {
+            notesField.value = vehicleData.notes || '';
+        }
         
-        if (nameField) nameField.value = vehicleData.name || '';
-        if (colorField) colorField.value = vehicleData.color || '';
-        if (seatsField) seatsField.value = vehicleData.seats || '';
-        if (powerField) powerField.value = vehicleData.power || '';
-        if (wheelSizeField) wheelSizeField.value = vehicleData.wheel_size || '';
-        if (currentLocationField) currentLocationField.value = vehicleData.current_location || '';
-        if (notesField) notesField.value = vehicleData.notes || '';
-        
-        console.log('Form populated with vehicle data');
+        console.log('Notes form populated with vehicle data');
     }
 
     /**
-     * Close vehicle modal
+     * Close edit notes modal
      */
-    closeVehicleModal() {
-        const modal = document.getElementById('vehicle-modal');
+    closeEditNotesModal() {
+        const modal = document.getElementById('edit-notes-modal');
         if (modal) {
             modal.classList.add('hidden');
         }
     }
 
     /**
-     * Setup edit vehicle functionality
+     * Setup edit notes functionality
      */
     setupEditVehicle() {
-        const form = document.getElementById('vehicle-form');
+        const form = document.getElementById('edit-notes-form');
         if (form) {
-            form.addEventListener('submit', (e) => this.handleEditVehicleSubmit(e));
+            form.addEventListener('submit', (e) => this.handleEditNotesSubmit(e));
         }
     }
 
     /**
-     * Handle edit vehicle form submission
+     * Handle edit notes form submission
      */
-    async handleEditVehicleSubmit(event) {
+    async handleEditNotesSubmit(event) {
         event.preventDefault();
         
         const form = event.target;
         const formData = new FormData(form);
         const vehicleId = formData.get('vehicle_id');
+        const notes = formData.get('notes');
         
-        // Convert FormData to object
-        const data = {
-            name: formData.get('name'),
-            color: formData.get('color'),
-            seats: formData.get('seats'),
-            power: formData.get('power'),
-            wheel_size: formData.get('wheel_size'),
-            current_location: formData.get('current_location'),
-            notes: formData.get('notes')
-        };
-        
-        const submitBtn = document.getElementById('vehicle-submit-btn');
+        const submitBtn = document.getElementById('edit-notes-submit-btn');
         this.setButtonLoading(submitBtn, true);
         
         try {
-            const response = await fetch(`/api/vehicles/${vehicleId}/update`, {
+            const response = await fetch(`/api/vehicles/${vehicleId}/update-notes`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify({ notes: notes })
             });
             
             const result = await response.json();
             
             if (result.success) {
-                this.showNotification('Cập nhật thông tin xe thành công!', 'success');
-                this.closeVehicleModal();
+                this.showNotification('Cập nhật ghi chú xe thành công!', 'success');
+                this.closeEditNotesModal();
                 // Reload page to show updated data
                 setTimeout(() => {
                     window.location.reload();
                 }, 1000);
             } else {
-                this.showNotification('Lỗi khi cập nhật xe: ' + result.message, 'error');
+                this.showNotification('Lỗi khi cập nhật ghi chú: ' + result.message, 'error');
             }
         } catch (error) {
-            console.error('Error updating vehicle:', error);
-            this.showNotification('Lỗi khi cập nhật xe: ' + error.message, 'error');
+            console.error('Error updating vehicle notes:', error);
+            this.showNotification('Lỗi khi cập nhật ghi chú: ' + error.message, 'error');
         } finally {
             this.setButtonLoading(submitBtn, false);
         }
