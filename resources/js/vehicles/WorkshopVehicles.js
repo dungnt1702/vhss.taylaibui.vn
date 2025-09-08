@@ -28,6 +28,7 @@ class WorkshopVehicles extends VehicleBase {
         this.setupEditVehicle();
         this.setupWorkshopActions();
         this.setupReturnToYardModal();
+        this.setupTechnicalUpdateModal();
     }
 
     /**
@@ -39,7 +40,9 @@ class WorkshopVehicles extends VehicleBase {
             openReturnToYardModal: (vehicleId) => this.openReturnToYardModal(vehicleId),
             closeReturnToYardModal: () => this.closeReturnToYardModal(),
             resetReturnNotes: () => this.resetReturnNotes(),
-            editVehicle: (vehicleId) => this.editVehicle(vehicleId)
+            editVehicle: (vehicleId) => this.editVehicle(vehicleId),
+            openTechnicalUpdateModal: (vehicleId) => this.openTechnicalUpdateModal(vehicleId),
+            closeTechnicalUpdateModal: () => this.closeTechnicalUpdateModal()
         };
         
         // Add closeEditNotesModal function globally
@@ -492,6 +495,163 @@ class WorkshopVehicles extends VehicleBase {
             this.showNotification('Có lỗi xảy ra khi đưa về bãi', 'error');
         } finally {
             this.restoreButtonState(button);
+        }
+    }
+
+    /**
+     * Setup technical update modal
+     */
+    setupTechnicalUpdateModal() {
+        const form = document.getElementById('technical-update-form');
+        if (form) {
+            form.addEventListener('submit', (event) => this.handleTechnicalUpdateSubmit(event));
+        }
+
+        // Setup issue type change handler
+        const issueTypeSelect = document.getElementById('technical-issue-type');
+        if (issueTypeSelect) {
+            issueTypeSelect.addEventListener('change', (event) => this.updateCategoryOptions(event.target.value));
+        }
+    }
+
+    /**
+     * Open technical update modal
+     */
+    openTechnicalUpdateModal(vehicleId) {
+        console.log('Opening technical update modal for vehicle:', vehicleId);
+        
+        const modal = document.getElementById('technical-update-modal');
+        const vehicleIdInput = document.getElementById('technical-vehicle-id');
+        
+        if (modal && vehicleIdInput) {
+            vehicleIdInput.value = vehicleId;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Reset form
+            document.getElementById('technical-update-form').reset();
+            vehicleIdInput.value = vehicleId;
+            
+            // Focus on issue type select
+            document.getElementById('technical-issue-type').focus();
+        }
+    }
+
+    /**
+     * Close technical update modal
+     */
+    closeTechnicalUpdateModal() {
+        const modal = document.getElementById('technical-update-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
+
+    /**
+     * Update category options based on issue type
+     */
+    updateCategoryOptions(issueType) {
+        const categorySelect = document.getElementById('technical-category');
+        if (!categorySelect) return;
+
+        // Clear existing options
+        categorySelect.innerHTML = '<option value="">-- Chọn hạng mục --</option>';
+
+        if (!issueType) return;
+
+        // Define categories based on issue type
+        const categories = {
+            'repair': {
+                'engine': 'Động cơ',
+                'brake_system': 'Hệ thống phanh',
+                'transmission': 'Hộp số',
+                'electrical': 'Hệ thống điện',
+                'suspension': 'Hệ thống treo',
+                'steering': 'Hệ thống lái',
+                'exhaust': 'Hệ thống xả',
+                'cooling': 'Hệ thống làm mát',
+                'fuel_system': 'Hệ thống nhiên liệu',
+                'tires': 'Lốp xe',
+                'lights': 'Hệ thống đèn',
+                'air_conditioning': 'Điều hòa',
+                'other': 'Khác'
+            },
+            'maintenance': {
+                'oil_change': 'Thay dầu',
+                'filter_replacement': 'Thay lọc',
+                'brake_inspection': 'Kiểm tra phanh',
+                'tire_rotation': 'Đảo lốp',
+                'battery_check': 'Kiểm tra ắc quy',
+                'belt_replacement': 'Thay dây curoa',
+                'spark_plug': 'Thay bugi',
+                'air_filter': 'Thay lọc gió',
+                'coolant_check': 'Kiểm tra nước làm mát',
+                'general_inspection': 'Kiểm tra tổng thể',
+                'cleaning': 'Vệ sinh',
+                'other': 'Khác'
+            }
+        };
+
+        const selectedCategories = categories[issueType] || {};
+        
+        // Add options
+        Object.entries(selectedCategories).forEach(([value, label]) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = label;
+            categorySelect.appendChild(option);
+        });
+    }
+
+    /**
+     * Handle technical update form submission
+     */
+    async handleTechnicalUpdateSubmit(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const formData = new FormData(form);
+        const vehicleId = formData.get('vehicle_id');
+        const issueType = formData.get('issue_type');
+        const category = formData.get('category');
+        const description = formData.get('description');
+        const notes = formData.get('notes');
+        
+        const submitBtn = document.getElementById('technical-update-submit-btn');
+        this.showButtonLoading(submitBtn, 'Đang cập nhật...');
+        
+        try {
+            const response = await fetch('/api/vehicles/technical-update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    vehicle_id: vehicleId,
+                    issue_type: issueType,
+                    category: category,
+                    description: description,
+                    notes: notes
+                })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showNotification('Cập nhật kỹ thuật thành công!', 'success');
+                this.closeTechnicalUpdateModal();
+                // Reload page to show updated data
+                window.location.reload();
+            } else {
+                this.showNotification('Lỗi khi cập nhật kỹ thuật: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error updating technical info:', error);
+            this.showNotification('Lỗi khi cập nhật kỹ thuật: ' + error.message, 'error');
+        } finally {
+            this.restoreButtonState(submitBtn);
         }
     }
 }

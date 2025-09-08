@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\vehicles;
 
 use App\Models\Vehicle;
+use App\Models\VehicleTechnicalIssue;
 use Illuminate\Http\Request;
 
 class RepairingVehiclesController extends VehicleBaseController
@@ -12,7 +13,15 @@ class RepairingVehiclesController extends VehicleBaseController
      */
     public function index()
     {
-        $vehicles = Vehicle::where('status', 'repairing')->latest()->get();
+        $vehicles = Vehicle::where('status', 'repairing')
+            ->with(['technicalIssues' => function($query) {
+                $query->where('issue_type', 'repair')
+                      ->where('status', '!=', 'completed')
+                      ->latest();
+            }])
+            ->latest()
+            ->get();
+            
         return view('vehicles.repairing_vehicles', compact('vehicles'));
     }
 
@@ -21,7 +30,15 @@ class RepairingVehiclesController extends VehicleBaseController
      */
     public function getRepairingVehicles()
     {
-        $vehicles = Vehicle::where('status', 'repairing')->latest()->get();
+        $vehicles = Vehicle::where('status', 'repairing')
+            ->with(['technicalIssues' => function($query) {
+                $query->where('issue_type', 'repair')
+                      ->where('status', '!=', 'completed')
+                      ->latest();
+            }])
+            ->latest()
+            ->get();
+            
         return response()->json(['success' => true, 'vehicles' => $vehicles]);
     }
 }

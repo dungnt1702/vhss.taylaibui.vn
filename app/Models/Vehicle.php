@@ -150,4 +150,28 @@ class Vehicle extends Model
     {
         return $query->where('status', self::STATUS_READY);
     }
+
+    /**
+     * Get technical issues for this vehicle
+     */
+    public function technicalIssues()
+    {
+        return $this->hasMany(\App\Models\VehicleTechnicalIssue::class);
+    }
+
+    /**
+     * Get repair issues for this vehicle
+     */
+    public function repairIssues()
+    {
+        return $this->hasMany(\App\Models\VehicleTechnicalIssue::class)->where('issue_type', 'repair');
+    }
+
+    /**
+     * Get maintenance issues for this vehicle
+     */
+    public function maintenanceIssues()
+    {
+        return $this->hasMany(\App\Models\VehicleTechnicalIssue::class)->where('issue_type', 'maintenance');
+    }
 }

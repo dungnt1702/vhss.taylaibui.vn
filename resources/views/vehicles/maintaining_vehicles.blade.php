@@ -27,15 +27,33 @@
                     <div class="w-4 h-4 rounded-full mr-2" style="background-color: {{ $vehicle->color }};"></div>
                     <span>{{ $vehicle->color }}</span>
                 </div>
-                <div class="text-sm text-neutral-600">
-                    <span class="font-medium">Loại bảo trì:</span> {{ $vehicle->maintenance_type ?? 'Định kỳ' }}
-                </div>
-                <div class="text-sm text-neutral-600">
-                    <span class="font-medium">Ngày bắt đầu:</span> {{ $vehicle->maintenance_start_date ?? 'Không có' }}
-                </div>
-                <div class="text-sm text-neutral-600">
-                    <span class="font-medium">Dự kiến hoàn thành:</span> {{ $vehicle->maintenance_estimated_date ?? 'Không có' }}
-                </div>
+                
+                @if($vehicle->technicalIssues && $vehicle->technicalIssues->count() > 0)
+                    @foreach($vehicle->technicalIssues as $issue)
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-2">
+                            <div class="text-sm font-medium text-blue-800 mb-1">
+                                {{ \App\Models\VehicleTechnicalIssue::getMaintenanceCategories()[$issue->category] ?? $issue->category }}
+                            </div>
+                            @if($issue->description)
+                                <div class="text-xs text-blue-700 mb-1">
+                                    {{ Str::limit($issue->description, 100) }}
+                                </div>
+                            @endif
+                            @if($issue->notes)
+                                <div class="text-xs text-blue-600">
+                                    <span class="font-medium">Ghi chú:</span> {{ Str::limit($issue->notes, 80) }}
+                                </div>
+                            @endif
+                            <div class="text-xs text-blue-600 mt-1">
+                                <span class="font-medium">Báo cáo:</span> {{ $issue->reported_at->format('d/m/Y H:i') }}
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="text-sm text-neutral-500 italic">
+                        Chưa có thông tin kỹ thuật chi tiết
+                    </div>
+                @endif
             </div>
 
             <!-- Action Buttons -->

@@ -500,6 +500,47 @@ class VehicleOperationsController extends Controller
     }
 
     /**
+     * Update vehicle technical information
+     */
+    public function technicalUpdate(Request $request)
+    {
+        try {
+            // Validate request data
+            $request->validate([
+                'vehicle_id' => 'required|exists:vehicles,id',
+                'issue_type' => 'required|in:repair,maintenance',
+                'category' => 'required|string|max:100',
+                'description' => 'nullable|string|max:1000',
+                'notes' => 'nullable|string|max:500'
+            ]);
+
+            // Create technical issue record
+            $technicalIssue = \App\Models\VehicleTechnicalIssue::create([
+                'vehicle_id' => $request->vehicle_id,
+                'issue_type' => $request->issue_type,
+                'category' => $request->category,
+                'description' => $request->input('description', ''),
+                'notes' => $request->input('notes', ''),
+                'status' => \App\Models\VehicleTechnicalIssue::STATUS_PENDING,
+                'reported_at' => now(),
+                'reported_by' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Thông tin kỹ thuật đã được cập nhật thành công!',
+                'technical_issue' => $technicalIssue
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi cập nhật thông tin kỹ thuật: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi cập nhật thông tin kỹ thuật'
+            ], 500);
+        }
+    }
+
+    /**
      * Helper method to validate vehicle IDs exist
      */
     private function validateVehicleIds(array $vehicleIds): void

@@ -314,3 +314,58 @@
         </div>
     </div>
 </div>
+
+<!-- Technical Update Modal (for workshop vehicles) -->
+<div id="technical-update-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg">
+        <div class="p-6">
+            <h3 class="text-lg font-semibold text-neutral-900 mb-4">Cập nhật kỹ thuật xe</h3>
+            <form id="technical-update-form">
+                <input type="hidden" id="technical-vehicle-id" name="vehicle_id" value="">
+                
+                <div class="mb-4">
+                    <label for="technical-issue-type" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Loại vấn đề <span class="text-red-500">*</span>
+                    </label>
+                    <select id="technical-issue-type" name="issue_type" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500" required>
+                        <option value="">-- Chọn loại vấn đề --</option>
+                        <option value="repair">Sửa chữa</option>
+                        <option value="maintenance">Bảo trì</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="technical-category" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Hạng mục <span class="text-red-500">*</span>
+                    </label>
+                    <select id="technical-category" name="category" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500" required>
+                        <option value="">-- Chọn hạng mục --</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="technical-description" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Mô tả chi tiết
+                    </label>
+                    <textarea id="technical-description" name="description" rows="3" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500" placeholder="Mô tả chi tiết về vấn đề kỹ thuật..."></textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="technical-notes" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Ghi chú thêm
+                    </label>
+                    <textarea id="technical-notes" name="notes" rows="2" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500" placeholder="Ghi chú thêm..."></textarea>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="vehicleOperations.closeTechnicalUpdateModal()" class="px-4 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 border border-neutral-300 rounded-md hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500">
+                        Hủy
+                    </button>
+                    <button type="submit" id="technical-update-submit-btn" class="px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        Cập nhật kỹ thuật
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
