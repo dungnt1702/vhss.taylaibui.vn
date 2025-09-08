@@ -145,6 +145,110 @@
     </div>
 </div>
 
+<!-- Edit Vehicle Modal -->
+<div id="vehicle-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div class="relative min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold text-neutral-900" id="vehicle-modal-title">Chỉnh sửa thông tin xe</h3>
+                    <button onclick="closeVehicleModal()" class="text-neutral-400 hover:text-neutral-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <form id="vehicle-form">
+                    <input type="hidden" id="vehicle-edit-id" name="vehicle_id">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Xe số -->
+                        <div>
+                            <label for="vehicle-name" class="block text-sm font-medium text-neutral-700 mb-2">
+                                Xe số <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="vehicle-name" name="name" required
+                                   class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                        </div>
+                        
+                        <!-- Màu sắc -->
+                        <div>
+                            <label for="vehicle-color" class="block text-sm font-medium text-neutral-700 mb-2">
+                                Màu sắc <span class="text-red-500">*</span>
+                            </label>
+                            <input type="color" id="vehicle-color" name="color" required
+                                   class="w-full h-10 px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                        </div>
+                        
+                        <!-- Ghế -->
+                        <div>
+                            <label for="vehicle-seats" class="block text-sm font-medium text-neutral-700 mb-2">
+                                Ghế <span class="text-red-500">*</span>
+                            </label>
+                            <select id="vehicle-seats" name="seats" required
+                                    class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                                <option value="1">1 ghế</option>
+                                <option value="2">2 ghế</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Công suất -->
+                        <div>
+                            <label for="vehicle-power" class="block text-sm font-medium text-neutral-700 mb-2">
+                                Công suất <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="vehicle-power" name="power" required
+                                   class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                        </div>
+                        
+                        <!-- Kích thước bánh xe -->
+                        <div>
+                            <label for="vehicle-wheel-size" class="block text-sm font-medium text-neutral-700 mb-2">
+                                Kích thước bánh xe <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="vehicle-wheel-size" name="wheel_size" required
+                                   class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                        </div>
+                        
+                        <!-- Vị trí hiện tại -->
+                        <div>
+                            <label for="vehicle-current-location" class="block text-sm font-medium text-neutral-700 mb-2">
+                                Vị trí hiện tại
+                            </label>
+                            <input type="text" id="vehicle-current-location" name="current_location"
+                                   class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                        </div>
+                    </div>
+                    
+                    <!-- Ghi chú -->
+                    <div class="mt-6">
+                        <label for="vehicle-notes" class="block text-sm font-medium text-neutral-700 mb-2">
+                            Ghi chú
+                        </label>
+                        <textarea id="vehicle-notes" name="notes" rows="3"
+                                  class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                                  placeholder="Nhập ghi chú về xe..."></textarea>
+                    </div>
+                    
+                    <!-- Buttons -->
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button type="button" onclick="closeVehicleModal()" 
+                                class="px-4 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 border border-neutral-300 rounded-md hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500">
+                            Hủy
+                        </button>
+                        <button type="submit" id="vehicle-submit-btn"
+                                class="px-4 py-2 text-sm font-medium text-white bg-brand-600 border border-transparent rounded-md hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+                            Cập nhật
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Notification Modal -->
 <div id="notification-modal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 bg-black bg-opacity-50"></div>

@@ -41,6 +41,9 @@ class WorkshopVehicles extends VehicleBase {
             resetReturnNotes: () => this.resetReturnNotes(),
             editVehicle: (vehicleId) => this.editVehicle(vehicleId)
         };
+        
+        // Add closeVehicleModal function globally
+        window.closeVehicleModal = () => this.closeVehicleModal();
     }
 
     /**
@@ -225,10 +228,146 @@ class WorkshopVehicles extends VehicleBase {
     }
 
     /**
-     * Edit vehicle
+     * Edit vehicle - open modal popup
      */
-    editVehicle(vehicleId) {
-        window.location.href = `/vehicles/${vehicleId}/edit`;
+    async editVehicle(vehicleId) {
+        try {
+            // Call API to get vehicle data for editing
+            const response = await fetch(`/api/vehicles/${vehicleId}/data`);
+            const result = await response.json();
+            
+            if (result.success) {
+                const vehicleData = result.data;
+                console.log('Vehicle data for edit modal:', vehicleData);
+                
+                // Populate form with vehicle data
+                this.populateEditVehicleForm(vehicleData);
+                
+                // Update modal title
+                const modalTitle = document.getElementById('vehicle-modal-title');
+                if (modalTitle) {
+                    modalTitle.textContent = 'Chỉnh sửa thông tin xe';
+                }
+                
+                // Update vehicle ID in form
+                const vehicleEditId = document.getElementById('vehicle-edit-id');
+                if (vehicleEditId) {
+                    vehicleEditId.value = vehicleId;
+                }
+                
+                // Show modal
+                const modal = document.getElementById('vehicle-modal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                }
+            } else {
+                console.error('Failed to get vehicle data for edit:', result.message);
+                this.showNotification('Không thể lấy thông tin xe để chỉnh sửa: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error fetching vehicle data for edit:', error);
+            this.showNotification('Lỗi khi lấy thông tin xe để chỉnh sửa: ' + error.message, 'error');
+        }
+    }
+
+    /**
+     * Populate edit vehicle form with data
+     */
+    populateEditVehicleForm(vehicleData) {
+        console.log('=== populateEditVehicleForm called with:', vehicleData, '===');
+        
+        // Populate form fields
+        const nameField = document.getElementById('vehicle-name');
+        const colorField = document.getElementById('vehicle-color');
+        const seatsField = document.getElementById('vehicle-seats');
+        const powerField = document.getElementById('vehicle-power');
+        const wheelSizeField = document.getElementById('vehicle-wheel-size');
+        const currentLocationField = document.getElementById('vehicle-current-location');
+        const notesField = document.getElementById('vehicle-notes');
+        
+        if (nameField) nameField.value = vehicleData.name || '';
+        if (colorField) colorField.value = vehicleData.color || '';
+        if (seatsField) seatsField.value = vehicleData.seats || '';
+        if (powerField) powerField.value = vehicleData.power || '';
+        if (wheelSizeField) wheelSizeField.value = vehicleData.wheel_size || '';
+        if (currentLocationField) currentLocationField.value = vehicleData.current_location || '';
+        if (notesField) notesField.value = vehicleData.notes || '';
+        
+        console.log('Form populated with vehicle data');
+    }
+
+    /**
+     * Close vehicle modal
+     */
+    closeVehicleModal() {
+        const modal = document.getElementById('vehicle-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Setup edit vehicle functionality
+     */
+    setupEditVehicle() {
+        const form = document.getElementById('vehicle-form');
+        if (form) {
+            form.addEventListener('submit', (e) => this.handleEditVehicleSubmit(e));
+        }
+    }
+
+    /**
+     * Handle edit vehicle form submission
+     */
+    async handleEditVehicleSubmit(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const formData = new FormData(form);
+        const vehicleId = formData.get('vehicle_id');
+        
+        // Convert FormData to object
+        const data = {
+            name: formData.get('name'),
+            color: formData.get('color'),
+            seats: formData.get('seats'),
+            power: formData.get('power'),
+            wheel_size: formData.get('wheel_size'),
+            current_location: formData.get('current_location'),
+            notes: formData.get('notes')
+        };
+        
+        const submitBtn = document.getElementById('vehicle-submit-btn');
+        this.setButtonLoading(submitBtn, true);
+        
+        try {
+            const response = await fetch(`/api/vehicles/${vehicleId}/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showNotification('Cập nhật thông tin xe thành công!', 'success');
+                this.closeVehicleModal();
+                // Reload page to show updated data
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                this.showNotification('Lỗi khi cập nhật xe: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error updating vehicle:', error);
+            this.showNotification('Lỗi khi cập nhật xe: ' + error.message, 'error');
+        } finally {
+            this.setButtonLoading(submitBtn, false);
+        }
     }
 
     /**
