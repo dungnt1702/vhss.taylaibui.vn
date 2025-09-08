@@ -1,3 +1,6 @@
+<!-- Page detection element for JavaScript -->
+<div id="vehicle-page" data-page-type="vehicles_list" style="display: none;"></div>
+
 <!-- Header for Vehicles List -->
 <div class="mb-6">
     <h1 class="text-2xl font-bold text-neutral-900">Danh sách xe</h1>

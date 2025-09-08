@@ -48,6 +48,7 @@ class VehiclesList extends VehicleBase {
         // Additional functions needed for vehicles_list.blade.php
         window.openStatusModal = (vehicleId, currentStatus, currentNotes) => this.openStatusModal(vehicleId, currentStatus, currentNotes);
         window.openEditVehicleModal = (vehicleId) => this.openEditVehicleModal(vehicleId);
+        window.closeVehicleModal = () => this.closeVehicleModal();
         window.deleteVehicle = (vehicleId) => this.deleteVehicle(vehicleId);
     }
 
@@ -562,6 +563,44 @@ document.addEventListener('DOMContentLoaded', function() {
     // Make it available globally for debugging
     window.vehiclesList = vehiclesList;
 });
+
+/**
+ * Close vehicle modal
+ */
+VehiclesList.prototype.closeVehicleModal = function() {
+    const modal = document.getElementById('vehicle-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        // Clear form if needed
+        this.clearEditVehicleForm();
+    }
+};
+
+/**
+ * Clear edit vehicle form
+ */
+VehiclesList.prototype.clearEditVehicleForm = function() {
+    // Clear form fields
+    const nameField = document.getElementById('vehicle-name');
+    const colorField = document.getElementById('vehicle-color');
+    const seatsField = document.getElementById('vehicle-seats');
+    const powerField = document.getElementById('vehicle-power');
+    const wheelSizeField = document.getElementById('vehicle-wheel-size');
+    const notesField = document.getElementById('vehicle-notes');
+    const colorPreview = document.getElementById('color-preview');
+    
+    if (nameField) nameField.value = '';
+    if (colorField) colorField.value = '#808080';
+    if (seatsField) seatsField.value = '';
+    if (powerField) powerField.value = '';
+    if (wheelSizeField) wheelSizeField.value = '';
+    if (notesField) notesField.value = '';
+    if (colorPreview) colorPreview.style.backgroundColor = '#808080';
+    
+    // Clear vehicle ID
+    const vehicleIdField = document.getElementById('vehicle-edit-id');
+    if (vehicleIdField) vehicleIdField.value = '';
+};
 
 // Export for ES6 modules
 export default VehiclesList;

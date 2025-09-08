@@ -103,9 +103,15 @@ async function loadPageSpecificJS() {
                 className = 'AttributesList';
                 break;
             
-            case 'list':
+            case 'vehicles_list':
                 const VehiclesList = (await import('./VehiclesList.js')).default;
                 VehicleClass = VehiclesList;
+                className = 'VehiclesList';
+                break;
+            
+            case 'list':
+                const VehiclesList2 = (await import('./VehiclesList.js')).default;
+                VehicleClass = VehiclesList2;
                 className = 'VehiclesList';
                 break;
             
@@ -131,6 +137,9 @@ async function loadPageSpecificJS() {
                 window.VehicleBase = VehicleBase;
                 window.vehicleBase = new VehicleBase('Global Vehicle Base');
             }
+            
+            console.log(`Successfully loaded ${className} for page type: ${pageType}`);
+            console.log('Available global functions:', Object.keys(window).filter(key => key.includes('open') || key.includes('close')));
         }
 
     } catch (error) {
