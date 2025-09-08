@@ -200,20 +200,20 @@ class ActiveVehicles extends VehicleBase {
             const headers = timerTable.parentElement.querySelectorAll('th');
             
             if (checkMobile()) {
-                // Mobile headers
+                // Mobile headers - update titles for mobile view
                 if (headers[1]) headers[1].textContent = 'Xe số';
-                if (headers[2]) headers[2].textContent = 'Màu sắc';
-                if (headers[3]) headers[3].textContent = 'Trạng thái';
-                if (headers[4]) headers[4].innerHTML = '⏰'; // Clock icon for start/end time
+                if (headers[2]) headers[2].textContent = 'Trạng thái';
+                if (headers[3]) headers[3].innerHTML = '⏰'; // Clock icon for start/end time
+                // headers[4] is "Bắt đầu" - keep original text
+                // headers[5] is hidden by CSS (Kết thúc)
                 if (headers[6]) headers[6].textContent = 'Đếm ngược';
             } else {
-                // Desktop headers
+                // Desktop headers - all 6 columns visible
                 if (headers[1]) headers[1].textContent = 'Xe số';
-                if (headers[2]) headers[2].textContent = 'Màu sắc';
-                if (headers[3]) headers[3].textContent = 'Trạng thái';
-                if (headers[4]) headers[4].textContent = 'Bắt đầu';
-                if (headers[5]) headers[5].textContent = 'Kết thúc';
-                if (headers[6]) headers[6].textContent = 'Đếm ngược';
+                if (headers[2]) headers[2].textContent = 'Trạng thái';
+                if (headers[3]) headers[3].textContent = 'Bắt đầu';
+                if (headers[4]) headers[4].textContent = 'Kết thúc';
+                if (headers[5]) headers[5].textContent = 'Đếm ngược';
             }
         };
 
@@ -575,8 +575,8 @@ class ActiveVehicles extends VehicleBase {
                 if (checkbox) {
                     const row = checkbox.closest('tr');
                     if (row) {
-                        // Get color from the row (3rd column in timer table)
-                        const colorCell = row.querySelector('td:nth-child(3) div');
+                        // Get color from the row (2nd column in timer table - vehicle number with color)
+                        const colorCell = row.querySelector('td:nth-child(2) .vehicle-number-with-color div');
                         if (colorCell) {
                             vehicleColor = colorCell.style.backgroundColor || '#3b82f6';
                         }
@@ -607,9 +607,12 @@ class ActiveVehicles extends VehicleBase {
                 <td class="px-3 py-2">
                     <input type="checkbox" value="${vehicleId}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                 </td>
-                <td class="px-3 py-2 text-sm text-gray-900">${vehicleName}</td>
                 <td class="px-3 py-2">
-                    <div class="w-6 h-6 rounded border border-gray-300" style="background-color: ${vehicleColor};" title="${vehicleColor}"></div>
+                    <div class="vehicle-number-with-color flex items-center">
+                        <div class="w-8 h-8 rounded border border-gray-300 flex items-center justify-center text-white font-semibold text-sm" style="background-color: ${vehicleColor};" title="${vehicleColor}">
+                            ${vehicleName}
+                        </div>
+                    </div>
                 </td>
                 <td class="px-3 py-2 text-sm text-gray-500">${vehicleSeats}</td>
                 <td class="px-3 py-2">
@@ -878,9 +881,12 @@ class ActiveVehicles extends VehicleBase {
                 <td class="px-3 py-2">
                     <input type="checkbox" class="vehicle-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500" value="${vehicle.id}">
                 </td>
-                <td class="px-3 py-2 text-sm text-gray-900">${vehicle.name}</td>
                 <td class="px-3 py-2">
-                    <div class="w-4 h-4 rounded border border-gray-300" style="background-color: ${vehicle.color};" title="${vehicle.color}"></div>
+                    <div class="vehicle-number-with-color flex items-center">
+                        <div class="w-8 h-8 rounded border border-gray-300 flex items-center justify-center text-white font-semibold text-sm" style="background-color: ${vehicle.color};" title="${vehicle.color}">
+                            ${vehicle.name}
+                        </div>
+                    </div>
                 </td>
                 <td class="px-3 py-2">
                     <span class="${statusClass}">${statusText}</span>

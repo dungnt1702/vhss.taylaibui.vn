@@ -40,7 +40,6 @@
                                         <input type="checkbox" id="select-all-waiting" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                     </th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Xe số</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Màu sắc</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Chỗ ngồi</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Tình trạng</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">🔧</th>
@@ -52,9 +51,12 @@
                                         <td class="px-3 py-2">
                                             <input type="checkbox" value="{{ $vehicle->id }}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                         </td>
-                                        <td class="px-3 py-2 text-sm text-gray-900">{{ $vehicle->name }}</td>
                                         <td class="px-3 py-2">
-                                            <div class="w-6 h-6 rounded border border-gray-300" style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}"></div>
+                                            <div class="vehicle-number-with-color flex items-center">
+                                                <div class="w-8 h-8 rounded border border-gray-300 flex items-center justify-center text-white font-semibold text-sm" style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}">
+                                                    {{ $vehicle->name }}
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="px-3 py-2 text-sm text-gray-500">{{ $vehicle->seats }}</td>
                                         <td class="px-3 py-2">
@@ -143,7 +145,6 @@
                                         <input type="checkbox" id="select-all-timer" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                     </th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Xe số</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Màu sắc</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Trạng thái</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Bắt đầu</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Kết thúc</th>
