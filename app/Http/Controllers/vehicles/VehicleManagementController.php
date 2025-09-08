@@ -20,19 +20,19 @@ class VehicleManagementController extends Controller
         $perPage = $request->get('per_page', 10);
         
         $vehicles = match($filter) {
-            'vehicles_list' => Vehicle::latest()->paginate($perPage),
-            'active' => Vehicle::active()->latest()->paginate($perPage),
-            'ready' => Vehicle::waiting()->latest()->paginate($perPage),
-            'workshop' => Vehicle::inactive()->latest()->paginate($perPage),
-            'running' => Vehicle::running()->latest()->paginate($perPage),
-            'waiting' => Vehicle::waiting()->latest()->paginate($perPage),
-            'expired' => Vehicle::expired()->paginate($perPage),
-            'paused' => Vehicle::paused()->latest()->paginate($perPage),
-            'route' => Vehicle::route()->latest()->paginate($perPage),
-            'repairing' => Vehicle::where('status', 'repairing')->latest()->paginate($perPage),
-            'maintaining' => Vehicle::where('status', 'maintaining')->latest()->paginate($perPage),
-            'attributes' => Vehicle::latest()->paginate($perPage),
-            default => Vehicle::latest()->paginate($perPage)
+            'vehicles_list' => Vehicle::latest()->paginate($perPage)->appends($request->query()),
+            'active' => Vehicle::active()->latest()->paginate($perPage)->appends($request->query()),
+            'ready' => Vehicle::waiting()->latest()->paginate($perPage)->appends($request->query()),
+            'workshop' => Vehicle::inactive()->latest()->paginate($perPage)->appends($request->query()),
+            'running' => Vehicle::running()->latest()->paginate($perPage)->appends($request->query()),
+            'waiting' => Vehicle::waiting()->latest()->paginate($perPage)->appends($request->query()),
+            'expired' => Vehicle::expired()->paginate($perPage)->appends($request->query()),
+            'paused' => Vehicle::paused()->latest()->paginate($perPage)->appends($request->query()),
+            'route' => Vehicle::route()->latest()->paginate($perPage)->appends($request->query()),
+            'repairing' => Vehicle::where('status', 'repairing')->latest()->paginate($perPage)->appends($request->query()),
+            'maintaining' => Vehicle::where('status', 'maintaining')->latest()->paginate($perPage)->appends($request->query()),
+            'attributes' => Vehicle::latest()->paginate($perPage)->appends($request->query()),
+            default => Vehicle::latest()->paginate($perPage)->appends($request->query())
         };
 
         $pageTitle = match($filter) {
@@ -253,6 +253,35 @@ class VehicleManagementController extends Controller
             'success' => true,
             'message' => 'Thông tin xe Gokart đã được cập nhật thành công!',
             'vehicle' => $vehicle
+        ]);
+    }
+
+    /**
+     * Update vehicle notes only
+     */
+    public function updateNotes(Request $request, $id)
+    {
+        $vehicle = Vehicle::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $vehicle->update([
+            'notes' => $request->notes,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ghi chú đã được cập nhật thành công.',
+            'vehicle' => $vehicle->fresh()
         ]);
     }
 

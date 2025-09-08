@@ -47,6 +47,7 @@ class VehiclesList extends VehicleBase {
         
         // Additional functions needed for vehicles_list.blade.php
         window.openStatusModal = (vehicleId, currentStatus, currentNotes) => this.openStatusModal(vehicleId, currentStatus, currentNotes);
+        window.closeStatusModal = () => this.closeStatusModal();
         window.openEditVehicleModal = (vehicleId) => this.openEditVehicleModal(vehicleId);
         window.closeVehicleModal = () => this.closeVehicleModal();
         window.deleteVehicle = (vehicleId) => this.deleteVehicle(vehicleId);
@@ -76,6 +77,14 @@ class VehiclesList extends VehicleBase {
             if (event.target && event.target.id === 'vehicle-form') {
                 event.preventDefault();
                 this.handleVehicleFormSubmit(event);
+            }
+        });
+
+        // Handle status form submission (notes update)
+        document.addEventListener('submit', (event) => {
+            if (event.target && event.target.id === 'status-form') {
+                event.preventDefault();
+                this.handleStatusFormSubmit(event);
             }
         });
     }
@@ -423,14 +432,41 @@ class VehiclesList extends VehicleBase {
     }
 
     /**
-     * Open status modal
+     * Open status modal (for editing notes only)
      */
-    openStatusModal(vehicleId, currentStatus, status, currentNotes) {
-        // Call function from vehicle-forms.js if available
-        if (typeof window.openStatusModal === 'function') {
-            window.openStatusModal(vehicleId, currentStatus, status, currentNotes);
-        } else {
-            console.warn('openStatusModal function not available');
+    openStatusModal(vehicleId, currentStatus, currentNotes) {
+        console.log('Opening notes edit modal for vehicle:', vehicleId, 'notes:', currentNotes);
+        
+        // Find the status modal
+        const statusModal = document.getElementById('status-modal');
+        if (!statusModal) {
+            console.error('Status modal not found');
+            return;
+        }
+        
+        // Populate modal with current data
+        const notesTextarea = document.getElementById('status-notes');
+        const vehicleIdInput = document.getElementById('status-vehicle-id');
+        
+        if (notesTextarea) notesTextarea.value = currentNotes || '';
+        if (vehicleIdInput) vehicleIdInput.value = vehicleId;
+        
+        // Show modal
+        statusModal.classList.remove('hidden');
+        
+        // Focus on notes textarea
+        if (notesTextarea) {
+            notesTextarea.focus();
+        }
+    }
+
+    /**
+     * Close status modal
+     */
+    closeStatusModal() {
+        const statusModal = document.getElementById('status-modal');
+        if (statusModal) {
+            statusModal.classList.add('hidden');
         }
     }
 
@@ -651,6 +687,7 @@ VehiclesList.prototype.handleVehicleFormSubmit = async function(event) {
         };
         
         console.log('Submitting vehicle update:', formData);
+        console.log('Current location value:', currentLocation);
         
         // Send PUT request
         const response = await fetch(`/vehicles/${vehicleId}`, {
@@ -684,6 +721,69 @@ VehiclesList.prototype.handleVehicleFormSubmit = async function(event) {
     } catch (error) {
         console.error('Error updating vehicle:', error);
         this.showNotification('Có lỗi xảy ra khi cập nhật xe: ' + error.message, 'error');
+    }
+
+};
+
+/**
+ * Handle status form submission (notes update)
+ */
+VehiclesList.prototype.handleStatusFormSubmit = async function(event) {
+    event.preventDefault();
+    
+    try {
+        // Get form data
+        const vehicleId = document.getElementById('status-vehicle-id').value;
+        const notes = document.getElementById('status-notes').value;
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                         document.querySelector('input[name="_token"]')?.value;
+        
+        if (!csrfToken) {
+            throw new Error('CSRF token not found');
+        }
+        
+        // Prepare data
+        const formData = {
+            notes: notes,
+            _token: csrfToken
+        };
+        
+        console.log('Updating vehicle notes:', formData);
+        
+        // Send PUT request to update notes only
+        const response = await fetch(`/vehicles/${vehicleId}/notes`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Show success message
+            this.showNotification('Cập nhật ghi chú thành công!', 'success');
+            
+            // Close modal
+            this.closeStatusModal();
+            
+            // Reload page to show updated data
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            // Show error message
+            this.showNotification('Có lỗi xảy ra khi cập nhật ghi chú: ' + (result.message || 'Unknown error'), 'error');
+        }
+        
+    } catch (error) {
+        console.error('Error updating vehicle notes:', error);
+        this.showNotification('Có lỗi xảy ra khi cập nhật ghi chú: ' + error.message, 'error');
     }
 };
 
