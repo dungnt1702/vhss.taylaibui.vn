@@ -276,6 +276,9 @@ class ActiveVehicles extends VehicleBase {
                     // Close modal
                     closeMoveWorkshopModal();
                     
+                    // Reload page after success
+                    setTimeout(() => window.location.reload(), 1500);
+                    
                     // Hide vehicle from waiting table
                     this.hideVehicleFromWaitingTable(vehicleId);
                     
@@ -432,6 +435,9 @@ class ActiveVehicles extends VehicleBase {
                 // Hide selected vehicles from waiting table
                 this.hideSelectedVehiclesFromWaitingTable(selectedVehicles);
                 
+                // Reload page after success
+                setTimeout(() => window.location.reload(), 1500);
+                
                 // Add vehicles to routing table
                 this.addVehiclesToRoutingTable(selectedVehicles, selectedVehicleNames, routeNumber);
                 
@@ -526,6 +532,9 @@ class ActiveVehicles extends VehicleBase {
         // Update UI immediately (optimistic update)
         console.log('About to add vehicles to waiting table...');
         this.addVehiclesToWaitingTableFromTimer(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
+        
+        // Reload page after success
+        setTimeout(() => window.location.reload(), 1500);
         console.log('About to hide vehicles from timer table...');
         this.hideSelectedVehiclesFromTimerTable(selectedVehicleIds);
         
@@ -696,6 +705,9 @@ class ActiveVehicles extends VehicleBase {
         // Update UI immediately (optimistic update)
         console.log('About to add vehicles to waiting table...');
         this.addVehiclesToWaitingTableFromRouting(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
+        
+        // Reload page after success
+        setTimeout(() => window.location.reload(), 1500);
         console.log('About to hide vehicles from routing table...');
         this.hideSelectedVehiclesFromRoutingTable(selectedVehicleIds);
         
