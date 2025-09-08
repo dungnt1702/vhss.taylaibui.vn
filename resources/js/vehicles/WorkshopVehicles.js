@@ -317,7 +317,7 @@ class WorkshopVehicles extends VehicleBase {
         const notes = formData.get('notes');
         
         const submitBtn = document.getElementById('edit-notes-submit-btn');
-        this.setButtonLoading(submitBtn, true);
+        this.showButtonLoading(submitBtn, 'Đang cập nhật...');
         
         try {
             const response = await fetch(`/api/vehicles/${vehicleId}/update-notes`, {
@@ -345,7 +345,7 @@ class WorkshopVehicles extends VehicleBase {
             console.error('Error updating vehicle notes:', error);
             this.showNotification('Lỗi khi cập nhật ghi chú: ' + error.message, 'error');
         } finally {
-            this.setButtonLoading(submitBtn, false);
+            this.restoreButtonState(submitBtn);
         }
     }
 
