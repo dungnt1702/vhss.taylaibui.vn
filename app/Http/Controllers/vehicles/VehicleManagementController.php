@@ -62,7 +62,7 @@ class VehicleManagementController extends Controller
         
         // Get active vehicles for active_vehicles.blade.php when filter = 'active'
         if ($filter === 'active') {
-            $activeVehicles = Vehicle::active()->latest()->get();
+            $activeVehicles = Vehicle::active()->orderBy('name')->get();
             $runningVehicles = Vehicle::running()->latest()->get();
             $pausedVehicles = Vehicle::paused()->latest()->get();
             $expiredVehicles = Vehicle::expired()->latest()->get();

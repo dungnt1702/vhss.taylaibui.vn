@@ -369,7 +369,7 @@ class ActiveVehicles extends VehicleBase {
             const button = document.querySelector('[data-action="assign-timer"]');
             const response = await super.assignTimerBulk(selectedVehicles, duration, button);
             
-            // Cập nhật bảng "Xe chạy đường 1-2" sau khi thành công
+            // Cập nhật bảng "Xe chạy theo thời gian" sau khi thành công
             if (response && response.success) {
                 // Không hiển thị thông báo ở đây vì VehicleBase.js đã hiển thị rồi
                 
@@ -395,25 +395,52 @@ class ActiveVehicles extends VehicleBase {
             return;
         }
 
-        if (confirm(`Bạn có chắc muốn phân tuyến cho ${selectedVehicles.length} xe?`)) {
-            try {
-                const response = await this.makeApiCall('/api/vehicles/assign-route', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        vehicle_ids: selectedVehicles
-                    })
-                });
+        // Get selected route number
+        const routeSelect = document.getElementById('route-select');
+        const routeNumber = routeSelect ? routeSelect.value : null;
+        
+        if (!routeNumber) {
+            VehicleBase.prototype.showNotificationModal.call(this, 'Cảnh báo', 'Vui lòng chọn cung đường.', 'warning');
+            return;
+        }
 
-                if (response.success) {
-                    VehicleBase.prototype.showNotificationModal.call(this, 'Thành công', `Phân tuyến thành công cho ${selectedVehicles.length} xe!`, 'success');
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    VehicleBase.prototype.showNotificationModal.call(this, 'Lỗi', response.message || 'Có lỗi xảy ra', 'error');
-                }
-            } catch (error) {
-                console.error('Error assigning bulk route:', error);
-                VehicleBase.prototype.showNotificationModal.call(this, 'Lỗi', 'Có lỗi xảy ra khi phân tuyến hàng loạt', 'error');
+        // Get vehicle names for display
+        const selectedVehicleNames = selectedVehicles.map(vehicleId => {
+            const checkbox = document.querySelector(`.waiting-checkbox[value="${vehicleId}"]`);
+            if (checkbox) {
+                const row = checkbox.closest('tr');
+                const vehicleNameElement = row.querySelector('td:nth-child(2) .vehicle-number-with-color div');
+                return vehicleNameElement ? vehicleNameElement.textContent : 'Unknown';
             }
+            return 'Unknown';
+        });
+
+        try {
+            const response = await this.makeApiCall('/api/vehicles/assign-route', {
+                method: 'POST',
+                body: JSON.stringify({
+                    vehicle_ids: selectedVehicles,
+                    route_number: parseInt(routeNumber)
+                })
+            });
+
+            if (response.success) {
+                // Show success message with vehicle names and route
+                const vehicleNamesText = selectedVehicleNames.join(', ');
+                this.showSuccess(`Xe số ${vehicleNamesText} đã được chạy theo cung đường ${routeNumber}`);
+                
+                // Hide selected vehicles from waiting table
+                this.hideSelectedVehiclesFromWaitingTable(selectedVehicles);
+                
+                // Add vehicles to routing table
+                this.addVehiclesToRoutingTable(selectedVehicles, selectedVehicleNames, routeNumber);
+                
+            } else {
+                VehicleBase.prototype.showNotificationModal.call(this, 'Lỗi', response.message || 'Có lỗi xảy ra', 'error');
+            }
+        } catch (error) {
+            console.error('Error assigning bulk route:', error);
+            VehicleBase.prototype.showNotificationModal.call(this, 'Lỗi', 'Có lỗi xảy ra khi phân tuyến hàng loạt', 'error');
         }
     }
 
@@ -467,8 +494,11 @@ class ActiveVehicles extends VehicleBase {
      * Return selected vehicles to yard (public function for HTML onclick)
      */
     returnSelectedVehiclesToYard() {
+        console.log('=== returnSelectedVehiclesToYard called ===');
+        
         // Get selected vehicles from timer table
         const selectedCheckboxes = document.querySelectorAll('#timer-vehicles .vehicle-checkbox:checked');
+        console.log('Selected checkboxes:', selectedCheckboxes.length);
         
         if (selectedCheckboxes.length === 0) {
             this.showWarning('Bạn phải chọn xe trước');
@@ -482,29 +512,162 @@ class ActiveVehicles extends VehicleBase {
             return row.querySelector('td:nth-child(2)').textContent; // Xe số column
         });
         
+        console.log('Selected vehicle IDs:', selectedVehicleIds);
+        console.log('Selected vehicle names:', selectedVehicleNames);
+        
+        // Get vehicle details from timer table before hiding
+        const vehicleDetails = this.getVehicleDetailsFromTimerTable(selectedVehicleIds);
+        console.log('Vehicle details:', vehicleDetails);
+        
         // Show confirmation message
         const vehicleNamesText = selectedVehicleNames.join(', ');
         this.showSuccess(`Xe số ${vehicleNamesText} đã được chuyển về bãi`);
         
-        // Set flag to prevent duplicate handling
-        this.hideVehicleCardsHandled = true;
-        
-        // Call returnToYard with selected vehicle IDs
-        super.returnToYard(selectedVehicleIds);
-        
-        // Hide selected vehicles from timer table
+        // Update UI immediately (optimistic update)
+        console.log('About to add vehicles to waiting table...');
+        this.addVehiclesToWaitingTableFromTimer(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
+        console.log('About to hide vehicles from timer table...');
         this.hideSelectedVehiclesFromTimerTable(selectedVehicleIds);
         
-        // Add vehicles back to waiting table
-        this.addVehiclesToWaitingTable(selectedVehicleIds, selectedVehicleNames);
+        // Call returnToYard with selected vehicle IDs in background
+        this.returnToYardAndUpdateUI(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
+    }
+
+    /**
+     * Get vehicle details from timer table before hiding
+     */
+    getVehicleDetailsFromTimerTable(vehicleIds) {
+        const timerTableBody = document.getElementById('timer-vehicles');
+        const vehicleDetails = {};
+        
+        if (!timerTableBody) return vehicleDetails;
+        
+        vehicleIds.forEach(vehicleId => {
+            const checkbox = timerTableBody.querySelector(`.vehicle-checkbox[value="${vehicleId}"]`);
+            if (checkbox) {
+                const row = checkbox.closest('tr');
+                if (row) {
+                    // Get color from the row (3rd column in timer table - color square)
+                    const colorCell = row.querySelector('td:nth-child(3) div');
+                    console.log(`Timer color cell for vehicle ${vehicleId}:`, colorCell);
+                    const vehicleColor = colorCell ? colorCell.style.backgroundColor || '#3b82f6' : '#3b82f6';
+                    console.log(`Timer extracted color for vehicle ${vehicleId}:`, vehicleColor);
+                    
+                    // Get notes (we'll use default since timer table doesn't have notes column)
+                    const vehicleNotes = 'Không có ghi chú';
+                    
+                    vehicleDetails[vehicleId] = {
+                        color: vehicleColor,
+                        notes: vehicleNotes
+                    };
+                }
+            }
+        });
+        
+        return vehicleDetails;
+    }
+
+    /**
+     * Add vehicles to waiting table from timer table with details
+     */
+    addVehiclesToWaitingTableFromTimer(vehicleIds, vehicleNames, vehicleDetails) {
+        console.log('=== addVehiclesToWaitingTableFromTimer called ===');
+        console.log('Vehicle IDs:', vehicleIds);
+        console.log('Vehicle names:', vehicleNames);
+        console.log('Vehicle details:', vehicleDetails);
+        
+        const waitingTableBody = document.getElementById('waiting-vehicles');
+        console.log('Waiting table body found:', !!waitingTableBody);
+        if (!waitingTableBody) {
+            console.error('waiting-vehicles table body not found!');
+            return;
+        }
+
+        // Check if table is showing empty state and clear it
+        const emptyStateRow = waitingTableBody.querySelector('tr td[colspan]');
+        if (emptyStateRow) {
+            console.log('Found empty state row, clearing it...');
+            waitingTableBody.innerHTML = '';
+        }
+
+        vehicleIds.forEach((vehicleId, index) => {
+            console.log(`Processing vehicle ${index + 1}/${vehicleIds.length}: ID=${vehicleId}`);
+            const vehicleName = vehicleNames[index];
+            const details = vehicleDetails[vehicleId] || {};
+            const vehicleColor = details.color || '#3b82f6';
+            const vehicleNotes = details.notes || 'Không có ghi chú';
+            
+            console.log(`Vehicle ${vehicleId} details:`, { vehicleName, vehicleColor, vehicleNotes });
+            
+            // Create new row for waiting table
+            const newRow = document.createElement('tr');
+            newRow.className = 'hover:bg-gray-50 clickable-row';
+            newRow.dataset.vehicleId = vehicleId;
+            console.log(`Created new row for vehicle ${vehicleId}:`, newRow);
+            
+            newRow.innerHTML = `
+                <td class="px-3 py-2">
+                    <input type="checkbox" value="${vehicleId}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                </td>
+                <td class="px-3 py-2">
+                    <div class="vehicle-number-with-color flex items-center">
+                        <div class="w-8 h-8 rounded border border-gray-300 flex items-center justify-center text-white font-semibold text-sm" style="background-color: ${vehicleColor};" title="${vehicleColor}">
+                            ${vehicleName}
+                        </div>
+                    </div>
+                </td>
+                <td class="px-3 py-2">
+                    ${vehicleNotes ? 
+                        `<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                            ${vehicleNotes}
+                        </span>` : 
+                        `<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                            Không có ghi chú
+                        </span>`
+                    }
+                </td>
+                <td class="px-3 py-2">
+                    <button onclick="openWorkshopModal(${vehicleId})" class="text-gray-600 hover:text-gray-900 transition-colors duration-200" title="Về xưởng">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                </td>
+            `;
+            
+            console.log(`HTML content for vehicle ${vehicleId}:`, newRow.innerHTML);
+            
+            // Add animation fade in
+            newRow.style.opacity = '0';
+            newRow.style.transform = 'scale(0.95)';
+            waitingTableBody.appendChild(newRow);
+            console.log(`Appended vehicle ${vehicleId} to waiting table`);
+            console.log('Waiting table body after append:', waitingTableBody.innerHTML);
+            
+            // Trigger animation
+            setTimeout(() => {
+                newRow.style.transition = 'all 0.3s ease';
+                newRow.style.opacity = '1';
+                newRow.style.transform = 'scale(1)';
+                console.log(`Animation triggered for vehicle ${vehicleId}`);
+            }, 100);
+        });
+        
+        console.log('=== Finished adding vehicles to waiting table ===');
     }
 
     /**
      * Return selected routing vehicles to yard (public function for HTML onclick)
      */
     returnSelectedRoutingVehiclesToYard() {
+        console.log('=== returnSelectedRoutingVehiclesToYard called ===');
+        console.log('this context:', this);
+        console.log('window.activeVehicles:', window.activeVehicles);
+        
         // Get selected vehicles from routing table
         const selectedCheckboxes = document.querySelectorAll('#routing-vehicles .routing-checkbox:checked');
+        console.log('Selected checkboxes:', selectedCheckboxes.length);
         
         if (selectedCheckboxes.length === 0) {
             this.showWarning('Bạn phải chọn xe trước');
@@ -519,20 +682,182 @@ class ActiveVehicles extends VehicleBase {
             return vehicleNameElement ? vehicleNameElement.textContent : 'Unknown';
         });
         
+        console.log('Selected vehicle IDs:', selectedVehicleIds);
+        console.log('Selected vehicle names:', selectedVehicleNames);
+        
+        // Get vehicle details from routing table before hiding
+        const vehicleDetails = this.getVehicleDetailsFromRoutingTable(selectedVehicleIds);
+        console.log('Vehicle details:', vehicleDetails);
+        
         // Show confirmation message
         const vehicleNamesText = selectedVehicleNames.join(', ');
         this.showSuccess(`Xe số ${vehicleNamesText} đã được chuyển về bãi`);
         
-        // Call returnToYard with selected vehicle IDs
-        super.returnToYard(selectedVehicleIds);
-        
-        // Hide selected vehicles from routing table
+        // Update UI immediately (optimistic update)
+        console.log('About to add vehicles to waiting table...');
+        this.addVehiclesToWaitingTableFromRouting(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
+        console.log('About to hide vehicles from routing table...');
         this.hideSelectedVehiclesFromRoutingTable(selectedVehicleIds);
         
-        // Add vehicles back to waiting table
-        this.addVehiclesToWaitingTable(selectedVehicleIds, selectedVehicleNames);
+        // Call returnToYard with selected vehicle IDs in background
+        this.returnToYardAndUpdateUI(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
     }
 
+    /**
+     * Return vehicles to yard and update UI after API call completes
+     */
+    async returnToYardAndUpdateUI(selectedVehicleIds, selectedVehicleNames, vehicleDetails) {
+        try {
+            console.log('Starting returnToYardAndUpdateUI...');
+            
+            // Call returnToYard with selected vehicle IDs
+            await super.returnToYard(selectedVehicleIds);
+            console.log('API call completed successfully');
+            
+            // UI has already been updated optimistically, no need to do it again
+            
+        } catch (error) {
+            console.error('Error in returnToYardAndUpdateUI:', error);
+            this.showError('Có lỗi xảy ra khi chuyển xe về bãi');
+            
+            // If API call fails, we should revert the UI changes
+            // For now, just show error message
+        }
+    }
+
+    /**
+     * Get vehicle details from routing table before hiding
+     */
+    getVehicleDetailsFromRoutingTable(vehicleIds) {
+        const routingTableBody = document.getElementById('routing-vehicles');
+        const vehicleDetails = {};
+        
+        if (!routingTableBody) return vehicleDetails;
+        
+        vehicleIds.forEach(vehicleId => {
+            const checkbox = routingTableBody.querySelector(`.routing-checkbox[value="${vehicleId}"]`);
+            if (checkbox) {
+                const row = checkbox.closest('tr');
+                if (row) {
+                    // Get color from the row (2nd column - vehicle number with color)
+                    const colorCell = row.querySelector('td:nth-child(2) .vehicle-number-with-color div');
+                    console.log(`Routing color cell for vehicle ${vehicleId}:`, colorCell);
+                    const vehicleColor = colorCell ? colorCell.style.backgroundColor || '#3b82f6' : '#3b82f6';
+                    console.log(`Routing extracted color for vehicle ${vehicleId}:`, vehicleColor);
+                    
+                    // Get notes (we'll use default since routing table doesn't have notes column)
+                    const vehicleNotes = 'Không có ghi chú';
+                    
+                    vehicleDetails[vehicleId] = {
+                        color: vehicleColor,
+                        notes: vehicleNotes
+                    };
+                }
+            }
+        });
+        
+        return vehicleDetails;
+    }
+
+    /**
+     * Add vehicles to waiting table from routing table with details
+     */
+    addVehiclesToWaitingTableFromRouting(vehicleIds, vehicleNames, vehicleDetails) {
+        console.log('=== addVehiclesToWaitingTableFromRouting called ===');
+        console.log('Vehicle IDs:', vehicleIds);
+        console.log('Vehicle names:', vehicleNames);
+        console.log('Vehicle details:', vehicleDetails);
+        
+        // Debug: Check if we can find the table
+        console.log('Looking for waiting-vehicles table...');
+        const allTables = document.querySelectorAll('table');
+        console.log('All tables found:', allTables.length);
+        allTables.forEach((table, index) => {
+            console.log(`Table ${index}:`, table.id, table.className);
+        });
+        
+        const waitingTableBody = document.getElementById('waiting-vehicles');
+        console.log('Waiting table body found:', !!waitingTableBody);
+        console.log('Waiting table body element:', waitingTableBody);
+        console.log('Waiting table body content:', waitingTableBody ? waitingTableBody.innerHTML : 'null');
+        if (!waitingTableBody) {
+            console.error('waiting-vehicles table body not found!');
+            return;
+        }
+
+        // Check if table is showing empty state and clear it
+        const emptyStateRow = waitingTableBody.querySelector('tr td[colspan]');
+        if (emptyStateRow) {
+            console.log('Found empty state row, clearing it...');
+            waitingTableBody.innerHTML = '';
+        }
+
+        vehicleIds.forEach((vehicleId, index) => {
+            console.log(`Processing vehicle ${index + 1}/${vehicleIds.length}: ID=${vehicleId}`);
+            const vehicleName = vehicleNames[index];
+            const details = vehicleDetails[vehicleId] || {};
+            const vehicleColor = details.color || '#3b82f6';
+            const vehicleNotes = details.notes || 'Không có ghi chú';
+            
+            console.log(`Vehicle ${vehicleId} details:`, { vehicleName, vehicleColor, vehicleNotes });
+            
+            // Create new row for waiting table
+            const newRow = document.createElement('tr');
+            newRow.className = 'hover:bg-gray-50 clickable-row';
+            newRow.dataset.vehicleId = vehicleId;
+            console.log(`Created new row for vehicle ${vehicleId}:`, newRow);
+            
+            newRow.innerHTML = `
+                <td class="px-3 py-2">
+                    <input type="checkbox" value="${vehicleId}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                </td>
+                <td class="px-3 py-2">
+                    <div class="vehicle-number-with-color flex items-center">
+                        <div class="w-8 h-8 rounded border border-gray-300 flex items-center justify-center text-white font-semibold text-sm" style="background-color: ${vehicleColor};" title="${vehicleColor}">
+                            ${vehicleName}
+                        </div>
+                    </div>
+                </td>
+                <td class="px-3 py-2">
+                    ${vehicleNotes ? 
+                        `<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                            ${vehicleNotes}
+                        </span>` : 
+                        `<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                            Không có ghi chú
+                        </span>`
+                    }
+                </td>
+                <td class="px-3 py-2">
+                    <button onclick="openWorkshopModal(${vehicleId})" class="text-gray-600 hover:text-gray-900 transition-colors duration-200" title="Về xưởng">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                </td>
+            `;
+            
+            console.log(`HTML content for vehicle ${vehicleId}:`, newRow.innerHTML);
+            
+            // Add animation fade in
+            newRow.style.opacity = '0';
+            newRow.style.transform = 'scale(0.95)';
+            waitingTableBody.appendChild(newRow);
+            console.log(`Appended vehicle ${vehicleId} to waiting table`);
+            console.log('Waiting table body after append:', waitingTableBody.innerHTML);
+            
+            // Trigger animation
+            setTimeout(() => {
+                newRow.style.transition = 'all 0.3s ease';
+                newRow.style.opacity = '1';
+                newRow.style.transform = 'scale(1)';
+                console.log(`Animation triggered for vehicle ${vehicleId}`);
+            }, 100);
+        });
+        
+        console.log('=== Finished adding vehicles to waiting table ===');
+    }
 
     /**
      * Hide single vehicle from waiting table
@@ -625,6 +950,105 @@ class ActiveVehicles extends VehicleBase {
     }
 
     /**
+     * Add vehicles to routing table
+     */
+    addVehiclesToRoutingTable(vehicleIds, vehicleNames, routeNumber) {
+        console.log('=== addVehiclesToRoutingTable called ===');
+        console.log('Vehicle IDs:', vehicleIds);
+        console.log('Vehicle names:', vehicleNames);
+        console.log('Route number:', routeNumber);
+        
+        const routingTableBody = document.getElementById('routing-vehicles');
+        console.log('Routing table body found:', !!routingTableBody);
+        if (!routingTableBody) {
+            console.error('routing-vehicles table body not found!');
+            return;
+        }
+
+        // Check if table is showing empty state and clear it
+        const emptyStateRow = routingTableBody.querySelector('tr td[colspan]');
+        if (emptyStateRow) {
+            console.log('Found empty state row in routing table, clearing it...');
+            routingTableBody.innerHTML = '';
+        }
+
+        vehicleIds.forEach((vehicleId, index) => {
+            console.log(`Processing vehicle ${index + 1}/${vehicleIds.length}: ID=${vehicleId}`);
+            const vehicleName = vehicleNames[index];
+            
+            // Get vehicle details from waiting table before hiding
+            const waitingTableBody = document.getElementById('waiting-vehicles');
+            let vehicleColor = '#3b82f6';
+            
+            if (waitingTableBody) {
+                const checkbox = waitingTableBody.querySelector(`.waiting-checkbox[value="${vehicleId}"]`);
+                if (checkbox) {
+                    const row = checkbox.closest('tr');
+                    if (row) {
+                        // Get color from the row
+                        const colorCell = row.querySelector('td:nth-child(2) .vehicle-number-with-color div');
+                        if (colorCell) {
+                            vehicleColor = colorCell.style.backgroundColor || '#3b82f6';
+                        }
+                    }
+                }
+            }
+            
+            // Get current time for start_time
+            const startTime = new Date();
+            const startTimeStr = startTime.toLocaleTimeString('vi-VN', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            // Create new row for routing table
+            const newRow = document.createElement('tr');
+            newRow.className = 'hover:bg-gray-50 clickable-row';
+            newRow.dataset.vehicleId = vehicleId;
+            
+            newRow.innerHTML = `
+                <td class="px-3 py-2">
+                    <input type="checkbox" value="${vehicleId}" class="routing-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                </td>
+                <td class="px-3 py-2">
+                    <div class="vehicle-number-with-color flex items-center">
+                        <div class="w-8 h-8 rounded border border-gray-300 flex items-center justify-center text-white font-semibold text-sm" style="background-color: ${vehicleColor};" title="${vehicleColor}">
+                            ${vehicleName}
+                        </div>
+                    </div>
+                </td>
+                <td class="px-3 py-2 text-sm text-gray-900">
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                        Đường ${routeNumber}
+                    </span>
+                </td>
+                <td class="px-3 py-2 text-sm text-gray-900">
+                    ${startTimeStr}
+                </td>
+            `;
+            
+            console.log(`HTML content for vehicle ${vehicleId}:`, newRow.innerHTML);
+            
+            // Add animation fade in
+            newRow.style.opacity = '0';
+            newRow.style.transform = 'scale(0.95)';
+            routingTableBody.appendChild(newRow);
+            console.log(`Appended vehicle ${vehicleId} to routing table`);
+            console.log('Routing table body after append:', routingTableBody.innerHTML);
+            
+            // Trigger animation
+            setTimeout(() => {
+                newRow.style.transition = 'all 0.3s ease';
+                newRow.style.opacity = '1';
+                newRow.style.transform = 'scale(1)';
+                console.log(`Animation triggered for vehicle ${vehicleId}`);
+            }, 100);
+        });
+        
+        console.log('=== Finished adding vehicles to routing table ===');
+    }
+
+    /**
      * Add vehicles back to waiting table
      */
     addVehiclesToWaitingTable(vehicleIds, vehicleNames) {
@@ -645,10 +1069,14 @@ class ActiveVehicles extends VehicleBase {
                 if (checkbox) {
                     const row = checkbox.closest('tr');
                     if (row) {
-                        // Get color from the row (2nd column in timer table - vehicle number with color)
-                        const colorCell = row.querySelector('td:nth-child(2) .vehicle-number-with-color div');
+                        // Get color from the row (3rd column in timer table - color square)
+                        const colorCell = row.querySelector('td:nth-child(3) div');
+                        console.log(`Color cell for vehicle ${vehicleId}:`, colorCell);
                         if (colorCell) {
                             vehicleColor = colorCell.style.backgroundColor || '#3b82f6';
+                            console.log(`Extracted color for vehicle ${vehicleId}:`, vehicleColor);
+                        } else {
+                            console.log(`No color cell found for vehicle ${vehicleId}`);
                         }
                         
                         // Get vehicle data from the original data arrays
@@ -684,7 +1112,6 @@ class ActiveVehicles extends VehicleBase {
                         </div>
                     </div>
                 </td>
-                <td class="px-3 py-2 text-sm text-gray-500">${vehicleSeats}</td>
                 <td class="px-3 py-2">
                     ${vehicleNotes ? 
                         `<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -951,12 +1378,9 @@ class ActiveVehicles extends VehicleBase {
                 <td class="px-3 py-2">
                     <input type="checkbox" class="vehicle-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500" value="${vehicle.id}">
                 </td>
+                <td class="px-3 py-2 text-sm text-gray-900">${vehicle.name}</td>
                 <td class="px-3 py-2">
-                    <div class="vehicle-number-with-color flex items-center">
-                        <div class="w-8 h-8 rounded border border-gray-300 flex items-center justify-center text-white font-semibold text-sm" style="background-color: ${vehicle.color};" title="${vehicle.color}">
-                            ${vehicle.name}
-                        </div>
-                    </div>
+                    <div class="w-4 h-4 rounded border border-gray-300" style="background-color: ${vehicle.color};" title="${vehicle.color}"></div>
                 </td>
                 <td class="px-3 py-2">
                     <span class="${statusClass}">${statusText}</span>
@@ -1039,7 +1463,7 @@ class ActiveVehicles extends VehicleBase {
         if (waitingTableBody) {
             waitingTableBody.innerHTML = `
                 <tr>
-                    <td colspan="6" class="px-3 py-8 text-center text-gray-500">
+                    <td colspan="4" class="px-3 py-8 text-center text-gray-500">
                         Không có xe nào đang chờ
                     </td>
                 </tr>

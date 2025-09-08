@@ -31,17 +31,17 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </div>
-                </div>
-
+                        </div>
+                        
                 <!-- Vehicle Details - Collapsible -->
                 <div class="vehicle-content hidden p-4" id="content-{{ $vehicle->id }}">
                     <!-- Countdown Timer Display -->
                     <div class="text-center mb-6">
                         <div class="countdown-display text-6xl font-black text-blue-600 drop-shadow-lg" id="countdown-{{ $vehicle->id }}">
                             <span class="countdown-minutes text-6xl font-black drop-shadow-lg">00</span><span class="text-6xl font-black drop-shadow-lg">:</span><span class="countdown-seconds text-6xl font-black drop-shadow-lg">00</span>
-                        </div>
-                    </div>
-                    
+            </div>
+        </div>
+
                     <!-- Action Buttons for waiting vehicles -->
                     <div class="flex flex-wrap gap-2 justify-center">
                         <button data-action="assign-timer" data-vehicle-id="{{ $vehicle->id }}" data-duration="30" class="btn btn-success btn-sm">
@@ -52,7 +52,7 @@
                         </button>
                         <button data-action="open-workshop-modal" data-vehicle-id="{{ $vehicle->id }}" class="btn btn-secondary btn-sm">
                             🔧 Về xưởng
-                        </button>
+                    </button>
                     </div>
                 </div>
             </div>

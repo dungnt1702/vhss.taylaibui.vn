@@ -86,8 +86,9 @@ class VehicleOperationsController extends Controller
             
             foreach ($vehicles as $vehicle) {
                 $vehicle->update([
-                    'status' => Vehicle::STATUS_ROUTE,
+                    'status' => Vehicle::STATUS_ROUTING,
                     'route_number' => $request->route_number,
+                    'start_time' => now(),
                     'status_changed_at' => now()
                 ]);
             }

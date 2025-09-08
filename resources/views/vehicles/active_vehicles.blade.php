@@ -40,7 +40,6 @@
                                         <input type="checkbox" id="select-all-waiting" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                     </th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Xe số</th>
-                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Chỗ ngồi</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Tình trạng</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">🔧</th>
                                 </tr>
@@ -58,7 +57,6 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-3 py-2 text-sm text-gray-500">{{ $vehicle->seats }}</td>
                                         <td class="px-3 py-2">
                                             @if($vehicle->notes)
                                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -127,11 +125,11 @@
                 </div>
             </div>
 
-            <!-- Block 2: Xe chạy đường 1-2 -->
+            <!-- Block 2: Xe chạy theo thời gian -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 border-b border-gray-200">
                     <h2 class="text-lg font-semibold text-gray-900 mb-4 cursor-pointer flex items-center justify-between section-header px-3 py-2 rounded-md" onclick="toggleSection('timer-section')">
-                        <span>Xe chạy đường 1-2</span>
+                        <span>Xe chạy theo thời gian</span>
                         <svg id="timer-arrow" class="w-5 h-5 arrow-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -165,19 +163,18 @@
                 </div>
             </div>
 
-            <!-- Block 3: Xe theo Đường -->
+            <!-- Block 3: Xe chạy theo cung đường -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 border-b border-gray-200">
                     <h2 class="text-lg font-semibold text-gray-900 mb-4 cursor-pointer flex items-center justify-between section-header px-3 py-2 rounded-md" onclick="toggleSection('route-section')">
-                        <span>Xe theo Đường</span>
+                        <span>Xe chạy theo cung đường</span>
                         <svg id="route-arrow" class="w-5 h-5 arrow-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </h2>
                     
                     <div id="route-section" class="transition-all duration-300 ease-in-out">
-                        @if($routingVehicles && count($routingVehicles) > 0)
-                            <table class="min-w-full divide-y divide-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200">
                                 <thead>
                                     <tr>
                                         <th class="px-3 py-2 text-left">
@@ -189,7 +186,8 @@
                                     </tr>
                                 </thead>
                                 <tbody id="routing-vehicles" class="divide-y divide-gray-200">
-                                    @foreach($routingVehicles as $vehicle)
+                                    @if($routingVehicles && count($routingVehicles) > 0)
+                                        @foreach($routingVehicles as $vehicle)
                                         <tr class="hover:bg-gray-50 clickable-row">
                                             <td class="px-3 py-2">
                                                 <input type="checkbox" value="{{ $vehicle->id }}" class="routing-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
@@ -210,20 +208,24 @@
                                                 {{ \Carbon\Carbon::parse($vehicle->start_time)->format('H:i') }}
                                             </td>
                                         </tr>
-                                    @endforeach
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="4" class="px-3 py-8 text-center text-gray-500">
+                                                Không có xe nào đang theo cung đường
+                                            </td>
+                                        </tr>
+                                    @endif
                                 </tbody>
                             </table>
                             
-                            <div class="mt-4">
-                                <button onclick="returnSelectedRoutingVehiclesToYard()" class="w-full px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                                    Về bãi
-                                </button>
-                            </div>
-                        @else
-                            <div class="text-center py-8">
-                                <p class="text-gray-500">Không có xe nào đang theo đường</p>
-                            </div>
-                        @endif
+                            @if($routingVehicles && count($routingVehicles) > 0)
+                                <div class="mt-4">
+                                    <button onclick="returnSelectedRoutingVehiclesToYard()" class="w-full px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                        Về bãi
+                                    </button>
+                                </div>
+                            @endif
                     </div>
                 </div>
             </div>
@@ -242,6 +244,16 @@
     @vite(['resources/js/vehicles/VehicleClasses.js'])
     
     <script>
+        // Global function wrapper for returnSelectedRoutingVehiclesToYard
+        function returnSelectedRoutingVehiclesToYard() {
+            console.log('Global function called');
+            if (window.activeVehicles) {
+                window.activeVehicles.returnSelectedRoutingVehiclesToYard();
+            } else {
+                console.error('window.activeVehicles not found');
+            }
+        }
+
         // Function to toggle section collapse/expand
         function toggleSection(sectionId) {
             const section = document.getElementById(sectionId);

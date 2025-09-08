@@ -15,8 +15,8 @@ class ActiveVehiclesController extends Controller
      */
     public function index()
     {
-        // Lấy xe có trạng thái active (sẵn sàng chạy)
-        $vehicles = Vehicle::active()->latest()->get();
+        // Lấy xe có trạng thái active (sẵn sàng chạy) và sắp xếp theo tên
+        $vehicles = Vehicle::active()->orderBy('name')->get();
         
         // Lấy xe đang chạy để hiển thị trong bảng "Xe chạy đường 1-2"
         $runningVehicles = Vehicle::running()->latest()->get();

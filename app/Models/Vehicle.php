@@ -46,6 +46,7 @@ class Vehicle extends Model
     const STATUS_WAITING = 'waiting';    // Xe đang chờ
     const STATUS_EXPIRED = 'expired';    // Xe hết giờ
     const STATUS_PAUSED = 'paused';     // Xe tạm dừng
+    const STATUS_ROUTING = 'routing';    // Xe đang theo đường
 
     const STATUS_GROUP = 'group';        // Xe ngoài bãi
     const STATUS_ROUTE = 'group';        // Alias cho STATUS_GROUP (để tương thích)
