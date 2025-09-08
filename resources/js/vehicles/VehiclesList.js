@@ -70,6 +70,14 @@ class VehiclesList extends VehicleBase {
                 this.closeVehicleDetailModal();
             }
         });
+
+        // Handle vehicle form submission
+        document.addEventListener('submit', (event) => {
+            if (event.target && event.target.id === 'vehicle-form') {
+                event.preventDefault();
+                this.handleVehicleFormSubmit(event);
+            }
+        });
     }
 
     /**
@@ -482,6 +490,7 @@ class VehiclesList extends VehicleBase {
             'vehicle-seats': vehicleData.seats,
             'vehicle-power': vehicleData.power,
             'vehicle-wheel-size': vehicleData.wheel_size,
+            'vehicle-current-location': vehicleData.current_location || '',
             'vehicle-notes': vehicleData.notes || ''
         };
         
@@ -586,6 +595,7 @@ VehiclesList.prototype.clearEditVehicleForm = function() {
     const seatsField = document.getElementById('vehicle-seats');
     const powerField = document.getElementById('vehicle-power');
     const wheelSizeField = document.getElementById('vehicle-wheel-size');
+    const currentLocationField = document.getElementById('vehicle-current-location');
     const notesField = document.getElementById('vehicle-notes');
     const colorPreview = document.getElementById('color-preview');
     
@@ -594,12 +604,87 @@ VehiclesList.prototype.clearEditVehicleForm = function() {
     if (seatsField) seatsField.value = '';
     if (powerField) powerField.value = '';
     if (wheelSizeField) wheelSizeField.value = '';
+    if (currentLocationField) currentLocationField.value = '';
     if (notesField) notesField.value = '';
     if (colorPreview) colorPreview.style.backgroundColor = '#808080';
     
     // Clear vehicle ID
     const vehicleIdField = document.getElementById('vehicle-edit-id');
     if (vehicleIdField) vehicleIdField.value = '';
+};
+
+/**
+ * Handle vehicle form submission
+ */
+VehiclesList.prototype.handleVehicleFormSubmit = async function(event) {
+    event.preventDefault();
+    
+    try {
+        // Get form data
+        const vehicleId = document.getElementById('vehicle-edit-id').value;
+        const name = document.getElementById('vehicle-name').value;
+        const color = document.getElementById('vehicle-color').value;
+        const seats = document.getElementById('vehicle-seats').value;
+        const power = document.getElementById('vehicle-power').value;
+        const wheelSize = document.getElementById('vehicle-wheel-size').value;
+        const currentLocation = document.getElementById('vehicle-current-location').value;
+        const notes = document.getElementById('vehicle-notes').value;
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                         document.querySelector('input[name="_token"]')?.value;
+        
+        if (!csrfToken) {
+            throw new Error('CSRF token not found');
+        }
+        
+        // Prepare data
+        const formData = {
+            name: name,
+            color: color,
+            seats: seats,
+            power: power,
+            wheel_size: wheelSize,
+            current_location: currentLocation,
+            notes: notes,
+            _token: csrfToken
+        };
+        
+        console.log('Submitting vehicle update:', formData);
+        
+        // Send PUT request
+        const response = await fetch(`/vehicles/${vehicleId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Show success message
+            this.showNotification('Cập nhật thông tin xe thành công!', 'success');
+            
+            // Close modal
+            this.closeVehicleModal();
+            
+            // Reload page to show updated data
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            // Show error message
+            this.showNotification('Có lỗi xảy ra khi cập nhật xe: ' + (result.message || 'Unknown error'), 'error');
+        }
+        
+    } catch (error) {
+        console.error('Error updating vehicle:', error);
+        this.showNotification('Có lỗi xảy ra khi cập nhật xe: ' + error.message, 'error');
+    }
 };
 
 // Export for ES6 modules
