@@ -47,6 +47,8 @@ class Vehicle extends Model
     const STATUS_EXPIRED = 'expired';    // Xe hết giờ
     const STATUS_PAUSED = 'paused';     // Xe tạm dừng
     const STATUS_ROUTING = 'routing';    // Xe đang theo đường
+    const STATUS_REPAIRING = 'repairing'; // Xe đang sửa chữa
+    const STATUS_MAINTAINING = 'maintaining'; // Xe đang bảo trì
 
     const STATUS_GROUP = 'group';        // Xe ngoài bãi
     const STATUS_ROUTE = 'group';        // Alias cho STATUS_GROUP (để tương thích)

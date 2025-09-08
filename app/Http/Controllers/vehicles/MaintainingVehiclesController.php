@@ -9,36 +9,29 @@ use Illuminate\Http\Request;
 class MaintainingVehiclesController extends VehicleBaseController
 {
     /**
-     * Display maintaining vehicles (xe đang bảo trì)
+     * Display maintenance issues history (lịch sử bảo trì)
      */
     public function index()
     {
-        $vehicles = Vehicle::where('status', 'maintaining')
-            ->with(['technicalIssues' => function($query) {
-                $query->where('issue_type', 'maintenance')
-                      ->where('status', '!=', 'completed')
-                      ->latest();
-            }])
-            ->latest()
+        // Get all maintenance issues with vehicle information
+        $maintenanceIssues = \App\Models\VehicleTechnicalIssue::where('issue_type', 'maintenance')
+            ->with(['vehicle', 'reporter'])
+            ->latest('reported_at')
             ->get();
             
-        return view('vehicles.maintaining_vehicles', compact('vehicles'));
+        return view('vehicles.maintaining_vehicles', compact('maintenanceIssues'));
     }
 
     /**
-     * Get maintaining vehicles for API
+     * Get maintenance issues for API
      */
     public function getMaintainingVehicles()
     {
-        $vehicles = Vehicle::where('status', 'maintaining')
-            ->with(['technicalIssues' => function($query) {
-                $query->where('issue_type', 'maintenance')
-                      ->where('status', '!=', 'completed')
-                      ->latest();
-            }])
-            ->latest()
+        $maintenanceIssues = \App\Models\VehicleTechnicalIssue::where('issue_type', 'maintenance')
+            ->with(['vehicle', 'reporter'])
+            ->latest('reported_at')
             ->get();
             
-        return response()->json(['success' => true, 'vehicles' => $vehicles]);
+        return response()->json(['success' => true, 'maintenanceIssues' => $maintenanceIssues]);
     }
 }

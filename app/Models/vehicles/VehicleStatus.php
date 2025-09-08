@@ -13,6 +13,8 @@ class VehicleStatus extends Model
     const STATUS_WAITING = 'waiting';    // Xe đang chờ
     const STATUS_EXPIRED = 'expired';    // Xe hết giờ
     const STATUS_PAUSED = 'paused';      // Xe tạm dừng
+    const STATUS_REPAIRING = 'repairing'; // Xe đang sửa chữa
+    const STATUS_MAINTAINING = 'maintaining'; // Xe đang bảo trì
     const STATUS_GROUP = 'group';        // Xe trong tuyến (để tương thích)
     const STATUS_ROUTE = 'group';        // Alias cho STATUS_GROUP (để tương thích)
 
@@ -28,6 +30,8 @@ class VehicleStatus extends Model
             self::STATUS_WAITING,
             self::STATUS_EXPIRED,
             self::STATUS_PAUSED,
+            self::STATUS_REPAIRING,
+            self::STATUS_MAINTAINING,
             self::STATUS_GROUP
         ];
     }
@@ -44,6 +48,8 @@ class VehicleStatus extends Model
             self::STATUS_WAITING => 'Xe đang chờ',
             self::STATUS_EXPIRED => 'Xe hết giờ',
             self::STATUS_PAUSED => 'Xe tạm dừng',
+            self::STATUS_REPAIRING => 'Xe đang sửa chữa',
+            self::STATUS_MAINTAINING => 'Xe đang bảo trì',
             self::STATUS_ROUTE => 'Xe trong tuyến',
             default => 'Không xác định'
         };
@@ -61,6 +67,8 @@ class VehicleStatus extends Model
             self::STATUS_WAITING => 'bg-yellow-100 text-yellow-800',
             self::STATUS_EXPIRED => 'bg-orange-100 text-orange-800',
             self::STATUS_PAUSED => 'bg-gray-100 text-gray-800',
+            self::STATUS_REPAIRING => 'bg-purple-100 text-purple-800',
+            self::STATUS_MAINTAINING => 'bg-indigo-100 text-indigo-800',
             self::STATUS_ROUTE => 'bg-indigo-100 text-indigo-800',
             default => 'bg-gray-100 text-gray-800'
         };
@@ -77,7 +85,9 @@ class VehicleStatus extends Model
             self::STATUS_PAUSED => [self::STATUS_RUNNING, self::STATUS_READY],
             self::STATUS_EXPIRED => [self::STATUS_READY, self::STATUS_WORKSHOP],
             self::STATUS_ROUTE => [self::STATUS_READY, self::STATUS_WORKSHOP],
-            self::STATUS_WORKSHOP => [self::STATUS_READY],
+            self::STATUS_WORKSHOP => [self::STATUS_READY, self::STATUS_REPAIRING, self::STATUS_MAINTAINING],
+            self::STATUS_REPAIRING => [self::STATUS_READY, self::STATUS_WORKSHOP],
+            self::STATUS_MAINTAINING => [self::STATUS_READY, self::STATUS_WORKSHOP],
             default => []
         };
     }

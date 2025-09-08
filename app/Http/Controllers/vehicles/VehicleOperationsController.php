@@ -514,6 +514,9 @@ class VehicleOperationsController extends Controller
                 'notes' => 'nullable|string|max:500'
             ]);
 
+            // Get the vehicle
+            $vehicle = \App\Models\Vehicle::findOrFail($request->vehicle_id);
+
             // Create technical issue record
             $technicalIssue = \App\Models\VehicleTechnicalIssue::create([
                 'vehicle_id' => $request->vehicle_id,
@@ -526,16 +529,81 @@ class VehicleOperationsController extends Controller
                 'reported_by' => auth()->id()
             ]);
 
+            $issueTypeMessage = $request->issue_type === 'repair' ? 'sửa chữa' : 'bảo trì';
+
             return response()->json([
                 'success' => true,
-                'message' => 'Thông tin kỹ thuật đã được cập nhật thành công!',
-                'technical_issue' => $technicalIssue
+                'message' => "Báo cáo {$issueTypeMessage} đã được ghi nhận thành công!",
+                'technical_issue' => $technicalIssue,
+                'vehicle' => $vehicle
             ]);
         } catch (\Exception $e) {
             Log::error('Lỗi khi cập nhật thông tin kỹ thuật: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi cập nhật thông tin kỹ thuật'
+            ], 500);
+        }
+    }
+
+    /**
+     * Complete repair and return vehicle to ready status
+     */
+    public function completeRepair(Request $request, Vehicle $vehicle)
+    {
+        try {
+            $vehicle->update([
+                'status' => Vehicle::STATUS_READY,
+                'status_changed_at' => now()
+            ]);
+
+            // Mark all repair issues as completed
+            $vehicle->repairIssues()->update([
+                'status' => \App\Models\VehicleTechnicalIssue::STATUS_COMPLETED,
+                'completed_at' => now()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Xe đã hoàn thành sửa chữa và sẵn sàng chạy!',
+                'vehicle' => $vehicle
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi hoàn thành sửa chữa: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi hoàn thành sửa chữa'
+            ], 500);
+        }
+    }
+
+    /**
+     * Complete maintenance and return vehicle to ready status
+     */
+    public function completeMaintenance(Request $request, Vehicle $vehicle)
+    {
+        try {
+            $vehicle->update([
+                'status' => Vehicle::STATUS_READY,
+                'status_changed_at' => now()
+            ]);
+
+            // Mark all maintenance issues as completed
+            $vehicle->maintenanceIssues()->update([
+                'status' => \App\Models\VehicleTechnicalIssue::STATUS_COMPLETED,
+                'completed_at' => now()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Xe đã hoàn thành bảo trì và sẵn sàng chạy!',
+                'vehicle' => $vehicle
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi hoàn thành bảo trì: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi hoàn thành bảo trì'
             ], 500);
         }
     }
