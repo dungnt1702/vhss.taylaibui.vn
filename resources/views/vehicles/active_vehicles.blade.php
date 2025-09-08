@@ -176,9 +176,54 @@
                     </h2>
                     
                     <div id="route-section" class="transition-all duration-300 ease-in-out">
-                        <div id="route-groups" class="space-y-4">
-                            <!-- Route groups will be populated by JavaScript -->
-                        </div>
+                        @if($routingVehicles && count($routingVehicles) > 0)
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-3 py-2 text-left">
+                                            <input type="checkbox" id="select-all-routing" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                                        </th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Xe số</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Cung đường</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Bắt đầu</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="routing-vehicles" class="divide-y divide-gray-200">
+                                    @foreach($routingVehicles as $vehicle)
+                                        <tr class="hover:bg-gray-50 clickable-row">
+                                            <td class="px-3 py-2">
+                                                <input type="checkbox" value="{{ $vehicle->id }}" class="routing-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <div class="vehicle-number-with-color flex items-center">
+                                                    <div class="w-8 h-8 rounded border border-gray-300 flex items-center justify-center text-white font-semibold text-sm" style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}">
+                                                        {{ $vehicle->name }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-3 py-2 text-sm text-gray-900">
+                                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                                    Đường {{ $vehicle->route_number }}
+                                                </span>
+                                            </td>
+                                            <td class="px-3 py-2 text-sm text-gray-900">
+                                                {{ \Carbon\Carbon::parse($vehicle->start_time)->format('H:i') }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            
+                            <div class="mt-4">
+                                <button onclick="returnSelectedRoutingVehiclesToYard()" class="w-full px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                    Về bãi
+                                </button>
+                            </div>
+                        @else
+                            <div class="text-center py-8">
+                                <p class="text-gray-500">Không có xe nào đang theo đường</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -228,6 +273,17 @@
             // Check if ActiveVehicles instance exists
             if (window.activeVehicles) {
                 window.activeVehicles.returnSelectedVehiclesToYard();
+            } else {
+                console.error('ActiveVehicles instance not found');
+                alert('Lỗi: Không thể thực hiện thao tác này');
+            }
+        }
+        
+        // Global function for return routing vehicles to yard button
+        function returnSelectedRoutingVehiclesToYard() {
+            // Check if ActiveVehicles instance exists
+            if (window.activeVehicles) {
+                window.activeVehicles.returnSelectedRoutingVehiclesToYard();
             } else {
                 console.error('ActiveVehicles instance not found');
                 alert('Lỗi: Không thể thực hiện thao tác này');

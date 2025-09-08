@@ -110,6 +110,7 @@ class ActiveVehicles extends VehicleBase {
     setupVehicleSelection() {
         this.setupSelectAll('waiting', 'waiting-checkbox');
         this.setupSelectAll('timer', 'vehicle-checkbox');
+        this.setupSelectAll('routing', 'routing-checkbox');
     }
 
     /**
@@ -121,6 +122,9 @@ class ActiveVehicles extends VehicleBase {
         
         // Setup row click for timer vehicles table
         this.setupTableRowClick('timer-vehicles', 'vehicle-checkbox');
+        
+        // Setup row click for routing vehicles table
+        this.setupTableRowClick('routing-vehicles', 'routing-checkbox');
         
         // Setup mobile responsive headers
         this.setupMobileHeaders();
@@ -495,6 +499,40 @@ class ActiveVehicles extends VehicleBase {
         this.addVehiclesToWaitingTable(selectedVehicleIds, selectedVehicleNames);
     }
 
+    /**
+     * Return selected routing vehicles to yard (public function for HTML onclick)
+     */
+    returnSelectedRoutingVehiclesToYard() {
+        // Get selected vehicles from routing table
+        const selectedCheckboxes = document.querySelectorAll('#routing-vehicles .routing-checkbox:checked');
+        
+        if (selectedCheckboxes.length === 0) {
+            this.showWarning('Bạn phải chọn xe trước');
+            return;
+        }
+        
+        // Get vehicle IDs and names
+        const selectedVehicleIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+        const selectedVehicleNames = Array.from(selectedCheckboxes).map(checkbox => {
+            const row = checkbox.closest('tr');
+            const vehicleNameElement = row.querySelector('td:nth-child(2) .vehicle-number-with-color div');
+            return vehicleNameElement ? vehicleNameElement.textContent : 'Unknown';
+        });
+        
+        // Show confirmation message
+        const vehicleNamesText = selectedVehicleNames.join(', ');
+        this.showSuccess(`Xe số ${vehicleNamesText} đã được chuyển về bãi`);
+        
+        // Call returnToYard with selected vehicle IDs
+        super.returnToYard(selectedVehicleIds);
+        
+        // Hide selected vehicles from routing table
+        this.hideSelectedVehiclesFromRoutingTable(selectedVehicleIds);
+        
+        // Add vehicles back to waiting table
+        this.addVehiclesToWaitingTable(selectedVehicleIds, selectedVehicleNames);
+    }
+
 
     /**
      * Hide single vehicle from waiting table
@@ -547,6 +585,38 @@ class ActiveVehicles extends VehicleBase {
                         // Remove row after animation
                         setTimeout(() => {
                             row.remove();
+                        }, 300);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Hide selected vehicles from routing table
+     */
+    hideSelectedVehiclesFromRoutingTable(vehicleIds) {
+        vehicleIds.forEach(vehicleId => {
+            const routingTableBody = document.getElementById('routing-vehicles');
+            if (routingTableBody) {
+                const checkbox = routingTableBody.querySelector(`.routing-checkbox[value="${vehicleId}"]`);
+                if (checkbox) {
+                    const row = checkbox.closest('tr');
+                    if (row) {
+                        // Add animation fade out
+                        row.style.transition = 'all 0.3s ease';
+                        row.style.opacity = '0';
+                        row.style.transform = 'scale(0.95)';
+                        
+                        // Remove row after animation
+                        setTimeout(() => {
+                            row.remove();
+                            
+                            // Check if no more vehicles in routing table
+                            const remainingRows = routingTableBody.querySelectorAll('tr');
+                            if (remainingRows.length === 0) {
+                                this.showEmptyRoutingState();
+                            }
                         }, 300);
                     }
                 }
@@ -971,6 +1041,22 @@ class ActiveVehicles extends VehicleBase {
                 <tr>
                     <td colspan="6" class="px-3 py-8 text-center text-gray-500">
                         Không có xe nào đang chờ
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    /**
+     * Show empty state for routing vehicles table
+     */
+    showEmptyRoutingState() {
+        const routingTableBody = document.getElementById('routing-vehicles');
+        if (routingTableBody) {
+            routingTableBody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="px-3 py-8 text-center text-gray-500">
+                        Không có xe nào đang theo đường
                     </td>
                 </tr>
             `;

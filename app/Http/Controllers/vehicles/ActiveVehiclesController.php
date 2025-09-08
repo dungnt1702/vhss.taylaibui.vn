@@ -20,8 +20,19 @@ class ActiveVehiclesController extends Controller
         
         // Lấy xe đang chạy để hiển thị trong bảng "Xe chạy đường 1-2"
         $runningVehicles = Vehicle::running()->latest()->get();
+        
+        // Lấy xe đang tạm dừng
+        $pausedVehicles = Vehicle::paused()->latest()->get();
+        
+        // Lấy xe đã hết giờ
+        $expiredVehicles = Vehicle::expired()->latest()->get();
+        
+        // Lấy xe đang theo đường (routing)
+        $routingVehicles = Vehicle::where('status', 'routing')
+            ->orderBy('start_time', 'asc')
+            ->get();
 
-        return view('vehicles.active_vehicles', compact('vehicles', 'runningVehicles'));
+        return view('vehicles.active_vehicles', compact('vehicles', 'runningVehicles', 'pausedVehicles', 'expiredVehicles', 'routingVehicles'));
     }
 
     /**

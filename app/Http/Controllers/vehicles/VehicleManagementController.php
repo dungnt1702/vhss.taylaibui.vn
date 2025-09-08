@@ -58,6 +58,7 @@ class VehicleManagementController extends Controller
         $runningVehicles = collect();
         $pausedVehicles = collect();
         $expiredVehicles = collect();
+        $routingVehicles = collect();
         
         // Get active vehicles for active_vehicles.blade.php when filter = 'active'
         if ($filter === 'active') {
@@ -65,6 +66,9 @@ class VehicleManagementController extends Controller
             $runningVehicles = Vehicle::running()->latest()->get();
             $pausedVehicles = Vehicle::paused()->latest()->get();
             $expiredVehicles = Vehicle::expired()->latest()->get();
+            $routingVehicles = Vehicle::where('status', 'routing')
+                ->orderBy('start_time', 'asc')
+                ->get();
         }
         
         // Get ready vehicles for ready_vehicles.blade.php when filter = 'ready'
@@ -85,6 +89,7 @@ class VehicleManagementController extends Controller
             'runningVehicles',
             'pausedVehicles',
             'expiredVehicles',
+            'routingVehicles',
             'filter', 
             'pageTitle', 
             'displayMode', 
