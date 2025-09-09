@@ -18,6 +18,7 @@ export default defineConfig({
                 'resources/css/vehicles/attributes-list.css',
                 'resources/css/vehicles/vehicles-list.css',
                 // Vehicle-specific JS files
+                'resources/js/vehicles/GlobalModalFunctions.js',
                 'resources/js/vehicles/VehicleBase.js',
                 'resources/js/vehicles/ActiveVehicles.js',
                 'resources/js/vehicles/ReadyVehicles.js',

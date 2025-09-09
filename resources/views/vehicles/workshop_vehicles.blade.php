@@ -181,24 +181,3 @@
     </div>
 
 </div>
-
-<!-- Modals -->
-
-
-{{-- Modals are included by vehicles_management.blade.php --}}
-
-<!-- Include modals -->
-@include('vehicles.partials.vehicle_modals')
-
-@push('scripts')
-    <!-- Load VehicleClasses.js for all vehicle functionality -->
-    @vite(['resources/js/vehicles/VehicleClasses.js'])
-    
-    <!-- Load WorkshopVehicles.js for workshop-specific functionality -->
-    @vite(['resources/js/vehicles/WorkshopVehicles.js'])
-@endpush
-
-@push('styles')
-@vite(['resources/css/vehicles/workshop-vehicles.css'])
-@endpush
-

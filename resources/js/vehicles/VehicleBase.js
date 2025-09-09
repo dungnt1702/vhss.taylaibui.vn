@@ -1416,7 +1416,8 @@ class VehicleBase {
         // Setup close button event listener
         closeBtn.onclick = () => {
             this.closeNotificationModal();
-            if (callback && typeof callback === 'function') {
+            // Only execute callback for non-confirm types
+            if (callback && typeof callback === 'function' && type !== 'confirm') {
                 callback();
             }
         };
@@ -1458,8 +1459,57 @@ class VehicleBase {
         icon.setAttribute('class', `h-6 w-6 ${iconColor}`);
         iconContainer.setAttribute('class', `mx-auto flex items-center justify-center h-12 w-12 rounded-full ${bgColor}`);
 
+        // Handle confirm type with two buttons
+        if (type === 'confirm') {
+            this.setupConfirmModal(modal, closeBtn, callback);
+        }
+
         // Show modal
         modal.classList.remove('hidden');
+    }
+
+    /**
+     * Setup confirm modal with two buttons
+     */
+    setupConfirmModal(modal, closeBtn, callback) {
+        // Hide the default close button
+        closeBtn.style.display = 'none';
+        
+        // Create button container if it doesn't exist
+        let buttonContainer = modal.querySelector('.notification-buttons');
+        if (!buttonContainer) {
+            buttonContainer = document.createElement('div');
+            buttonContainer.className = 'notification-buttons mt-8 flex justify-center space-x-4';
+            modal.querySelector('.mt-4').appendChild(buttonContainer);
+        }
+        
+        // Clear existing buttons
+        buttonContainer.innerHTML = '';
+        
+        // Create Cancel button
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.className = 'px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 shadow-sm';
+        cancelBtn.textContent = 'Hủy';
+        cancelBtn.onclick = () => {
+            this.closeNotificationModal();
+        };
+        
+        // Create Confirm button
+        const confirmBtn = document.createElement('button');
+        confirmBtn.type = 'button';
+        confirmBtn.className = 'px-6 py-3 text-sm font-semibold text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 shadow-md';
+        confirmBtn.textContent = 'Xác nhận xóa';
+        confirmBtn.onclick = () => {
+            this.closeNotificationModal();
+            if (callback && typeof callback === 'function') {
+                callback();
+            }
+        };
+        
+        // Add buttons to container
+        buttonContainer.appendChild(cancelBtn);
+        buttonContainer.appendChild(confirmBtn);
     }
 
     /**
@@ -1469,6 +1519,17 @@ class VehicleBase {
         const modal = document.getElementById('notification-modal');
         if (modal) {
             modal.classList.add('hidden');
+            
+            // Reset button container and close button
+            const buttonContainer = modal.querySelector('.notification-buttons');
+            if (buttonContainer) {
+                buttonContainer.remove();
+            }
+            
+            const closeBtn = document.getElementById('notification-close-btn');
+            if (closeBtn) {
+                closeBtn.style.display = 'block';
+            }
         }
     }
 
@@ -1523,139 +1584,7 @@ if (typeof window !== 'undefined') {
     // Make VehicleBase available globally
     window.VehicleBase = VehicleBase;
 
-    // Create global functions immediately
-    (function() {
-        console.log('🔧 Creating global functions immediately...');
-        
-        // Status Modal functions
-        window.closeStatusModal = () => {
-            const modal = document.getElementById('status-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        };
-
-        // Workshop Modal functions
-        window.openWorkshopModal = (vehicleId) => {
-            console.log('🔧 openWorkshopModal called with vehicleId:', vehicleId);
-            const modal = document.getElementById('move-workshop-modal');
-            const vehicleIdInput = document.getElementById('workshop-vehicle-id');
-            if (modal && vehicleIdInput) {
-                vehicleIdInput.value = vehicleId;
-                modal.classList.remove('hidden');
-                console.log('✅ Workshop modal opened successfully');
-            } else {
-                console.error('❌ Workshop modal elements not found');
-            }
-        };
-
-        window.closeWorkshopModal = () => {
-            const modal = document.getElementById('move-workshop-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        };
-
-        // Additional modal functions
-        window.closeStartTimerModal = () => {
-            const modal = document.getElementById('start-timer-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        };
-
-        window.closeAssignRouteModal = () => {
-            const modal = document.getElementById('assign-route-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        };
-
-        window.closeMoveWorkshopModal = () => {
-            const modal = document.getElementById('move-workshop-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        };
-
-        window.closeEditNotesModal = () => {
-            const modal = document.getElementById('edit-notes-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        };
-
-        window.closeTechnicalUpdateModal = () => {
-            const modal = document.getElementById('technical-update-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        };
-
-        window.closeProcessIssueModal = () => {
-            const modal = document.getElementById('process-issue-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        };
-
-        window.closeDescriptionDetailModal = () => {
-            const modal = document.getElementById('description-detail-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        };
-
-        window.closeReturnToYardModal = () => {
-            const modal = document.getElementById('return-to-yard-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        };
-
-        window.closeEditIssueModal = () => {
-            const modal = document.getElementById('edit-issue-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-        };
-
-        // Additional global functions for active vehicles
-        window.returnSelectedRoutingVehiclesToYard = () => {
-            if (window.activeVehicles && window.activeVehicles.returnSelectedRoutingVehiclesToYard) {
-                window.activeVehicles.returnSelectedRoutingVehiclesToYard();
-            } else {
-                console.error('window.activeVehicles not found');
-            }
-        };
-
-        window.returnSelectedVehiclesToYard = () => {
-            if (window.activeVehicles && window.activeVehicles.returnSelectedVehiclesToYard) {
-                window.activeVehicles.returnSelectedVehiclesToYard();
-            } else {
-                console.error('window.activeVehicles not found');
-            }
-        };
-
-        window.toggleSection = (sectionId) => {
-            const section = document.getElementById(sectionId);
-            const arrow = document.getElementById(sectionId.replace('-section', '-arrow'));
-            
-            if (section && arrow) {
-                if (section.style.display === 'none' || section.classList.contains('hidden')) {
-                    section.style.display = 'block';
-                    section.classList.remove('hidden');
-                    arrow.style.transform = 'rotate(180deg)';
-                } else {
-                    section.style.display = 'none';
-                    section.classList.add('hidden');
-                    arrow.style.transform = 'rotate(0deg)';
-                }
-            }
-        };
-
-        console.log('✅ Global functions created successfully');
-    })();
+    // Global functions are now handled by GlobalModalFunctions.js
 
     // Initialize VehicleBase when DOM is ready
     document.addEventListener('DOMContentLoaded', function() {

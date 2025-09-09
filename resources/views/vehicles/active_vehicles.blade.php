@@ -228,5 +228,3 @@
         </div>
     </div>
 </div>
-
-{{-- Notification modal is now included from vehicle_modals.blade.php --}}
