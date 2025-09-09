@@ -76,13 +76,13 @@
                     @endforeach
 
                     <!-- Actions -->
-                    <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 border-t border-gray-200">
                         <a href="{{ route('roles.index') }}" 
                            class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             Quay lại
                         </a>
                         
-                        <div class="flex space-x-4">
+                        <div class="flex flex-wrap gap-3">
                             <button type="button" 
                                     class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150"
                                     onclick="selectAll()">
