@@ -24,31 +24,31 @@
             <!-- Block 1: Xe đang chờ -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4 cursor-pointer flex items-center justify-between section-header px-3 py-2 rounded-md" onclick="toggleSection('waiting-section')">
-                        <span>Xe đang chờ</span>
-                        <svg id="waiting-arrow" class="w-5 h-5 arrow-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4 cursor-pointer flex items-center justify-between section-header px-3 py-2 rounded-md" onclick="toggleSection('ready-section')">
+                        <span>Xe sẵn sàng</span>
+                        <svg id="ready-arrow" class="w-5 h-5 arrow-rotate" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </h2>
                     
-                    <div id="waiting-section" class="transition-all duration-300 ease-in-out">
+                    <div id="ready-section" class="transition-all duration-300 ease-in-out">
                         @if($vehicles && count($vehicles) > 0)
                             <table class="min-w-full divide-y divide-gray-200">
                             <thead>
                                 <tr>
                                     <th class="px-3 py-2 text-left">
-                                        <input type="checkbox" id="select-all-waiting" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                                        <input type="checkbox" id="select-all-ready" class="rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                     </th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Xe số</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">Tình trạng</th>
                                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">🔧</th>
                                 </tr>
                             </thead>
-                            <tbody id="waiting-vehicles" class="divide-y divide-gray-200">
+                            <tbody id="ready-vehicles" class="divide-y divide-gray-200">
                                 @foreach($vehicles as $vehicle)
                                     <tr class="hover:bg-gray-50 clickable-row">
                                         <td class="px-3 py-2">
-                                            <input type="checkbox" value="{{ $vehicle->id }}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                                            <input type="checkbox" value="{{ $vehicle->id }}" class="ready-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                                         </td>
                                         <td class="px-3 py-2">
                                             <div class="vehicle-number-with-color flex items-center">
@@ -444,7 +444,7 @@
         
         // Initialize all sections as expanded by default
         document.addEventListener('DOMContentLoaded', function() {
-            const sections = ['waiting-section', 'timer-section', 'route-section'];
+            const sections = ['ready-section', 'timer-section', 'route-section'];
             sections.forEach(sectionId => {
                 const section = document.getElementById(sectionId);
                 if (section) {

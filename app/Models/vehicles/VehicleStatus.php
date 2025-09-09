@@ -10,7 +10,7 @@ class VehicleStatus extends Model
     const STATUS_READY = 'ready';        // Xe sẵn sàng chạy
     const STATUS_WORKSHOP = 'workshop';  // Xe trong xưởng
     const STATUS_RUNNING = 'running';    // Xe đang chạy
-    const STATUS_WAITING = 'waiting';    // Xe đang chờ
+    const STATUS_WAITING = 'ready';      // Xe sẵn sàng (alias for ready)
     const STATUS_EXPIRED = 'expired';    // Xe hết giờ
     const STATUS_PAUSED = 'paused';      // Xe tạm dừng
     const STATUS_REPAIRING = 'repairing'; // Xe đang sửa chữa
@@ -27,7 +27,7 @@ class VehicleStatus extends Model
             self::STATUS_READY,
             self::STATUS_WORKSHOP,
             self::STATUS_RUNNING,
-            self::STATUS_WAITING,
+            // self::STATUS_WAITING, // Deprecated: use STATUS_READY
             self::STATUS_EXPIRED,
             self::STATUS_PAUSED,
             self::STATUS_REPAIRING,
@@ -45,7 +45,7 @@ class VehicleStatus extends Model
             self::STATUS_READY => 'Xe sẵn sàng chạy',
             self::STATUS_WORKSHOP => 'Xe trong xưởng',
             self::STATUS_RUNNING => 'Xe đang chạy',
-            self::STATUS_WAITING => 'Xe đang chờ',
+            self::STATUS_WAITING => 'Xe sẵn sàng', // Alias for STATUS_READY
             self::STATUS_EXPIRED => 'Xe hết giờ',
             self::STATUS_PAUSED => 'Xe tạm dừng',
             self::STATUS_REPAIRING => 'Xe đang sửa chữa',
@@ -64,7 +64,7 @@ class VehicleStatus extends Model
             self::STATUS_READY => 'bg-green-100 text-green-800',
             self::STATUS_WORKSHOP => 'bg-red-100 text-red-800',
             self::STATUS_RUNNING => 'bg-blue-100 text-blue-800',
-            self::STATUS_WAITING => 'bg-yellow-100 text-yellow-800',
+            self::STATUS_WAITING => 'bg-green-100 text-green-800', // Same as STATUS_READY
             self::STATUS_EXPIRED => 'bg-orange-100 text-orange-800',
             self::STATUS_PAUSED => 'bg-gray-100 text-gray-800',
             self::STATUS_REPAIRING => 'bg-purple-100 text-purple-800',
@@ -109,7 +109,7 @@ class VehicleStatus extends Model
         return [
             self::STATUS_READY,
             self::STATUS_RUNNING,
-            self::STATUS_WAITING,
+            // self::STATUS_WAITING, // Deprecated: use STATUS_READY
             self::STATUS_EXPIRED,
             self::STATUS_PAUSED,
             self::STATUS_ROUTE

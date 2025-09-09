@@ -73,12 +73,6 @@ async function loadPageSpecificJS() {
                 className = 'RunningVehicles';
                 break;
             
-            case 'waiting':
-                const WaitingVehicles = (await import('./ReadyVehicles.js')).default;
-                VehicleClass = WaitingVehicles;
-                className = 'ReadyVehicles';
-                break;
-            
             case 'workshop':
                 const WorkshopVehicles = (await import('./WorkshopVehicles.js')).default;
                 VehicleClass = WorkshopVehicles;

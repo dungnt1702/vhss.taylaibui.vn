@@ -468,7 +468,7 @@ class VehicleOperationsController extends Controller
                 'paused' => Vehicle::paused()->latest()->get(),
                 'expired' => Vehicle::expired()->latest()->get(),
                 'route' => Vehicle::route()->latest()->get(),
-                'waiting' => Vehicle::waiting()->latest()->get(),
+                'ready' => Vehicle::ready()->latest()->get(),
                 'workshop' => Vehicle::inactive()->latest()->get(),
                 default => Vehicle::active()->latest()->get()
             };

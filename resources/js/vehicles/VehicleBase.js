@@ -400,9 +400,9 @@ export class VehicleBase {
                     } else if (vehicleStatus === 'expired') {
                         // Xe expired sẽ được xử lý bởi ExpiredVehicles.js
                         console.log('Expired vehicle - should be handled by ExpiredVehicles.js');
-                    } else if (vehicleStatus === 'waiting') {
-                        // Xe waiting sẽ được xử lý bởi WaitingVehicles.js
-                        console.log('Waiting vehicle - should be handled by WaitingVehicles.js');
+                    } else if (vehicleStatus === 'ready') {
+                        // Xe ready sẽ được xử lý bởi ReadyVehicles.js
+                        console.log('Ready vehicle - should be handled by ReadyVehicles.js');
                     } else {
                         console.log('Unknown vehicle status:', vehicleStatus);
                     }
@@ -1180,15 +1180,15 @@ export class VehicleBase {
      * Get selected vehicles
      */
     getSelectedVehicles() {
-        // Tìm checkbox trong bảng "Xe đang chờ" (waiting-checkbox) và bảng timer (vehicle-checkbox)
-        const waitingCheckboxes = document.querySelectorAll('.waiting-checkbox:checked');
+        // Tìm checkbox trong bảng "Xe sẵn sàng" (ready-checkbox) và bảng timer (vehicle-checkbox)
+        const readyCheckboxes = document.querySelectorAll('.ready-checkbox:checked');
         const vehicleCheckboxes = document.querySelectorAll('.vehicle-checkbox:checked');
         
-        const waitingIds = Array.from(waitingCheckboxes).map(cb => cb.value);
+        const readyIds = Array.from(readyCheckboxes).map(cb => cb.value);
         const vehicleIds = Array.from(vehicleCheckboxes).map(cb => cb.value);
         
         // Kết hợp cả hai loại checkbox
-        return [...waitingIds, ...vehicleIds];
+        return [...readyIds, ...vehicleIds];
     }
 
     /**

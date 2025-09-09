@@ -188,7 +188,6 @@ class Vehicles extends VehicleBase {
     getVehicleStats() {
         const totalVehicles = this.vehicleCards.length;
         const readyCount = document.querySelectorAll('.vehicle-card[data-status="ready"]').length;
-        const waitingCount = document.querySelectorAll('.vehicle-card[data-status="waiting"]').length;
         const runningCount = document.querySelectorAll('.vehicle-card[data-status="running"]').length;
         const pausedCount = document.querySelectorAll('.vehicle-card[data-status="paused"]').length;
         const expiredCount = document.querySelectorAll('.vehicle-card[data-status="expired"]').length;
@@ -197,7 +196,6 @@ class Vehicles extends VehicleBase {
         return {
             total: totalVehicles,
             ready: readyCount,
-            waiting: waitingCount,
             running: runningCount,
             paused: pausedCount,
             expired: expiredCount,
@@ -218,7 +216,6 @@ class Vehicles extends VehicleBase {
                 <div class="text-sm text-gray-600">
                     <span class="font-semibold text-blue-600">${stats.total}</span> tổng cộng | 
                     <span class="font-semibold text-green-600">${stats.ready}</span> sẵn sàng | 
-                    <span class="font-semibold text-yellow-600">${stats.waiting}</span> chờ | 
                     <span class="font-semibold text-blue-600">${stats.running}</span> chạy | 
                     <span class="font-semibold text-orange-600">${stats.paused}</span> tạm dừng | 
                     <span class="font-semibold text-red-600">${stats.expired}</span> hết giờ | 

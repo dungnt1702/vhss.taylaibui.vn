@@ -364,7 +364,7 @@ class VehicleOperations extends VehicleBase {
             case 'paused':
                 statusText = minutes !== null ? `Xe tạm dừng ${minutes}p` : 'Tạm dừng';
                 break;
-            case 'waiting':
+            case 'ready':
                 statusText = 'Đang chờ';
                 break;
             case 'expired':
@@ -473,8 +473,8 @@ class VehicleOperations extends VehicleBase {
             case 'expired':
                 targetFilter = 'expired';
                 break;
-            case 'waiting':
-                targetFilter = 'ready'; // active screen shows waiting vehicles
+            case 'ready':
+                targetFilter = 'ready'; // active screen shows ready vehicles
                 break;
         }
         

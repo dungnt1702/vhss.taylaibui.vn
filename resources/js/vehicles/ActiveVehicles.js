@@ -108,7 +108,7 @@ class ActiveVehicles extends VehicleBase {
      * Setup vehicle selection functionality
      */
     setupVehicleSelection() {
-        this.setupSelectAll('waiting', 'waiting-checkbox');
+        this.setupSelectAll('ready', 'ready-checkbox');
         this.setupSelectAll('timer', 'vehicle-checkbox');
         this.setupSelectAll('routing', 'routing-checkbox');
     }
@@ -117,8 +117,8 @@ class ActiveVehicles extends VehicleBase {
      * Setup row click handlers for all tables
      */
     setupRowClickHandlers() {
-        // Setup row click for waiting vehicles table
-        this.setupTableRowClick('waiting-vehicles', 'waiting-checkbox');
+        // Setup row click for ready vehicles table
+        this.setupTableRowClick('ready-vehicles', 'ready-checkbox');
         
         // Setup row click for timer vehicles table
         this.setupTableRowClick('timer-vehicles', 'vehicle-checkbox');
@@ -279,8 +279,8 @@ class ActiveVehicles extends VehicleBase {
                     // Reload page after success
                     setTimeout(() => window.location.reload(), 1500);
                     
-                    // Hide vehicle from waiting table
-                    this.hideVehicleFromWaitingTable(vehicleId);
+                    // Hide vehicle from ready table
+                    this.hideVehicleFromReadyTable(vehicleId);
                     
                     // Reload page after delay
                     setTimeout(() => window.location.reload(), 1000);
@@ -380,7 +380,7 @@ class ActiveVehicles extends VehicleBase {
                 this.updateTimerVehiclesTable(selectedVehicles, duration, response.vehicles);
                 
                 // Ẩn xe khỏi bảng "Xe đang chờ"
-                this.hideSelectedVehiclesFromWaitingTable(selectedVehicles);
+                this.hideSelectedVehiclesFromReadyTable(selectedVehicles);
             }
         } catch (error) {
             console.error('Error in assignTimerBulk:', error);
@@ -409,7 +409,7 @@ class ActiveVehicles extends VehicleBase {
 
         // Get vehicle names for display
         const selectedVehicleNames = selectedVehicles.map(vehicleId => {
-            const checkbox = document.querySelector(`.waiting-checkbox[value="${vehicleId}"]`);
+            const checkbox = document.querySelector(`.ready-checkbox[value="${vehicleId}"]`);
             if (checkbox) {
                 const row = checkbox.closest('tr');
                 const vehicleNameElement = row.querySelector('td:nth-child(2) .vehicle-number-with-color div');
@@ -432,8 +432,8 @@ class ActiveVehicles extends VehicleBase {
                 const vehicleNamesText = selectedVehicleNames.join(', ');
                 this.showSuccess(`Xe số ${vehicleNamesText} đã được chạy theo cung đường ${routeNumber}`);
                 
-                // Hide selected vehicles from waiting table
-                this.hideSelectedVehiclesFromWaitingTable(selectedVehicles);
+                // Hide selected vehicles from ready table
+                this.hideSelectedVehiclesFromReadyTable(selectedVehicles);
                 
                 // Reload page after success
                 setTimeout(() => window.location.reload(), 1500);
@@ -530,8 +530,8 @@ class ActiveVehicles extends VehicleBase {
         this.showSuccess(`Xe số ${vehicleNamesText} đã được chuyển về bãi`);
         
         // Update UI immediately (optimistic update)
-        console.log('About to add vehicles to waiting table...');
-        this.addVehiclesToWaitingTableFromTimer(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
+        console.log('About to add vehicles to ready table...');
+        this.addVehiclesToReadyTableFromTimer(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
         
         // Reload page after success
         setTimeout(() => window.location.reload(), 1500);
@@ -577,26 +577,26 @@ class ActiveVehicles extends VehicleBase {
     }
 
     /**
-     * Add vehicles to waiting table from timer table with details
+     * Add vehicles to ready table from timer table with details
      */
-    addVehiclesToWaitingTableFromTimer(vehicleIds, vehicleNames, vehicleDetails) {
-        console.log('=== addVehiclesToWaitingTableFromTimer called ===');
+    addVehiclesToReadyTableFromTimer(vehicleIds, vehicleNames, vehicleDetails) {
+        console.log('=== addVehiclesToReadyTableFromTimer called ===');
         console.log('Vehicle IDs:', vehicleIds);
         console.log('Vehicle names:', vehicleNames);
         console.log('Vehicle details:', vehicleDetails);
         
-        const waitingTableBody = document.getElementById('waiting-vehicles');
-        console.log('Waiting table body found:', !!waitingTableBody);
-        if (!waitingTableBody) {
-            console.error('waiting-vehicles table body not found!');
+        const readyTableBody = document.getElementById('ready-vehicles');
+        console.log('Ready table body found:', !!readyTableBody);
+        if (!readyTableBody) {
+            console.error('ready-vehicles table body not found!');
             return;
         }
 
         // Check if table is showing empty state and clear it
-        const emptyStateRow = waitingTableBody.querySelector('tr td[colspan]');
+        const emptyStateRow = readyTableBody.querySelector('tr td[colspan]');
         if (emptyStateRow) {
             console.log('Found empty state row, clearing it...');
-            waitingTableBody.innerHTML = '';
+            readyTableBody.innerHTML = '';
         }
 
         vehicleIds.forEach((vehicleId, index) => {
@@ -608,7 +608,7 @@ class ActiveVehicles extends VehicleBase {
             
             console.log(`Vehicle ${vehicleId} details:`, { vehicleName, vehicleColor, vehicleNotes });
             
-            // Create new row for waiting table
+            // Create new row for ready table
             const newRow = document.createElement('tr');
             newRow.className = 'hover:bg-gray-50 clickable-row';
             newRow.dataset.vehicleId = vehicleId;
@@ -616,7 +616,7 @@ class ActiveVehicles extends VehicleBase {
             
             newRow.innerHTML = `
                 <td class="px-3 py-2">
-                    <input type="checkbox" value="${vehicleId}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                    <input type="checkbox" value="${vehicleId}" class="ready-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                 </td>
                 <td class="px-3 py-2">
                     <div class="vehicle-number-with-color flex items-center">
@@ -650,9 +650,9 @@ class ActiveVehicles extends VehicleBase {
             // Add animation fade in
             newRow.style.opacity = '0';
             newRow.style.transform = 'scale(0.95)';
-            waitingTableBody.appendChild(newRow);
-            console.log(`Appended vehicle ${vehicleId} to waiting table`);
-            console.log('Waiting table body after append:', waitingTableBody.innerHTML);
+            readyTableBody.appendChild(newRow);
+            console.log(`Appended vehicle ${vehicleId} to ready table`);
+            console.log('Ready table body after append:', readyTableBody.innerHTML);
             
             // Trigger animation
             setTimeout(() => {
@@ -663,7 +663,7 @@ class ActiveVehicles extends VehicleBase {
             }, 100);
         });
         
-        console.log('=== Finished adding vehicles to waiting table ===');
+        console.log('=== Finished adding vehicles to ready table ===');
     }
 
     /**
@@ -703,8 +703,8 @@ class ActiveVehicles extends VehicleBase {
         this.showSuccess(`Xe số ${vehicleNamesText} đã được chuyển về bãi`);
         
         // Update UI immediately (optimistic update)
-        console.log('About to add vehicles to waiting table...');
-        this.addVehiclesToWaitingTableFromRouting(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
+        console.log('About to add vehicles to ready table...');
+        this.addVehiclesToReadyTableFromRouting(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
         
         // Reload page after success
         setTimeout(() => window.location.reload(), 1500);
@@ -772,36 +772,36 @@ class ActiveVehicles extends VehicleBase {
     }
 
     /**
-     * Add vehicles to waiting table from routing table with details
+     * Add vehicles to ready table from routing table with details
      */
-    addVehiclesToWaitingTableFromRouting(vehicleIds, vehicleNames, vehicleDetails) {
-        console.log('=== addVehiclesToWaitingTableFromRouting called ===');
+    addVehiclesToReadyTableFromRouting(vehicleIds, vehicleNames, vehicleDetails) {
+        console.log('=== addVehiclesToReadyTableFromRouting called ===');
         console.log('Vehicle IDs:', vehicleIds);
         console.log('Vehicle names:', vehicleNames);
         console.log('Vehicle details:', vehicleDetails);
         
         // Debug: Check if we can find the table
-        console.log('Looking for waiting-vehicles table...');
+        console.log('Looking for ready-vehicles table...');
         const allTables = document.querySelectorAll('table');
         console.log('All tables found:', allTables.length);
         allTables.forEach((table, index) => {
             console.log(`Table ${index}:`, table.id, table.className);
         });
         
-        const waitingTableBody = document.getElementById('waiting-vehicles');
-        console.log('Waiting table body found:', !!waitingTableBody);
-        console.log('Waiting table body element:', waitingTableBody);
-        console.log('Waiting table body content:', waitingTableBody ? waitingTableBody.innerHTML : 'null');
-        if (!waitingTableBody) {
-            console.error('waiting-vehicles table body not found!');
+        const readyTableBody = document.getElementById('ready-vehicles');
+        console.log('Ready table body found:', !!readyTableBody);
+        console.log('Ready table body element:', readyTableBody);
+        console.log('Ready table body content:', readyTableBody ? readyTableBody.innerHTML : 'null');
+        if (!readyTableBody) {
+            console.error('ready-vehicles table body not found!');
             return;
         }
 
         // Check if table is showing empty state and clear it
-        const emptyStateRow = waitingTableBody.querySelector('tr td[colspan]');
+        const emptyStateRow = readyTableBody.querySelector('tr td[colspan]');
         if (emptyStateRow) {
             console.log('Found empty state row, clearing it...');
-            waitingTableBody.innerHTML = '';
+            readyTableBody.innerHTML = '';
         }
 
         vehicleIds.forEach((vehicleId, index) => {
@@ -813,7 +813,7 @@ class ActiveVehicles extends VehicleBase {
             
             console.log(`Vehicle ${vehicleId} details:`, { vehicleName, vehicleColor, vehicleNotes });
             
-            // Create new row for waiting table
+            // Create new row for ready table
             const newRow = document.createElement('tr');
             newRow.className = 'hover:bg-gray-50 clickable-row';
             newRow.dataset.vehicleId = vehicleId;
@@ -821,7 +821,7 @@ class ActiveVehicles extends VehicleBase {
             
             newRow.innerHTML = `
                 <td class="px-3 py-2">
-                    <input type="checkbox" value="${vehicleId}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                    <input type="checkbox" value="${vehicleId}" class="ready-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                 </td>
                 <td class="px-3 py-2">
                     <div class="vehicle-number-with-color flex items-center">
@@ -855,9 +855,9 @@ class ActiveVehicles extends VehicleBase {
             // Add animation fade in
             newRow.style.opacity = '0';
             newRow.style.transform = 'scale(0.95)';
-            waitingTableBody.appendChild(newRow);
-            console.log(`Appended vehicle ${vehicleId} to waiting table`);
-            console.log('Waiting table body after append:', waitingTableBody.innerHTML);
+            readyTableBody.appendChild(newRow);
+            console.log(`Appended vehicle ${vehicleId} to ready table`);
+            console.log('Ready table body after append:', readyTableBody.innerHTML);
             
             // Trigger animation
             setTimeout(() => {
@@ -868,17 +868,17 @@ class ActiveVehicles extends VehicleBase {
             }, 100);
         });
         
-        console.log('=== Finished adding vehicles to waiting table ===');
+        console.log('=== Finished adding vehicles to ready table ===');
     }
 
     /**
-     * Hide single vehicle from waiting table
+     * Hide single vehicle from ready table
      */
-    hideVehicleFromWaitingTable(vehicleId) {
-        const waitingTableBody = document.getElementById('waiting-vehicles');
-        if (!waitingTableBody) return;
+    hideVehicleFromReadyTable(vehicleId) {
+        const readyTableBody = document.getElementById('ready-vehicles');
+        if (!readyTableBody) return;
 
-        const checkbox = waitingTableBody.querySelector(`.waiting-checkbox[value="${vehicleId}"]`);
+        const checkbox = readyTableBody.querySelector(`.ready-checkbox[value="${vehicleId}"]`);
         if (checkbox) {
             const row = checkbox.closest('tr');
             if (row) {
@@ -892,10 +892,10 @@ class ActiveVehicles extends VehicleBase {
                     if (row.parentElement) {
                         row.remove();
                         
-                        // Check if no more vehicles in waiting table
-                        const remainingRows = waitingTableBody.querySelectorAll('tr');
+                        // Check if no more vehicles in ready table
+                        const remainingRows = readyTableBody.querySelectorAll('tr');
                         if (remainingRows.length === 0) {
-                            this.showEmptyWaitingState();
+                            this.showEmptyReadyState();
                         }
                     }
                 }, 300);
@@ -988,12 +988,12 @@ class ActiveVehicles extends VehicleBase {
             console.log(`Processing vehicle ${index + 1}/${vehicleIds.length}: ID=${vehicleId}`);
             const vehicleName = vehicleNames[index];
             
-            // Get vehicle details from waiting table before hiding
-            const waitingTableBody = document.getElementById('waiting-vehicles');
+            // Get vehicle details from ready table before hiding
+            const readyTableBody = document.getElementById('ready-vehicles');
             let vehicleColor = '#3b82f6';
             
-            if (waitingTableBody) {
-                const checkbox = waitingTableBody.querySelector(`.waiting-checkbox[value="${vehicleId}"]`);
+            if (readyTableBody) {
+                const checkbox = readyTableBody.querySelector(`.ready-checkbox[value="${vehicleId}"]`);
                 if (checkbox) {
                     const row = checkbox.closest('tr');
                     if (row) {
@@ -1061,11 +1061,11 @@ class ActiveVehicles extends VehicleBase {
     }
 
     /**
-     * Add vehicles back to waiting table
+     * Add vehicles back to ready table
      */
-    addVehiclesToWaitingTable(vehicleIds, vehicleNames) {
-        const waitingTableBody = document.getElementById('waiting-vehicles');
-        if (!waitingTableBody) return;
+    addVehiclesToReadyTable(vehicleIds, vehicleNames) {
+        const readyTableBody = document.getElementById('ready-vehicles');
+        if (!readyTableBody) return;
 
         vehicleIds.forEach((vehicleId, index) => {
             const vehicleName = vehicleNames[index];
@@ -1108,14 +1108,14 @@ class ActiveVehicles extends VehicleBase {
                 }
             }
             
-            // Create new row for waiting table
+            // Create new row for ready table
             const newRow = document.createElement('tr');
             newRow.className = 'hover:bg-gray-50 clickable-row';
             newRow.dataset.vehicleId = vehicleId;
             
             newRow.innerHTML = `
                 <td class="px-3 py-2">
-                    <input type="checkbox" value="${vehicleId}" class="waiting-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
+                    <input type="checkbox" value="${vehicleId}" class="ready-checkbox rounded border-gray-300 text-brand-600 focus:ring-brand-500">
                 </td>
                 <td class="px-3 py-2">
                     <div class="vehicle-number-with-color flex items-center">
@@ -1147,7 +1147,7 @@ class ActiveVehicles extends VehicleBase {
             // Add animation fade in
             newRow.style.opacity = '0';
             newRow.style.transform = 'scale(0.95)';
-            waitingTableBody.appendChild(newRow);
+            readyTableBody.appendChild(newRow);
             
             // Trigger animation
             setTimeout(() => {
@@ -1433,14 +1433,14 @@ class ActiveVehicles extends VehicleBase {
     }
 
     /**
-     * Hide selected vehicles from waiting table after successful timer assignment
+     * Hide selected vehicles from ready table after successful timer assignment
      */
-    hideSelectedVehiclesFromWaitingTable(vehicleIds) {
+    hideSelectedVehiclesFromReadyTable(vehicleIds) {
         vehicleIds.forEach(vehicleId => {
-            // Tìm row trong bảng "Xe đang chờ" bằng checkbox value với class waiting-checkbox
-            const waitingTableBody = document.getElementById('waiting-vehicles');
-            if (waitingTableBody) {
-                const checkbox = waitingTableBody.querySelector(`.waiting-checkbox[value="${vehicleId}"]`);
+            // Tìm row trong bảng "Xe đang chờ" bằng checkbox value với class ready-checkbox
+            const readyTableBody = document.getElementById('ready-vehicles');
+            if (readyTableBody) {
+                const checkbox = readyTableBody.querySelector(`.ready-checkbox[value="${vehicleId}"]`);
                 if (checkbox) {
                     const row = checkbox.closest('tr');
                     if (row) {
@@ -1455,9 +1455,9 @@ class ActiveVehicles extends VehicleBase {
                                 row.remove();
                                 
                                 // Kiểm tra nếu không còn xe nào trong bảng chờ
-                                const remainingRows = waitingTableBody.querySelectorAll('tr');
+                                const remainingRows = readyTableBody.querySelectorAll('tr');
                                 if (remainingRows.length === 0) {
-                                    this.showEmptyWaitingState();
+                                    this.showEmptyReadyState();
                                 }
                             }
                         }, 300);
@@ -1468,12 +1468,12 @@ class ActiveVehicles extends VehicleBase {
     }
 
     /**
-     * Show empty state for waiting vehicles table
+     * Show empty state for ready vehicles table
      */
-    showEmptyWaitingState() {
-        const waitingTableBody = document.getElementById('waiting-vehicles');
-        if (waitingTableBody) {
-            waitingTableBody.innerHTML = `
+    showEmptyReadyState() {
+        const readyTableBody = document.getElementById('ready-vehicles');
+        if (readyTableBody) {
+            readyTableBody.innerHTML = `
                 <tr>
                     <td colspan="4" class="px-3 py-8 text-center text-gray-500">
                         Không có xe nào đang chờ

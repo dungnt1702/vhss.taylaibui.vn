@@ -395,14 +395,14 @@ class RepairingVehicles extends VehicleBase {
         const inProgressCount = document.querySelectorAll('.vehicle-card.repair-in-progress').length;
         const pausedCount = document.querySelectorAll('.vehicle-card.repair-paused').length;
         const completedCount = document.querySelectorAll('.vehicle-card.repair-completed').length;
-        const waitingPartsCount = document.querySelectorAll('.vehicle-card.waiting-parts').length;
+        const readyPartsCount = document.querySelectorAll('.vehicle-card.ready-parts').length;
         
         return {
             repair: repairCount,
             inProgress: inProgressCount,
             paused: pausedCount,
             completed: completedCount,
-            waitingParts: waitingPartsCount,
+            readyParts: readyPartsCount,
             total: repairCount
         };
     }
@@ -422,7 +422,7 @@ class RepairingVehicles extends VehicleBase {
                     <span class="font-semibold text-green-600">${stats.inProgress}</span> đang tiến hành | 
                     <span class="font-semibold text-yellow-600">${stats.paused}</span> tạm dừng | 
                     <span class="font-semibold text-gray-600">${stats.completed}</span> hoàn thành | 
-                    <span class="font-semibold text-orange-600">${stats.waitingParts}</span> chờ phụ tùng
+                    <span class="font-semibold text-orange-600">${stats.readyParts}</span> sẵn sàng phụ tùng
                 </div>
             `;
         }

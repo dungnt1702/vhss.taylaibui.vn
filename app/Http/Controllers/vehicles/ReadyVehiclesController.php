@@ -12,7 +12,7 @@ class ReadyVehiclesController extends VehicleBaseController
      */
     public function index()
     {
-        $vehicles = Vehicle::waiting()->latest()->get();
+        $vehicles = Vehicle::ready()->latest()->get();
         return view('vehicles.ready_vehicles', compact('vehicles'));
     }
 
@@ -21,7 +21,7 @@ class ReadyVehiclesController extends VehicleBaseController
      */
     public function getReadyVehicles()
     {
-        $vehicles = Vehicle::waiting()->latest()->get();
+        $vehicles = Vehicle::ready()->latest()->get();
         return response()->json(['success' => true, 'vehicles' => $vehicles]);
     }
 }

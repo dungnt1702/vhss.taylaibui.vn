@@ -45,7 +45,7 @@ class ReadyVehicles extends VehicleBase {
     }
 
     /**
-     * Override handleCustomAction for waiting-specific actions
+     * Override handleCustomAction for ready-specific actions
      */
     handleCustomAction(action, vehicleId, button) {
         switch (action) {
@@ -245,14 +245,14 @@ class ReadyVehicles extends VehicleBase {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Waiting Vehicles page loaded');
+    console.log('Ready Vehicles page loaded');
     
     // Create and initialize ReadyVehicles instance
-    const waitingVehicles = new ReadyVehicles();
-    waitingVehicles.init();
+    const readyVehicles = new ReadyVehicles();
+    readyVehicles.init();
     
     // Make it available globally for debugging
-    window.waitingVehicles = waitingVehicles;
+    window.readyVehicles = readyVehicles;
 });
 
 // Export for ES6 modules

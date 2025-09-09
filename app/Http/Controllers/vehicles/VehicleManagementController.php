@@ -22,10 +22,9 @@ class VehicleManagementController extends Controller
         $vehicles = match($filter) {
             'vehicles_list' => Vehicle::latest()->paginate($perPage)->appends($request->query()),
             'active' => Vehicle::active()->latest()->paginate($perPage)->appends($request->query()),
-            'ready' => Vehicle::waiting()->latest()->paginate($perPage)->appends($request->query()),
+            'ready' => Vehicle::ready()->latest()->paginate($perPage)->appends($request->query()),
             'workshop' => Vehicle::inactive()->latest()->paginate($perPage)->appends($request->query()),
             'running' => Vehicle::running()->latest()->paginate($perPage)->appends($request->query()),
-            'waiting' => Vehicle::waiting()->latest()->paginate($perPage)->appends($request->query()),
             'expired' => Vehicle::expired()->paginate($perPage)->appends($request->query()),
             'paused' => Vehicle::paused()->latest()->paginate($perPage)->appends($request->query()),
             'route' => Vehicle::route()->latest()->paginate($perPage)->appends($request->query()),
@@ -41,7 +40,6 @@ class VehicleManagementController extends Controller
             'ready' => 'Xe sẵn sàng',
             'workshop' => 'Xe trong xưởng',
             'running' => 'Xe đang chạy',
-            'waiting' => 'Xe đang chờ',
             'expired' => 'Xe hết giờ',
             'paused' => 'Xe tạm dừng',
             'repairing' => 'Xe đang sửa chữa',
@@ -73,7 +71,7 @@ class VehicleManagementController extends Controller
         
         // Get ready vehicles for ready_vehicles.blade.php when filter = 'ready'
         if ($filter === 'ready') {
-            $activeVehicles = Vehicle::waiting()->latest()->get();
+            $activeVehicles = Vehicle::ready()->latest()->get();
             $runningVehicles = Vehicle::running()->latest()->get();
         }
 
@@ -291,7 +289,7 @@ class VehicleManagementController extends Controller
     public function updateStatus(Request $request, Vehicle $vehicle)
     {
         $validator = Validator::make($request->all(), [
-            'status' => 'required|string|in:active,inactive,running,waiting,expired,paused,route,group',
+            'status' => 'required|string|in:active,inactive,running,ready,expired,paused,route,group',
             'notes' => 'nullable|string|max:500',
             'end_time' => 'nullable|integer',
         ]);

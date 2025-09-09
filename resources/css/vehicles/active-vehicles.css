@@ -179,10 +179,6 @@
     border-left-color: #10b981;
 }
 
-.vehicle-card.waiting {
-    border-left-color: #f59e0b;
-}
-
 .vehicle-card.running {
     border-left-color: #3b82f6;
 }
@@ -234,10 +230,6 @@
 
 .status-ready {
     @apply bg-green-100 text-green-800;
-}
-
-.status-waiting {
-    @apply bg-yellow-100 text-yellow-800;
 }
 
 .status-running {

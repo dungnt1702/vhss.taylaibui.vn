@@ -42,7 +42,7 @@
             </div>
         </div>
 
-                    <!-- Action Buttons for waiting vehicles -->
+                    <!-- Action Buttons for ready vehicles -->
                     <div class="flex flex-wrap gap-2 justify-center">
                         <button data-action="assign-timer" data-vehicle-id="{{ $vehicle->id }}" data-duration="30" class="btn btn-success btn-sm">
                             🚗 30p

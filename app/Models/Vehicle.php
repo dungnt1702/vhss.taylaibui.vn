@@ -43,7 +43,7 @@ class Vehicle extends Model
     const STATUS_READY = 'ready';        // Xe sẵn sàng chạy (thay thế cho Xe ngoài bãi)
     const STATUS_WORKSHOP = 'workshop';  // Xe trong xưởng
     const STATUS_RUNNING = 'running';    // Xe đang chạy
-    const STATUS_WAITING = 'waiting';    // Xe đang chờ
+    const STATUS_WAITING = 'ready';      // Xe sẵn sàng (alias for ready)
     const STATUS_EXPIRED = 'expired';    // Xe hết giờ
     const STATUS_PAUSED = 'paused';     // Xe tạm dừng
     const STATUS_ROUTING = 'routing';    // Xe đang theo đường
@@ -147,8 +147,14 @@ class Vehicle extends Model
         return $query->where('status', '!=', self::STATUS_WORKSHOP);
     }
 
-    // Scope for waiting vehicles (xe sẵn sàng chạy - ready status)
+    // Scope for waiting vehicles (xe sẵn sàng chạy - ready status) - DEPRECATED: use scopeReady()
     public function scopeWaiting($query)
+    {
+        return $query->where('status', self::STATUS_READY);
+    }
+
+    // Scope for ready vehicles (alias for waiting - xe sẵn sàng chạy)
+    public function scopeReady($query)
     {
         return $query->where('status', self::STATUS_READY);
     }

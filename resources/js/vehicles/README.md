@@ -11,7 +11,6 @@ This directory contains the refactored JavaScript code for the VHSS vehicle mana
 
 ### Vehicle Status Classes
 - **`ReadyVehicles.js`** - Manages ready vehicles (extends VehicleBase)
-- **`WaitingVehicles.js`** - Manages waiting vehicles (extends VehicleBase)
 - **`RunningVehicles.js`** - Manages running vehicles (extends VehicleBase)
 - **`PausedVehicles.js`** - Manages paused vehicles (extends VehicleBase)
 - **`ExpiredVehicles.js`** - Manages expired vehicles (extends VehicleBase)
@@ -78,7 +77,6 @@ readyVehicles.init();
 
 ### Status-Specific Classes
 - **ReadyVehicles**: Duration selection, route assignment, workshop transfer
-- **WaitingVehicles**: Timer start, route assignment, workshop transfer
 - **RunningVehicles**: Timer pause/resume, return to yard
 - **PausedVehicles**: Timer resume, return to yard
 - **ExpiredVehicles**: Timer extension, return to yard
@@ -106,7 +104,6 @@ readyVehicles.init();
 
 ### What Was Removed
 - `ready-vehicles.js` (old)
-- `waiting-vehicles.js` (old)
 - `running-vehicles.js` (old)
 - `paused-vehicles.js` (old)
 - `expired-vehicles.js` (old)
@@ -162,10 +159,9 @@ VehicleBase (Base Class)
 ┌─────────────────────────────────────────────────────────┐
 │                    Child Classes                        │
 ├─────────────────────────────────────────────────────────┤
-│ ReadyVehicles    │ RunningVehicles  │ ReadyVehicles    │
-│ WaitingVehicles  │ PausedVehicles   │ ExpiredVehicles  │
-│ WorkshopVehicles │ AttributesList   │ MaintainingVehicles │
-│ RepairingVehicles│                  │                  │
+│ ReadyVehicles    │ RunningVehicles  │ PausedVehicles   │
+│ ExpiredVehicles  │ WorkshopVehicles │ AttributesList   │
+│ RepairingVehicles│ MaintainingVehicles │                │
 ├─────────────────────────────────────────────────────────┤
 │ Vehicles        │ VehicleForms      │ VehicleOperations │
 │ VehicleWrappers │ VehiclesList      │                  │

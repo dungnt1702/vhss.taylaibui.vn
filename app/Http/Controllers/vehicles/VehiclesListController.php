@@ -23,7 +23,6 @@ class VehiclesListController extends Controller
             'ready' => Vehicle::active()->latest()->paginate($perPage),
             'workshop' => Vehicle::inactive()->latest()->paginate($perPage),
             'running' => Vehicle::running()->latest()->paginate($perPage),
-            'waiting' => Vehicle::waiting()->latest()->paginate($perPage),
             'expired' => Vehicle::expired()->latest()->paginate($perPage),
             'paused' => Vehicle::paused()->latest()->paginate($perPage),
             'route' => Vehicle::route()->latest()->paginate($perPage),
@@ -35,7 +34,6 @@ class VehiclesListController extends Controller
             'ready' => 'Xe sẵn sàng chạy',
             'workshop' => 'Xe trong xưởng',
             'running' => 'Xe đang chạy',
-            'waiting' => 'Xe đang chờ',
             'expired' => 'Xe hết giờ',
             'paused' => 'Xe tạm dừng',
             default => 'Danh sách xe'
