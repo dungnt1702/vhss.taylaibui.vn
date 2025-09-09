@@ -507,11 +507,8 @@ class WorkshopVehicles extends VehicleBase {
             form.addEventListener('submit', (event) => this.handleTechnicalUpdateSubmit(event));
         }
 
-        // Setup issue type change handler
-        const issueTypeSelect = document.getElementById('technical-issue-type');
-        if (issueTypeSelect) {
-            issueTypeSelect.addEventListener('change', (event) => this.updateCategoryOptions(event.target.value));
-        }
+        // Initialize with repair categories (no need for issue type change handler)
+        this.updateCategoryOptions('repair');
     }
 
     /**
@@ -532,8 +529,11 @@ class WorkshopVehicles extends VehicleBase {
             document.getElementById('technical-update-form').reset();
             vehicleIdInput.value = vehicleId;
             
-            // Focus on issue type select
-            document.getElementById('technical-issue-type').focus();
+            // Update category options
+            this.updateCategoryOptions('repair');
+            
+            // Focus on category select
+            document.getElementById('technical-category').focus();
         }
     }
 
@@ -552,13 +552,22 @@ class WorkshopVehicles extends VehicleBase {
      * Update category options based on issue type
      */
     updateCategoryOptions(issueType) {
+        console.log('updateCategoryOptions called with issueType:', issueType);
         const categorySelect = document.getElementById('technical-category');
-        if (!categorySelect) return;
+        console.log('categorySelect element:', categorySelect);
+        
+        if (!categorySelect) {
+            console.error('Category select element not found!');
+            return;
+        }
 
         // Clear existing options
         categorySelect.innerHTML = '<option value="">-- Chọn hạng mục --</option>';
 
-        if (!issueType) return;
+        if (!issueType) {
+            console.log('No issue type provided');
+            return;
+        }
 
         // Define categories based on issue type
         const categories = {
@@ -596,12 +605,16 @@ class WorkshopVehicles extends VehicleBase {
         const selectedCategories = categories[issueType] || {};
         
         // Add options
+        console.log('Adding categories:', selectedCategories);
         Object.entries(selectedCategories).forEach(([value, label]) => {
             const option = document.createElement('option');
             option.value = value;
             option.textContent = label;
             categorySelect.appendChild(option);
         });
+        
+        console.log('Final categorySelect options count:', categorySelect.options.length);
+        console.log('Category select innerHTML:', categorySelect.innerHTML);
     }
 
     /**

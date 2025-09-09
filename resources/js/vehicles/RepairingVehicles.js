@@ -17,6 +17,15 @@ class RepairingVehicles extends VehicleBase {
         super.init();
         this.setupRepairSpecificFeatures();
         console.log('Repairing Vehicles page fully initialized');
+        
+        // Test if button exists
+        setTimeout(() => {
+            const btn = document.getElementById('add-repair-btn');
+            console.log('Button check after timeout:', btn);
+            if (btn) {
+                console.log('Button is clickable:', btn.offsetParent !== null);
+            }
+        }, 1000);
     }
 
     /**
@@ -27,6 +36,9 @@ class RepairingVehicles extends VehicleBase {
         this.setupUpdateRepairStatus();
         this.setupRepairActions();
         this.setupRepairTracking();
+        this.setupAddRepairButton();
+        this.setupModalFunctions();
+        this.setupFormHandlers();
     }
 
     /**
@@ -83,6 +95,345 @@ class RepairingVehicles extends VehicleBase {
         this.vehicleCards.forEach(card => {
             this.setupRepairProgress(card);
         });
+    }
+
+
+    /**
+     * Setup add repair button
+     */
+    setupAddRepairButton() {
+        // Use event delegation to handle button clicks
+        document.addEventListener('click', (e) => {
+            if (e.target && e.target.id === 'add-repair-btn') {
+                console.log('Add repair button clicked via delegation');
+                this.openAddRepairModal();
+            }
+        });
+    }
+
+    /**
+     * Open add repair modal
+     */
+    openAddRepairModal() {
+        console.log('Opening add repair modal');
+        const modal = document.getElementById('add-repair-modal');
+        console.log('Modal found:', modal);
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Reset form
+            const form = document.getElementById('add-repair-form');
+            if (form) {
+                form.reset();
+            }
+            
+            // Focus on first input
+            const firstInput = document.getElementById('add-repair-vehicle-id') || document.getElementById('add-repair-category');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        } else {
+            console.error('Add repair modal not found');
+        }
+    }
+
+    /**
+     * Close add repair modal
+     */
+    closeAddRepairModal() {
+        const modal = document.getElementById('add-repair-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
+
+    /**
+     * Setup modal functions
+     */
+    setupModalFunctions() {
+        // Expose modal functions globally
+        window.openDescriptionModal = (description, notes) => this.openDescriptionModal(description, notes);
+        window.closeDescriptionModal = () => this.closeDescriptionModal();
+        window.openEditModal = (issueId, description, notes, category) => this.openEditModal(issueId, description, notes, category);
+        window.closeEditModal = () => this.closeEditModal();
+        window.openProcessModal = (issueId) => this.openProcessModal(issueId);
+        window.closeProcessModal = () => this.closeProcessModal();
+        window.openAddRepairModal = () => this.openAddRepairModal();
+        window.closeAddRepairModal = () => this.closeAddRepairModal();
+    }
+
+    /**
+     * Setup form handlers
+     */
+    setupFormHandlers() {
+        // Add repair form handler
+        const addRepairForm = document.getElementById('add-repair-form');
+        if (addRepairForm) {
+            addRepairForm.addEventListener('submit', (e) => this.handleAddRepairSubmit(e));
+        }
+
+        // Process form handler
+        const processForm = document.getElementById('process-issue-form');
+        if (processForm) {
+            processForm.addEventListener('submit', (e) => this.handleProcessSubmit(e));
+        }
+
+        // Edit form handler
+        const editForm = document.getElementById('edit-issue-form');
+        if (editForm) {
+            editForm.addEventListener('submit', (e) => this.handleEditSubmit(e));
+        }
+    }
+
+    /**
+     * Open description modal
+     */
+    openDescriptionModal(description, notes) {
+        const modal = document.getElementById('description-detail-modal');
+        const descriptionContent = document.getElementById('description-content');
+        const notesContent = document.getElementById('notes-content');
+        const notesSection = document.getElementById('notes-section');
+        
+        if (modal && descriptionContent) {
+            descriptionContent.textContent = description || 'Không có mô tả';
+            
+            if (notes && notes.trim()) {
+                notesContent.textContent = notes;
+                notesSection.classList.remove('hidden');
+            } else {
+                notesSection.classList.add('hidden');
+            }
+            
+            modal.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Close description modal
+     */
+    closeDescriptionModal() {
+        const modal = document.getElementById('description-detail-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Open edit modal
+     */
+    openEditModal(issueId, description, notes, category) {
+        const modal = document.getElementById('edit-issue-modal');
+        const issueIdInput = document.getElementById('edit-issue-id');
+        const descriptionInput = document.getElementById('edit-description');
+        const notesInput = document.getElementById('edit-notes');
+        const categorySelect = document.getElementById('edit-category');
+        
+        if (modal && issueIdInput) {
+            issueIdInput.value = issueId;
+            descriptionInput.value = description;
+            notesInput.value = notes;
+            categorySelect.value = category;
+            modal.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Close edit modal
+     */
+    closeEditModal() {
+        const modal = document.getElementById('edit-issue-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.getElementById('edit-issue-form').reset();
+        }
+    }
+
+    /**
+     * Open process modal
+     */
+    openProcessModal(issueId) {
+        const modal = document.getElementById('process-issue-modal');
+        const issueIdInput = document.getElementById('process-issue-id');
+        
+        if (modal && issueIdInput) {
+            issueIdInput.value = issueId;
+            modal.classList.remove('hidden');
+            this.loadIssueData(issueId);
+        }
+    }
+
+    /**
+     * Close process modal
+     */
+    closeProcessModal() {
+        const modal = document.getElementById('process-issue-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.getElementById('process-issue-form').reset();
+        }
+    }
+
+    /**
+     * Load issue data
+     */
+    async loadIssueData(issueId) {
+        try {
+            const response = await fetch(`/api/technical-issues/${issueId}`);
+            const issue = await response.json();
+            
+            if (issue.success) {
+                const data = issue.data;
+                document.getElementById('process-status').value = data.status;
+                document.getElementById('process-assignee').value = data.assignee_id || '';
+                document.getElementById('process-result').value = data.result || '';
+            }
+        } catch (error) {
+            console.error('Error loading issue data:', error);
+        }
+    }
+
+    /**
+     * Handle add repair form submission
+     */
+    async handleAddRepairSubmit(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const submitBtn = document.getElementById('add-repair-submit-btn');
+        const originalText = submitBtn.textContent;
+        
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Đang thêm...';
+        
+        try {
+            const formData = new FormData(form);
+            const response = await fetch('/api/vehicles/technical-update', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    vehicle_id: formData.get('vehicle_id'),
+                    issue_type: formData.get('issue_type'),
+                    category: formData.get('category'),
+                    description: formData.get('description'),
+                    notes: formData.get('notes')
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Thêm báo cáo sửa chữa thành công!');
+                this.closeAddRepairModal();
+                window.location.reload();
+            } else {
+                alert('Lỗi: ' + (result.message || 'Có lỗi xảy ra'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Lỗi: ' + error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    }
+
+    /**
+     * Handle process form submission
+     */
+    async handleProcessSubmit(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const formData = new FormData(form);
+        const issueId = formData.get('issue_id');
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Đang xử lý...';
+        
+        try {
+            const response = await fetch(`/api/technical-issues/${issueId}/process`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    assigned_to: formData.get('assigned_to'),
+                    status: formData.get('status'),
+                    result: formData.get('result')
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('Cập nhật thành công!');
+                this.closeProcessModal();
+                window.location.reload();
+            } else {
+                alert('Có lỗi xảy ra: ' + (data.message || 'Không thể cập nhật'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi cập nhật');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    }
+
+    /**
+     * Handle edit form submission
+     */
+    async handleEditSubmit(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const formData = new FormData(form);
+        const issueId = formData.get('issue_id');
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Đang cập nhật...';
+        
+        try {
+            const response = await fetch(`/api/technical-issues/${issueId}/edit`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    description: formData.get('description'),
+                    notes: formData.get('notes'),
+                    category: formData.get('category')
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                alert('Cập nhật thành công!');
+                this.closeEditModal();
+                window.location.reload();
+            } else {
+                alert('Có lỗi xảy ra: ' + (data.message || 'Không thể cập nhật'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi cập nhật');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
     }
 
     /**
@@ -439,7 +790,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Make it available globally for debugging
     window.repairingVehicles = repairingVehicles;
+    
+    
 });
 
 // Export for ES6 modules
 export default RepairingVehicles;
+
+

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\vehicles;
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use App\Models\VehicleAttribute;
+use App\Models\VehicleTechnicalIssue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\vehicles\VehicleOperationsController;
@@ -66,15 +67,40 @@ class VehicleManagementController extends Controller
             default => Vehicle::latest()->paginate($perPage, ['*'], 'page', $page)->withPath(route('vehicles.index'))->appends($request->query())
         };
 
+        // Add repair count for workshop vehicles
+        if ($filter === 'workshop') {
+            $vehicles->getCollection()->each(function ($vehicle) {
+                $vehicle->repair_count = VehicleTechnicalIssue::where('vehicle_id', $vehicle->id)
+                    ->where('issue_type', 'repair')
+                    ->whereIn('status', ['pending', 'in_progress'])
+                    ->count();
+            });
+        }
+
         // Get technical issues for repairing and maintaining views
         $repairIssues = null;
         $maintenanceIssues = null;
         
             if ($filter === 'repairing') {
-                $repairIssues = \App\Models\VehicleTechnicalIssue::where('issue_type', 'repair')
-                    ->with(['vehicle', 'reporter', 'assignee'])
-                    ->latest('reported_at')
-                    ->get();
+                $query = \App\Models\VehicleTechnicalIssue::where('issue_type', 'repair')
+                    ->with(['vehicle', 'reporter', 'assignee']);
+                
+                // Filter by vehicle_id if provided
+                if ($request->has('vehicle_id') && $request->get('vehicle_id')) {
+                    $query->where('vehicle_id', $request->get('vehicle_id'));
+                }
+                
+                // Sort: pending/in_progress first, then by reported_at desc
+                $repairIssues = $query->get()->sortBy(function ($issue) {
+                    $priority = match($issue->status) {
+                        'pending' => 1,
+                        'in_progress' => 2,
+                        'completed' => 3,
+                        'cancelled' => 4,
+                        default => 5
+                    };
+                    return [$priority, $issue->reported_at->timestamp];
+                })->values();
             }
 
         $pageTitle = match($filter) {

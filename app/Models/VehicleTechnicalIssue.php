@@ -127,6 +127,27 @@ class VehicleTechnicalIssue extends Model
     }
 
     /**
+     * Get status color classes
+     */
+    public static function getStatusColorClasses(): array
+    {
+        return [
+            self::STATUS_PENDING => 'bg-yellow-100 text-yellow-800',
+            self::STATUS_IN_PROGRESS => 'bg-blue-100 text-blue-800',
+            self::STATUS_COMPLETED => 'bg-green-100 text-green-800',
+            self::STATUS_CANCELLED => 'bg-red-100 text-red-800'
+        ];
+    }
+
+    /**
+     * Get color class for a specific status
+     */
+    public function getStatusColorClass(): string
+    {
+        return self::getStatusColorClasses()[$this->status] ?? 'bg-gray-100 text-gray-800';
+    }
+
+    /**
      * Get issue type labels
      */
     public static function getIssueTypeLabels(): array

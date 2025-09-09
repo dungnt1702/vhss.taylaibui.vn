@@ -323,16 +323,7 @@
             <form id="technical-update-form">
                 <input type="hidden" id="technical-vehicle-id" name="vehicle_id" value="">
                 
-                <div class="mb-4">
-                    <label for="technical-issue-type" class="block text-sm font-medium text-neutral-700 mb-2">
-                        Loại vấn đề <span class="text-red-500">*</span>
-                    </label>
-                    <select id="technical-issue-type" name="issue_type" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:border-brand-500" required>
-                        <option value="">-- Chọn loại vấn đề --</option>
-                        <option value="repair">Sửa chữa</option>
-                        <option value="maintenance">Bảo trì</option>
-                    </select>
-                </div>
+                <input type="hidden" id="technical-issue-type" name="issue_type" value="repair">
                 
                 <div class="mb-4">
                     <label for="technical-category" class="block text-sm font-medium text-neutral-700 mb-2">

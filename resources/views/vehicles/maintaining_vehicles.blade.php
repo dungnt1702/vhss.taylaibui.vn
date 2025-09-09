@@ -250,11 +250,7 @@
 
 @endsection
 
-@push('scripts')
-    <!-- Load VehicleClasses.js for all vehicle functionality -->
-    @vite(['resources/js/vehicles/VehicleClasses.js'])
-    
-    <script>
+<script>
     // Global function to open description modal
     function openDescriptionModal(description, notes) {
         const modal = document.getElementById('description-detail-modal');
@@ -425,8 +421,3 @@
         }
     });
     </script>
-@endpush
-
-@push('styles')
-@vite(['resources/css/vehicles/maintaining-vehicles.css'])
-@endpush

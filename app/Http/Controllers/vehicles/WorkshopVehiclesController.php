@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\vehicles;
 
 use App\Models\Vehicle;
+use App\Models\VehicleTechnicalIssue;
 use Illuminate\Http\Request;
 
 class WorkshopVehiclesController extends VehicleBaseController
@@ -13,6 +14,15 @@ class WorkshopVehiclesController extends VehicleBaseController
     public function index()
     {
         $vehicles = Vehicle::inactive()->latest()->get();
+        
+        // Add repair count for each vehicle
+        $vehicles->each(function ($vehicle) {
+            $vehicle->repair_count = VehicleTechnicalIssue::where('vehicle_id', $vehicle->id)
+                ->where('issue_type', 'repair')
+                ->whereIn('status', ['pending', 'in_progress'])
+                ->count();
+        });
+        
         return view('vehicles.workshop_vehicles', compact('vehicles'));
     }
 
@@ -22,6 +32,15 @@ class WorkshopVehiclesController extends VehicleBaseController
     public function getWorkshopVehicles()
     {
         $vehicles = Vehicle::inactive()->latest()->get();
+        
+        // Add repair count for each vehicle
+        $vehicles->each(function ($vehicle) {
+            $vehicle->repair_count = VehicleTechnicalIssue::where('vehicle_id', $vehicle->id)
+                ->where('issue_type', 'repair')
+                ->whereIn('status', ['pending', 'in_progress'])
+                ->count();
+        });
+        
         return response()->json(['success' => true, 'vehicles' => $vehicles]);
     }
 }

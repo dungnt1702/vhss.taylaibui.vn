@@ -21,7 +21,7 @@
                 <thead class="bg-neutral-50">
                     <tr class="hidden md:table-row">
                         <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Xe số</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Ghế</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Sửa chữa</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Công suất</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Ghi chú</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Thao tác</th>
@@ -46,7 +46,17 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                                {{ $vehicle->seats }}
+                                @if(($vehicle->repair_count ?? 0) > 0)
+                                    <a href="{{ route('vehicles.repairing', ['vehicle_id' => $vehicle->id]) }}" 
+                                       class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 hover:bg-red-200 transition-colors duration-200 cursor-pointer"
+                                       title="Xem lịch sử sửa chữa của xe {{ $vehicle->name }}">
+                                        {{ $vehicle->repair_count ?? 0 }}
+                                    </a>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        {{ $vehicle->repair_count ?? 0 }}
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                                 {{ $vehicle->power }}
@@ -96,7 +106,7 @@
                             data-vehicle-power="{{ $vehicle->power }}"
                             data-vehicle-wheel-size="{{ $vehicle->wheel_size }}"
                             data-vehicle-notes="{{ $vehicle->notes ?? 'Không có ghi chú' }}">
-                            <!-- Dòng 1: Xe số, Ghế, Công suất, Thao tác -->
+                            <!-- Dòng 1: Xe số, Sửa chữa, Công suất, Thao tác -->
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-8 h-8 rounded border border-neutral-300 flex items-center justify-center text-xs font-bold text-white" style="background-color: {{ $vehicle->color }};" title="{{ $vehicle->color }}">
@@ -105,7 +115,17 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                                {{ $vehicle->seats }}
+                                @if(($vehicle->repair_count ?? 0) > 0)
+                                    <a href="{{ route('vehicles.repairing', ['vehicle_id' => $vehicle->id]) }}" 
+                                       class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 hover:bg-red-200 transition-colors duration-200 cursor-pointer"
+                                       title="Xem lịch sử sửa chữa của xe {{ $vehicle->name }}">
+                                        {{ $vehicle->repair_count ?? 0 }}
+                                    </a>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        {{ $vehicle->repair_count ?? 0 }}
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                                 {{ $vehicle->power }}
@@ -233,11 +253,3 @@
 
 @endsection
 
-@push('scripts')
-    <!-- Load VehicleClasses.js for all vehicle functionality -->
-    @vite(['resources/js/vehicles/VehicleClasses.js'])
-@endpush
-
-@push('styles')
-@vite(['resources/css/vehicles/workshop-vehicles.css'])
-@endpush

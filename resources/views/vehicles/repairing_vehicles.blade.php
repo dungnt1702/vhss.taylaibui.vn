@@ -4,11 +4,42 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
+    <!-- Page identifier for VehicleClasses.js -->
+    <div id="vehicle-page" data-page-type="repairing" style="display: none;"></div>
+
 
     <!-- Header for Repair Issues History -->
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-neutral-900">Lịch sử sửa chữa</h1>
-        <p class="text-neutral-600 mt-2">Báo cáo và lịch sử các vấn đề sửa chữa</p>
+        <div class="flex justify-between items-start">
+            <div>
+                <h1 class="text-2xl font-bold text-neutral-900">Lịch sử sửa chữa</h1>
+                @if(request('vehicle_id') && $repairIssues->isNotEmpty())
+                    @php
+                        $vehicle = $repairIssues->first()->vehicle;
+                    @endphp
+                    <p class="text-neutral-600 mt-2">
+                        Lịch sử sửa chữa của xe 
+                        <span class="inline-flex items-center px-2 py-1 rounded text-sm font-medium text-white" style="background-color: {{ $vehicle->color }};">
+                            {{ $vehicle->name }}
+                        </span>
+                        <a href="{{ route('vehicles.repairing') }}" class="ml-2 text-blue-600 hover:text-blue-800 underline">
+                            (Xem tất cả)
+                        </a>
+                    </p>
+                @else
+                    <p class="text-neutral-600 mt-2">Báo cáo và lịch sử các vấn đề sửa chữa</p>
+                @endif
+            </div>
+            
+            <!-- Add Repair Button -->
+            <button id="add-repair-btn" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span>Thêm sửa chữa</span>
+            </button>
+        </div>
     </div>
 
     <!-- Desktop Table Display -->
@@ -79,7 +110,7 @@
                             @endif
                         </td>
                         <td class="px-4 py-4 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs font-medium rounded-full {{ \App\Models\VehicleTechnicalIssue::getStatusLabels()[$issue->status] ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800' }}">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full {{ $issue->getStatusColorClass() }}">
                                 {{ \App\Models\VehicleTechnicalIssue::getStatusLabels()[$issue->status] ?? $issue->status }}
                             </span>
                         </td>
@@ -136,7 +167,7 @@
                         {{ $issue->vehicle->name }}
                     </div>
                 </div>
-                <span class="px-2 py-1 text-xs font-medium rounded-full {{ \App\Models\VehicleTechnicalIssue::getStatusLabels()[$issue->status] ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800' }}">
+                <span class="px-2 py-1 text-xs font-medium rounded-full {{ $issue->getStatusColorClass() }}">
                     {{ \App\Models\VehicleTechnicalIssue::getStatusLabels()[$issue->status] ?? $issue->status }}
                 </span>
             </div>
@@ -250,183 +281,75 @@
 
 @endsection
 
-@push('scripts')
-    <!-- Load VehicleClasses.js for all vehicle functionality -->
-    @vite(['resources/js/vehicles/VehicleClasses.js'])
-    
-    <script>
-    // Global function to open description modal
-    function openDescriptionModal(description, notes) {
-        const modal = document.getElementById('description-detail-modal');
-        const descriptionContent = document.getElementById('description-content');
-        const notesContent = document.getElementById('notes-content');
-        const notesSection = document.getElementById('notes-section');
-        
-        if (modal && descriptionContent) {
-            // Set description content
-            descriptionContent.textContent = description || 'Không có mô tả';
-            
-            // Set notes content if available
-            if (notes && notes.trim()) {
-                notesContent.textContent = notes;
-                notesSection.classList.remove('hidden');
-            } else {
-                notesSection.classList.add('hidden');
-            }
-            
-            modal.classList.remove('hidden');
-        }
-    }
 
-    // Global function to close description modal
-    function closeDescriptionModal() {
-        const modal = document.getElementById('description-detail-modal');
-        if (modal) {
-            modal.classList.add('hidden');
-        }
-    }
-
-    // Global function to open edit modal
-    function openEditModal(issueId, description, notes, category) {
-        const modal = document.getElementById('edit-issue-modal');
-        const issueIdInput = document.getElementById('edit-issue-id');
-        const descriptionInput = document.getElementById('edit-description');
-        const notesInput = document.getElementById('edit-notes');
-        const categorySelect = document.getElementById('edit-category');
-        
-        if (modal && issueIdInput) {
-            issueIdInput.value = issueId;
-            descriptionInput.value = description;
-            notesInput.value = notes;
-            categorySelect.value = category;
-            modal.classList.remove('hidden');
-        }
-    }
-
-    // Global function to close edit modal
-    function closeEditModal() {
-        const modal = document.getElementById('edit-issue-modal');
-        if (modal) {
-            modal.classList.add('hidden');
-            // Reset form
-            document.getElementById('edit-issue-form').reset();
-        }
-    }
-
-    // Global function to open process modal
-    function openProcessModal(issueId) {
-        const modal = document.getElementById('process-issue-modal');
-        const issueIdInput = document.getElementById('process-issue-id');
-        
-        if (modal && issueIdInput) {
-            issueIdInput.value = issueId;
-            modal.classList.remove('hidden');
-            
-            // Load current issue data
-            loadIssueData(issueId);
-        }
-    }
-
-    // Global function to close process modal
-    function closeProcessModal() {
-        const modal = document.getElementById('process-issue-modal');
-        if (modal) {
-            modal.classList.add('hidden');
-            // Reset form
-            document.getElementById('process-issue-form').reset();
-        }
-    }
-
-    // Load issue data into modal
-    function loadIssueData(issueId) {
-        // This would typically make an AJAX call to get issue data
-        // For now, we'll just set the form to be ready for submission
-        console.log('Loading issue data for ID:', issueId);
-    }
-
-    // Handle form submission
-    document.addEventListener('DOMContentLoaded', function() {
-        const processForm = document.getElementById('process-issue-form');
-        if (processForm) {
-            processForm.addEventListener('submit', function(e) {
-                e.preventDefault();
+<!-- Add Repair Modal -->
+<div id="add-repair-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg">
+        <div class="p-6">
+            <h3 class="text-lg font-semibold text-neutral-900 mb-4">Thêm báo cáo sửa chữa</h3>
+            <form id="add-repair-form">
+                <input type="hidden" id="add-repair-issue-type" name="issue_type" value="repair">
                 
-                const formData = new FormData(processForm);
-                const issueId = formData.get('issue_id');
+                @if(!request('vehicle_id'))
+                <!-- Vehicle selection (only show when not filtered by specific vehicle) -->
+                <div class="mb-4">
+                    <label for="add-repair-vehicle-id" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Chọn xe <span class="text-red-500">*</span>
+                    </label>
+                    <select id="add-repair-vehicle-id" name="vehicle_id" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        <option value="">-- Chọn xe --</option>
+                        @foreach(\App\Models\Vehicle::inactive()->get() as $vehicle)
+                            <option value="{{ $vehicle->id }}">{{ $vehicle->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @else
+                <input type="hidden" id="add-repair-vehicle-id" name="vehicle_id" value="{{ request('vehicle_id') }}">
+                @endif
                 
-                // Make AJAX request to update issue
-                fetch(`/api/technical-issues/${issueId}/process`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        assigned_to: formData.get('assigned_to'),
-                        status: formData.get('status'),
-                        result: formData.get('result')
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Close modal
-                        closeProcessModal();
-                        // Reload page to show updated data
-                        window.location.reload();
-                    } else {
-                        alert('Có lỗi xảy ra: ' + (data.message || 'Không thể cập nhật'));
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra khi cập nhật');
-                });
-            });
-        }
+                <div class="mb-4">
+                    <label for="add-repair-category" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Hạng mục <span class="text-red-500">*</span>
+                    </label>
+                    <select id="add-repair-category" name="category" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        <option value="">-- Chọn hạng mục --</option>
+                        @foreach(\App\Models\VehicleTechnicalIssue::getRepairCategories() as $key => $label)
+                            <option value="{{ $key }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="add-repair-description" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Mô tả vấn đề <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="add-repair-description" name="description" rows="3" 
+                              class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                              placeholder="Mô tả chi tiết vấn đề cần sửa chữa..." required></textarea>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="add-repair-notes" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Ghi chú thêm
+                    </label>
+                    <textarea id="add-repair-notes" name="notes" rows="2" 
+                              class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                              placeholder="Ghi chú bổ sung (tùy chọn)"></textarea>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeAddRepairModal()" 
+                            class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-neutral-500">
+                        Hủy
+                    </button>
+                    <button type="submit" id="add-repair-submit-btn"
+                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        Thêm báo cáo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-        const editForm = document.getElementById('edit-issue-form');
-        if (editForm) {
-            editForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const formData = new FormData(editForm);
-                const issueId = formData.get('issue_id');
-                
-                // Make AJAX request to update issue
-                fetch(`/api/technical-issues/${issueId}/edit`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        description: formData.get('description'),
-                        notes: formData.get('notes'),
-                        category: formData.get('category')
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Close modal
-                        closeEditModal();
-                        // Reload page to show updated data
-                        window.location.reload();
-                    } else {
-                        alert('Có lỗi xảy ra: ' + (data.message || 'Không thể cập nhật'));
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra khi cập nhật');
-                });
-            });
-        }
-    });
-    </script>
-@endpush
 
-@push('styles')
-@vite(['resources/css/vehicles/repairing-vehicles.css'])
-@endpush

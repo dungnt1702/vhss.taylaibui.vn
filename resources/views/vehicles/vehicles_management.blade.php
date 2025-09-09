@@ -46,14 +46,35 @@
     @push('scripts')
     <!-- Load VehicleClasses.js for all vehicle functionality -->
     @vite(['resources/js/vehicles/VehicleClasses.js'])
+    
+    <!-- Load specific JS based on filter -->
+    @if($filter === 'active')
+        @vite(['resources/js/vehicles/ActiveVehicles.js'])
+    @elseif($filter === 'ready')
+        @vite(['resources/js/vehicles/ReadyVehicles.js'])
+    @elseif($filter === 'running')
+        @vite(['resources/js/vehicles/RunningVehicles.js'])
+    @elseif($filter === 'paused')
+        @vite(['resources/js/vehicles/PausedVehicles.js'])
+    @elseif($filter === 'expired')
+        @vite(['resources/js/vehicles/ExpiredVehicles.js'])
+    @elseif($filter === 'workshop')
+        @vite(['resources/js/vehicles/WorkshopVehicles.js'])
+    @elseif($filter === 'repairing')
+        @vite(['resources/js/vehicles/RepairingVehicles.js'])
+    @elseif($filter === 'maintaining')
+        @vite(['resources/js/vehicles/MaintainingVehicles.js'])
+    @elseif($filter === 'attributes')
+        @vite(['resources/js/vehicles/AttributesList.js'])
+    @elseif($filter === 'vehicles_list')
+        @vite(['resources/js/vehicles/VehiclesList.js'])
+    @endif
 @endpush
 
 @push('styles')
     <!-- Load appropriate CSS based on filter -->
     @if($filter === 'active')
         @vite(['resources/css/vehicles/active-vehicles.css'])
-    @elseif($filter === 'ready')
-        @vite(['resources/css/vehicles/ready-vehicles.css'])
     @elseif($filter === 'ready')
         @vite(['resources/css/vehicles/ready-vehicles.css'])
     @elseif($filter === 'running')
@@ -73,4 +94,4 @@
     @elseif($filter === 'vehicles_list')
         @vite(['resources/css/vehicles/vehicles-list.css'])
     @endif
-    @endpush
+@endpush

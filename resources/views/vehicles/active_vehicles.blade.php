@@ -239,11 +239,7 @@
 
 @endsection
 
-@push('scripts')
-    <!-- Load VehicleClasses.js for smart vehicle functionality -->
-    @vite(['resources/js/vehicles/VehicleClasses.js'])
-    
-    <script>
+<script>
         // Global function wrapper for returnSelectedRoutingVehiclesToYard
         function returnSelectedRoutingVehiclesToYard() {
             console.log('Global function called');
@@ -454,9 +450,3 @@
             });
         });
     </script>
-@endpush
-
-@push('styles')
-    <!-- Load active-vehicles.css -->
-    @vite(['resources/css/vehicles/active-vehicles.css'])
-@endpush

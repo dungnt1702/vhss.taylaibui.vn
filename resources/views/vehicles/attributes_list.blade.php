@@ -190,11 +190,3 @@
 
 @endsection
 
-@push('scripts')
-    <!-- Load VehicleClasses.js for all vehicle functionality -->
-    @vite(['resources/js/vehicles/VehicleClasses.js'])
-@endpush
-
-@push('styles')
-@vite(['resources/css/vehicles/attributes-list.css'])
-@endpush

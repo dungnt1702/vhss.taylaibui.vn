@@ -71,11 +71,3 @@
 
 @endsection
 
-@push('scripts')
-    <!-- Load VehicleClasses.js for smart vehicle functionality -->
-    @vite(['resources/js/vehicles/VehicleClasses.js'])
-@endpush
-
-@push('styles')
-@vite(['resources/css/vehicles/expired-vehicles.css'])
-@endpush

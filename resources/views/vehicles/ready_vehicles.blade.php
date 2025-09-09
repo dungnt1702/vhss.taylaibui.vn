@@ -76,11 +76,7 @@
 
 @endsection
 
-@push('scripts')
-    <!-- Load VehicleClasses.js for all vehicle functionality -->
-    @vite(['resources/js/vehicles/VehicleClasses.js'])
-    
-    <script>
+<script>
         // Global function for close workshop modal
         function closeMoveWorkshopModal() {
             const modal = document.getElementById('move-workshop-modal');
@@ -175,8 +171,3 @@
             validateForm();
         }
     </script>
-@endpush
-
-@push('styles')
-@vite(['resources/css/vehicles/ready-vehicles.css'])
-@endpush
