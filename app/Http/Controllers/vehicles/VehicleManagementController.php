@@ -24,21 +24,27 @@ class VehicleManagementController extends Controller
             $routeName = $request->route()->getName();
             if ($routeName) {
                 $filter = match($routeName) {
-                    'vehicles.active' => 'active',
-                    'vehicles.ready' => 'ready',
-                    'vehicles.running' => 'running',
-                    'vehicles.paused' => 'paused',
-                    'vehicles.expired' => 'expired',
-                    'vehicles.workshop' => 'workshop',
-                    'vehicles.repairing' => 'repairing',
-                    'vehicles.attributes' => 'attributes',
-                    'vehicles.list' => 'vehicles_list',
+                    'vehicles.active', 'vehicles.active.page' => 'active',
+                    'vehicles.ready', 'vehicles.ready.page' => 'ready',
+                    'vehicles.running', 'vehicles.running.page' => 'running',
+                    'vehicles.paused', 'vehicles.paused.page' => 'paused',
+                    'vehicles.expired', 'vehicles.expired.page' => 'expired',
+                    'vehicles.workshop', 'vehicles.workshop.page' => 'workshop',
+                    'vehicles.repairing', 'vehicles.repairing.page' => 'repairing',
+                    'vehicles.attributes', 'vehicles.attributes.page' => 'attributes',
+                    'vehicles.list', 'vehicles.list.page' => 'vehicles_list',
                     default => 'all'
                 };
             }
         }
         
         $perPage = $request->get('per_page', 10);
+        
+        // Handle page parameter from route
+        $page = $request->get('page', 1);
+        if ($request->route('page')) {
+            $page = $request->route('page');
+        }
 
         // Redirect legacy maintaining filter to the new Maintenance module
         if ($filter === 'maintaining') {
@@ -46,18 +52,18 @@ class VehicleManagementController extends Controller
         }
         
         $vehicles = match($filter) {
-            'vehicles_list' => Vehicle::latest()->paginate($perPage)->appends($request->query()),
-            'active' => Vehicle::active()->latest()->paginate($perPage)->appends($request->query()),
-            'ready' => Vehicle::ready()->latest()->paginate($perPage)->appends($request->query()),
-            'workshop' => Vehicle::inactive()->latest()->paginate($perPage)->appends($request->query()),
-            'running' => Vehicle::running()->latest()->paginate($perPage)->appends($request->query()),
-            'expired' => Vehicle::expired()->paginate($perPage)->appends($request->query()),
-            'paused' => Vehicle::paused()->latest()->paginate($perPage)->appends($request->query()),
-            'route' => Vehicle::route()->latest()->paginate($perPage)->appends($request->query()),
-            'repairing' => Vehicle::where('status', 'repairing')->latest()->paginate($perPage)->appends($request->query()),
+            'vehicles_list' => Vehicle::latest()->paginate($perPage, ['*'], 'page', $page)->withPath(route('vehicles.list'))->appends($request->query()),
+            'active' => Vehicle::active()->latest()->paginate($perPage, ['*'], 'page', $page)->withPath(route('vehicles.active'))->appends($request->query()),
+            'ready' => Vehicle::ready()->latest()->paginate($perPage, ['*'], 'page', $page)->withPath(route('vehicles.ready'))->appends($request->query()),
+            'workshop' => Vehicle::inactive()->latest()->paginate($perPage, ['*'], 'page', $page)->withPath(route('vehicles.workshop'))->appends($request->query()),
+            'running' => Vehicle::running()->latest()->paginate($perPage, ['*'], 'page', $page)->withPath(route('vehicles.running'))->appends($request->query()),
+            'expired' => Vehicle::expired()->paginate($perPage, ['*'], 'page', $page)->withPath(route('vehicles.expired'))->appends($request->query()),
+            'paused' => Vehicle::paused()->latest()->paginate($perPage, ['*'], 'page', $page)->withPath(route('vehicles.paused'))->appends($request->query()),
+            'route' => Vehicle::route()->latest()->paginate($perPage, ['*'], 'page', $page)->withPath(route('vehicles.index'))->appends($request->query()),
+            'repairing' => Vehicle::where('status', 'repairing')->latest()->paginate($perPage, ['*'], 'page', $page)->withPath(route('vehicles.repairing'))->appends($request->query()),
             // 'maintaining' legacy handled above by redirect
-            'attributes' => Vehicle::latest()->paginate($perPage)->appends($request->query()),
-            default => Vehicle::latest()->paginate($perPage)->appends($request->query())
+            'attributes' => Vehicle::latest()->paginate($perPage, ['*'], 'page', $page)->withPath(route('vehicles.attributes'))->appends($request->query()),
+            default => Vehicle::latest()->paginate($perPage, ['*'], 'page', $page)->withPath(route('vehicles.index'))->appends($request->query())
         };
 
         // Get technical issues for repairing and maintaining views

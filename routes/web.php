@@ -417,14 +417,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // RESTful vehicle status routes
     Route::get('/vehicles/active', [VehicleManagementController::class, 'index'])->name('vehicles.active');
+    Route::get('/vehicles/active/page/{page}', [VehicleManagementController::class, 'index'])->name('vehicles.active.page');
     Route::get('/vehicles/ready', [VehicleManagementController::class, 'index'])->name('vehicles.ready');
+    Route::get('/vehicles/ready/page/{page}', [VehicleManagementController::class, 'index'])->name('vehicles.ready.page');
     Route::get('/vehicles/running', [VehicleManagementController::class, 'index'])->name('vehicles.running');
+    Route::get('/vehicles/running/page/{page}', [VehicleManagementController::class, 'index'])->name('vehicles.running.page');
     Route::get('/vehicles/paused', [VehicleManagementController::class, 'index'])->name('vehicles.paused');
+    Route::get('/vehicles/paused/page/{page}', [VehicleManagementController::class, 'index'])->name('vehicles.paused.page');
     Route::get('/vehicles/expired', [VehicleManagementController::class, 'index'])->name('vehicles.expired');
+    Route::get('/vehicles/expired/page/{page}', [VehicleManagementController::class, 'index'])->name('vehicles.expired.page');
     Route::get('/vehicles/workshop', [VehicleManagementController::class, 'index'])->name('vehicles.workshop');
+    Route::get('/vehicles/workshop/page/{page}', [VehicleManagementController::class, 'index'])->name('vehicles.workshop.page');
     Route::get('/vehicles/repairing', [VehicleManagementController::class, 'index'])->name('vehicles.repairing');
+    Route::get('/vehicles/repairing/page/{page}', [VehicleManagementController::class, 'index'])->name('vehicles.repairing.page');
     Route::get('/vehicles/attributes', [VehicleManagementController::class, 'index'])->name('vehicles.attributes');
+    Route::get('/vehicles/attributes/page/{page}', [VehicleManagementController::class, 'index'])->name('vehicles.attributes.page');
     Route::get('/vehicles/list', [VehicleManagementController::class, 'index'])->name('vehicles.list');
+    Route::get('/vehicles/list/page/{page}', [VehicleManagementController::class, 'index'])->name('vehicles.list.page');
     Route::get('/vehicles/create', [VehicleManagementController::class, 'create'])->name('vehicles.create');
     Route::post('/vehicles', [VehicleManagementController::class, 'store'])->name('vehicles.store');
     Route::get('/vehicles/{vehicle}', [VehicleManagementController::class, 'show'])->name('vehicles.show');
