@@ -18,7 +18,6 @@ export default defineConfig({
                 'resources/css/vehicles/expired-vehicles.css',
                 'resources/css/vehicles/workshop-vehicles.css',
                 'resources/css/vehicles/repairing-vehicles.css',
-                'resources/css/vehicles/maintaining-vehicles.css',
                 'resources/css/vehicles/attributes-list.css'
             ],
             refresh: true,

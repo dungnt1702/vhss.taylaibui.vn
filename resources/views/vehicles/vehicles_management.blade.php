@@ -23,8 +23,6 @@
         @include('vehicles.workshop_vehicles')
     @elseif($filter === 'repairing')
         @include('vehicles.repairing_vehicles')
-    @elseif($filter === 'maintaining')
-        @include('vehicles.maintaining_vehicles')
     @else
         <!-- Default view -->
         <div class="text-center py-12">
@@ -62,8 +60,6 @@
         @vite(['resources/js/vehicles/WorkshopVehicles.js'])
     @elseif($filter === 'repairing')
         @vite(['resources/js/vehicles/RepairingVehicles.js'])
-    @elseif($filter === 'maintaining')
-        @vite(['resources/js/vehicles/MaintainingVehicles.js'])
     @elseif($filter === 'attributes')
         @vite(['resources/js/vehicles/AttributesList.js'])
     @elseif($filter === 'vehicles_list')
@@ -87,8 +83,6 @@
         @vite(['resources/css/vehicles/workshop-vehicles.css'])
     @elseif($filter === 'repairing')
         @vite(['resources/css/vehicles/repairing-vehicles.css'])
-    @elseif($filter === 'maintaining')
-        @vite(['resources/css/vehicles/maintaining-vehicles.css'])
     @elseif($filter === 'attributes')
         @vite(['resources/css/vehicles/attributes-list.css'])
     @elseif($filter === 'vehicles_list')

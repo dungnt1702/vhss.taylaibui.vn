@@ -10,7 +10,6 @@ use App\Http\Controllers\vehicles\PausedVehiclesController;
 use App\Http\Controllers\vehicles\ExpiredVehiclesController;
 use App\Http\Controllers\vehicles\WorkshopVehiclesController;
 use App\Http\Controllers\vehicles\RepairingVehiclesController;
-use App\Http\Controllers\vehicles\MaintainingVehiclesController;
 use App\Http\Controllers\vehicles\VehiclesListController;
 use App\Http\Controllers\vehicles\VehicleOperationsController;
 
@@ -474,7 +473,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/repairing-vehicles', [RepairingVehiclesController::class, 'index'])->name('repairing-vehicles.index');
     
     // Maintaining Vehicles (Xe đang bảo trì)
-    Route::get('/maintaining-vehicles', [MaintainingVehiclesController::class, 'index'])->name('maintaining-vehicles.index');
     
     // Vehicle Attributes
     Route::get('/attributes-list', [AttributesListController::class, 'index'])->name('attributes-list.index');
