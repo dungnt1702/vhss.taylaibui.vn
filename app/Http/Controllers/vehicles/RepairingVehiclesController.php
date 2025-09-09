@@ -19,7 +19,10 @@ class RepairingVehiclesController extends VehicleBaseController
             ->latest('reported_at')
             ->get();
             
-        return view('vehicles.repairing_vehicles', compact('repairIssues'));
+        return view('vehicles.vehicles_management', [
+            'filter' => 'repairing',
+            'repairIssues' => $repairIssues
+        ]);
     }
 
     /**

@@ -13,7 +13,10 @@ class ReadyVehiclesController extends VehicleBaseController
     public function index()
     {
         $vehicles = Vehicle::ready()->latest()->get();
-        return view('vehicles.ready_vehicles', compact('vehicles'));
+        return view('vehicles.vehicles_management', [
+            'filter' => 'ready',
+            'vehicles' => $vehicles
+        ]);
     }
 
     /**

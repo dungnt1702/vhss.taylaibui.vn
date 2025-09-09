@@ -32,7 +32,14 @@ class ActiveVehiclesController extends Controller
             ->orderBy('start_time', 'asc')
             ->get();
 
-        return view('vehicles.active_vehicles', compact('vehicles', 'runningVehicles', 'pausedVehicles', 'expiredVehicles', 'routingVehicles'));
+        return view('vehicles.vehicles_management', [
+            'filter' => 'active',
+            'vehicles' => $vehicles,
+            'runningVehicles' => $runningVehicles,
+            'pausedVehicles' => $pausedVehicles,
+            'expiredVehicles' => $expiredVehicles,
+            'routingVehicles' => $routingVehicles
+        ]);
     }
 
     /**

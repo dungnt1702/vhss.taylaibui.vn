@@ -18,12 +18,13 @@ class AttributesListController extends Controller
         $powerOptions = VehicleAttribute::getPowerOptions();
         $wheelSizes = VehicleAttribute::getWheelSizes();
 
-        return view('vehicles.attributes_list', compact(
-            'colors', 
-            'seats', 
-            'powerOptions', 
-            'wheelSizes'
-        ));
+        return view('vehicles.vehicles_management', [
+            'filter' => 'attributes',
+            'colors' => $colors, 
+            'seats' => $seats, 
+            'powerOptions' => $powerOptions, 
+            'wheelSizes' => $wheelSizes
+        ]);
     }
 
     /**

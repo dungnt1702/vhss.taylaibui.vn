@@ -75,6 +75,8 @@
 
 @endsection
 
+@include('vehicles.partials.vehicle_modals')
+
 <script>
         // Global function for close workshop modal
         function closeMoveWorkshopModal() {

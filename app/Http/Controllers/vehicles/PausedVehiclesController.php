@@ -13,7 +13,10 @@ class PausedVehiclesController extends VehicleBaseController
     public function index()
     {
         $vehicles = Vehicle::paused()->latest()->get();
-        return view('vehicles.paused_vehicles', compact('vehicles'));
+        return view('vehicles.vehicles_management', [
+            'filter' => 'paused',
+            'vehicles' => $vehicles
+        ]);
     }
 
     /**

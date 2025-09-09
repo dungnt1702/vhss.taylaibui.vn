@@ -23,7 +23,11 @@ class WorkshopVehiclesController extends VehicleBaseController
                 ->count();
         });
         
-        return view('vehicles.workshop_vehicles', compact('vehicles'));
+        // Use vehicles_management with workshop filter
+        return view('vehicles.vehicles_management', [
+            'filter' => 'workshop',
+            'vehicles' => $vehicles
+        ]);
     }
 
     /**

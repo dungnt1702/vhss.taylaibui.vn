@@ -13,7 +13,10 @@ class ExpiredVehiclesController extends VehicleBaseController
     public function index()
     {
         $vehicles = Vehicle::expired()->latest()->get();
-        return view('vehicles.expired_vehicles', compact('vehicles'));
+        return view('vehicles.vehicles_management', [
+            'filter' => 'expired',
+            'vehicles' => $vehicles
+        ]);
     }
 
     /**

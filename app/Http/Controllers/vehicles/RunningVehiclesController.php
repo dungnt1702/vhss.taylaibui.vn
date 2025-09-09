@@ -13,7 +13,10 @@ class RunningVehiclesController extends VehicleBaseController
     public function index()
     {
         $vehicles = Vehicle::running()->latest()->get();
-        return view('vehicles.running_vehicles', compact('vehicles'));
+        return view('vehicles.vehicles_management', [
+            'filter' => 'running',
+            'vehicles' => $vehicles
+        ]);
     }
 
     /**

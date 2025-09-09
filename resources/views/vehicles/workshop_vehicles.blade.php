@@ -252,3 +252,5 @@
 
 @endsection
 
+@include('vehicles.partials.vehicle_modals')
+
