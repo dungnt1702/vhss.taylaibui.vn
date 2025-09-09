@@ -1150,22 +1150,28 @@ export class VehicleBase {
      * Show notification modal
      */
     showNotificationModal(title, message, type = 'info') {
-        // Retry mechanism to ensure modal is loaded
-        this.ensureNotificationModalLoaded().then(() => {
-            const modal = document.getElementById('notification-modal');
-            const modalTitle = document.getElementById('notification-title');
-            const modalMessage = document.getElementById('notification-message');
-            const iconContainer = document.getElementById('notification-icon-container');
-            const icon = document.getElementById('notification-icon');
-            const closeBtn = document.getElementById('notification-close-btn');
-
-            if (!modal || !modalTitle || !modalMessage || !iconContainer || !icon || !closeBtn) {
-                console.error('Notification modal elements not found after retry');
-                return;
-            }
-
-            this.displayNotificationModal(modal, modalTitle, modalMessage, iconContainer, icon, closeBtn, title, message, type);
-        });
+        const callId = Math.random().toString(36).substr(2, 9);
+        console.log(`🔔 [${callId}] showNotificationModal called: ${title} - ${message}`);
+        
+        // Check if modal is already available
+        const modal = document.getElementById('notification-modal');
+        if (modal) {
+            // Modal is available, show it directly
+            console.log(`✅ [${callId}] Modal available, showing directly`);
+            this.displayNotificationModalDirect(modal, title, message, type);
+        } else {
+            // Modal not available, use retry mechanism
+            console.log(`⏳ [${callId}] Modal not available, starting retry mechanism`);
+            this.ensureNotificationModalLoaded().then(() => {
+                const modal = document.getElementById('notification-modal');
+                if (modal) {
+                    console.log(`✅ [${callId}] Modal found after retry, showing`);
+                    this.displayNotificationModalDirect(modal, title, message, type);
+                } else {
+                    console.error(`❌ [${callId}] Notification modal not found after retry`);
+                }
+            });
+        }
     }
 
     /**
@@ -1174,7 +1180,7 @@ export class VehicleBase {
     ensureNotificationModalLoaded() {
         return new Promise((resolve) => {
             let retryCount = 0;
-            const maxRetries = 50; // 5 seconds max
+            const maxRetries = 10; // 1 second max
             
             const checkModal = () => {
                 const modal = document.getElementById('notification-modal');
@@ -1183,7 +1189,9 @@ export class VehicleBase {
                     resolve();
                 } else if (retryCount < maxRetries) {
                     retryCount++;
-                    console.log('⏳ Notification modal not found, retrying in 100ms... (attempt', retryCount, '/', maxRetries, ')');
+                    if (retryCount <= 3) { // Only log first 3 attempts
+                        console.log('⏳ Notification modal not found, retrying in 100ms... (attempt', retryCount, '/', maxRetries, ')');
+                    }
                     setTimeout(checkModal, 100);
                 } else {
                     console.error('❌ Notification modal not found after', maxRetries, 'retries');
@@ -1192,6 +1200,24 @@ export class VehicleBase {
             };
             checkModal();
         });
+    }
+
+    /**
+     * Display notification modal directly (when modal is already available)
+     */
+    displayNotificationModalDirect(modal, title, message, type) {
+        const modalTitle = document.getElementById('notification-title');
+        const modalMessage = document.getElementById('notification-message');
+        const iconContainer = document.getElementById('notification-icon-container');
+        const icon = document.getElementById('notification-icon');
+        const closeBtn = document.getElementById('notification-close-btn');
+
+        if (!modalTitle || !modalMessage || !iconContainer || !icon || !closeBtn) {
+            console.error('Notification modal elements not found');
+            return;
+        }
+
+        this.displayNotificationModal(modal, modalTitle, modalMessage, iconContainer, icon, closeBtn, title, message, type);
     }
 
     /**
