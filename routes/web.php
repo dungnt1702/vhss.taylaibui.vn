@@ -414,6 +414,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     // Main vehicle management
     Route::get('/vehicles', [VehicleManagementController::class, 'index'])->name('vehicles.index');
+    
+    // RESTful vehicle status routes
+    Route::get('/vehicles/ready', [VehicleManagementController::class, 'index'])->name('vehicles.ready');
+    Route::get('/vehicles/running', [VehicleManagementController::class, 'index'])->name('vehicles.running');
+    Route::get('/vehicles/paused', [VehicleManagementController::class, 'index'])->name('vehicles.paused');
+    Route::get('/vehicles/expired', [VehicleManagementController::class, 'index'])->name('vehicles.expired');
+    Route::get('/vehicles/workshop', [VehicleManagementController::class, 'index'])->name('vehicles.workshop');
+    Route::get('/vehicles/repairing', [VehicleManagementController::class, 'index'])->name('vehicles.repairing');
+    Route::get('/vehicles/attributes', [VehicleManagementController::class, 'index'])->name('vehicles.attributes');
+    Route::get('/vehicles/list', [VehicleManagementController::class, 'index'])->name('vehicles.list');
     Route::get('/vehicles/create', [VehicleManagementController::class, 'create'])->name('vehicles.create');
     Route::post('/vehicles', [VehicleManagementController::class, 'store'])->name('vehicles.store');
     Route::get('/vehicles/{vehicle}', [VehicleManagementController::class, 'show'])->name('vehicles.show');

@@ -16,7 +16,27 @@ class VehicleManagementController extends Controller
      */
     public function index(Request $request)
     {
+        // Support both RESTful routes (/vehicles/ready) and query parameters (?filter=ready)
         $filter = $request->get('filter', 'all');
+        
+        // If no filter in query, try to get from route segment
+        if ($filter === 'all' && $request->route()) {
+            $routeName = $request->route()->getName();
+            if ($routeName) {
+                $filter = match($routeName) {
+                    'vehicles.ready' => 'ready',
+                    'vehicles.running' => 'running',
+                    'vehicles.paused' => 'paused',
+                    'vehicles.expired' => 'expired',
+                    'vehicles.workshop' => 'workshop',
+                    'vehicles.repairing' => 'repairing',
+                    'vehicles.attributes' => 'attributes',
+                    'vehicles.list' => 'vehicles_list',
+                    default => 'all'
+                };
+            }
+        }
+        
         $perPage = $request->get('per_page', 10);
 
         // Redirect legacy maintaining filter to the new Maintenance module
