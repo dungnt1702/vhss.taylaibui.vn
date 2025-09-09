@@ -194,7 +194,7 @@
                             </svg>
                         </span>
                     @else
-                        <a href="{{ $vehicles->previousPageUrl() }}" class="px-2 py-1 text-xs text-neutral-600 bg-white border border-neutral-300 rounded hover:bg-neutral-50">
+                        <a href="{{ route('vehicles.list.page', $vehicles->currentPage() - 1) }}" class="px-2 py-1 text-xs text-neutral-600 bg-white border border-neutral-300 rounded hover:bg-neutral-50">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                             </svg>
@@ -202,17 +202,17 @@
                     @endif
 
                     <!-- Page Numbers -->
-                    @foreach($vehicles->getUrlRange(1, $vehicles->lastPage()) as $page => $url)
+                    @for($page = 1; $page <= $vehicles->lastPage(); $page++)
                         @if($page == $vehicles->currentPage())
                             <span class="px-2 py-1 text-xs text-white bg-brand-600 border border-brand-600 rounded">{{ $page }}</span>
                         @else
-                            <a href="{{ $url }}" class="px-2 py-1 text-xs text-neutral-600 bg-white border border-neutral-300 rounded hover:bg-neutral-50">{{ $page }}</a>
+                            <a href="{{ route('vehicles.list.page', $page) }}" class="px-2 py-1 text-xs text-neutral-600 bg-white border border-neutral-300 rounded hover:bg-neutral-50">{{ $page }}</a>
                         @endif
-                    @endforeach
+                    @endfor
 
                     <!-- Next Page -->
                     @if($vehicles->hasMorePages())
-                        <a href="{{ $vehicles->nextPageUrl() }}" class="px-2 py-1 text-xs text-neutral-600 bg-white border border-neutral-300 rounded hover:bg-neutral-50">
+                        <a href="{{ route('vehicles.list.page', $vehicles->currentPage() + 1) }}" class="px-2 py-1 text-xs text-neutral-600 bg-white border border-neutral-300 rounded hover:bg-neutral-50">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5l7 7-7 7" />
                             </svg>

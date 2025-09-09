@@ -21,7 +21,12 @@
                     Trước
                 </span>
             @else
-                <a href="{{ $paginator->previousPageUrl() }}" class="relative inline-flex items-center rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50">
+                @php
+                    $currentRoute = request()->route()->getName();
+                    $baseRoute = str_replace('.page', '', $currentRoute);
+                    $previousPage = $paginator->currentPage() - 1;
+                @endphp
+                <a href="{{ route($baseRoute . '.page', $previousPage) }}" class="relative inline-flex items-center rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50">
                     <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
@@ -43,7 +48,11 @@
                             @if ($page == $paginator->currentPage())
                                 <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-brand-600 border border-brand-600 rounded-md">{{ $page }}</span>
                             @else
-                                <a href="{{ $url }}" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50">{{ $page }}</a>
+                                @php
+                                    $currentRoute = request()->route()->getName();
+                                    $baseRoute = str_replace('.page', '', $currentRoute);
+                                @endphp
+                                <a href="{{ route($baseRoute . '.page', $page) }}" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50">{{ $page }}</a>
                             @endif
                         @endforeach
                     @endif
@@ -52,7 +61,12 @@
 
             {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
-                <a href="{{ $paginator->nextPageUrl() }}" class="relative ml-3 inline-flex items-center rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50">
+                @php
+                    $currentRoute = request()->route()->getName();
+                    $baseRoute = str_replace('.page', '', $currentRoute);
+                    $nextPage = $paginator->currentPage() + 1;
+                @endphp
+                <a href="{{ route($baseRoute . '.page', $nextPage) }}" class="relative ml-3 inline-flex items-center rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50">
                     Sau
                     <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
