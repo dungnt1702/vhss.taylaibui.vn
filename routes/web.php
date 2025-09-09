@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 // ActiveVehiclesController đã được migration sang VehicleOperationsController
 use App\Http\Controllers\vehicles\ActiveVehiclesController;
 use App\Http\Controllers\vehicles\ReadyVehiclesController;
@@ -20,13 +21,22 @@ Route::get('/', function () {
     return view('welcome');
 })->middleware(['auth', 'verified'])->name('home');
 
+
+
+
+
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/profile', function () {
-    return view('profile.edit');
-})->middleware(['auth', 'verified'])->name('profile.edit');
+Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->middleware(['auth', 'verified'])->name('profile.edit');
+
+// Profile routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::patch('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 // Vehicle Management Routes
 Route::middleware(['auth', 'verified'])->group(function () {

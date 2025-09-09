@@ -1,11 +1,11 @@
 <section>
     <header>
         <h2 class="text-lg font-medium text-gray-900 ">
-            {{ __('Update Password') }}
+            {{ __('profile.Update Password') }}
         </h2>
 
         <p class="mt-1 text-sm text-gray-600 ">
-            {{ __('Ensure your account is using a long, random password to stay secure.') }}
+            {{ __('profile.Ensure your account is using a long, random password to stay secure.') }}
         </p>
     </header>
 
@@ -14,7 +14,7 @@
         @method('put')
 
         <div>
-            <x-input-label for="update_password_current_password" :value="__('Current Password')" />
+            <x-input-label for="update_password_current_password" :value="__('profile.Current Password')" />
             <div class="relative">
                 <x-text-input id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full pr-10" autocomplete="current-password" />
                 
@@ -35,7 +35,7 @@
         </div>
 
         <div>
-            <x-input-label for="update_password_password" :value="__('New Password')" />
+            <x-input-label for="update_password_password" :value="__('profile.New Password')" />
             <div class="relative">
                 <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full pr-10" autocomplete="new-password" />
                 
@@ -56,7 +56,7 @@
         </div>
 
         <div>
-            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
+            <x-input-label for="update_password_password_confirmation" :value="__('profile.Confirm Password')" />
             <div class="relative">
                 <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full pr-10" autocomplete="new-password" />
                 
@@ -77,7 +77,7 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+            <x-primary-button>{{ __('profile.Save') }}</x-primary-button>
 
             @if (session('status') === 'password-updated')
                 <p
@@ -86,7 +86,7 @@
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
                     class="text-sm text-gray-600 "
-                >{{ __('Saved.') }}</p>
+                >{{ __('profile.Saved.') }}</p>
             @endif
         </div>
     </form>
