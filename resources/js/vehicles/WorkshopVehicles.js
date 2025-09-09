@@ -523,9 +523,23 @@ class WorkshopVehicles extends VehicleBase {
                 form.addEventListener('submit', (event) => this.handleTechnicalUpdateSubmit(event));
             }
 
-            // Initialize with repair categories (no need for issue type change handler)
-            this.updateCategoryOptions('repair');
+            // Check if modal is available and retry if not
+            this.checkModalAvailability();
         }, 100);
+    }
+
+    /**
+     * Check if modal is available and retry if not
+     */
+    checkModalAvailability() {
+        const categorySelect = document.getElementById('technical-category');
+        if (!categorySelect) {
+            console.log('Modal not yet available, retrying in 500ms...');
+            setTimeout(() => this.checkModalAvailability(), 500);
+        } else {
+            console.log('Modal is now available');
+            this.updateCategoryOptions('repair');
+        }
     }
 
     /**
