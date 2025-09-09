@@ -277,7 +277,6 @@
 </div>
 
 <!-- Modals -->
-@include('vehicles.partials.vehicle_modals')
 
 @endsection
 

@@ -187,7 +187,6 @@
 </div>
 
 <!-- Modals -->
-@include('vehicles.partials.vehicle_modals')
 
 <!-- Return to Yard Modal -->
 <div id="return-to-yard-modal" class="fixed inset-0 z-50 hidden">

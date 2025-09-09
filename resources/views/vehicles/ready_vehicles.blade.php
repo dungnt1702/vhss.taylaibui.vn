@@ -72,7 +72,6 @@
     </div>
 </div>
 
-@include('vehicles.partials.vehicle_modals')
 
 @endsection
 

@@ -235,7 +235,6 @@
 
 <!-- Notification modal is now included from vehicle_modals.blade.php -->
 
-@include('vehicles.partials.vehicle_modals')
 
 @endsection
 
