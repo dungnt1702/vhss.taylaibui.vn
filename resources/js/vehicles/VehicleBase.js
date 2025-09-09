@@ -22,7 +22,46 @@ export class VehicleBase {
         this.initializeElements();
         this.initializeEventListeners();
         this.initializeCountdownTimers();
+        this.setupGlobalModalFunctions();
         this.initialized = true;
+    }
+
+    /**
+     * Setup global modal functions
+     */
+    setupGlobalModalFunctions() {
+        // Add Repair Modal functions
+        window.closeAddRepairModal = () => {
+            const modal = document.getElementById('add-repair-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        // Add Attribute Modal functions
+        window.closeAddAttributeModal = () => {
+            const modal = document.getElementById('add-attribute-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        // Vehicle Detail Modal functions
+        window.closeVehicleDetailModal = () => {
+            const modal = document.getElementById('vehicle-detail-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        // Status Modal functions
+        window.closeStatusModal = () => {
+            const modal = document.getElementById('status-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
     }
 
     /**

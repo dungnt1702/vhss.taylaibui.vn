@@ -262,6 +262,7 @@ class WorkshopVehicles extends VehicleBase {
                 const modal = document.getElementById('edit-notes-modal');
                 if (modal) {
                     modal.classList.remove('hidden');
+                    modal.classList.add('flex');
                 }
             } else {
                 console.error('Failed to get vehicle data for edit:', result.message);
@@ -295,6 +296,7 @@ class WorkshopVehicles extends VehicleBase {
         const modal = document.getElementById('edit-notes-modal');
         if (modal) {
             modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
     }
 
@@ -377,6 +379,7 @@ class WorkshopVehicles extends VehicleBase {
             vehicleIdInput.value = vehicleId;
             notesTextarea.value = 'Xe hoạt động tốt';
             modal.classList.remove('hidden');
+            modal.classList.add('flex');
             notesTextarea.focus();
         }
     }
@@ -388,6 +391,7 @@ class WorkshopVehicles extends VehicleBase {
         const modal = document.getElementById('return-to-yard-modal');
         if (modal) {
             modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
     }
 
@@ -502,44 +506,13 @@ class WorkshopVehicles extends VehicleBase {
      * Setup technical update modal
      */
     setupTechnicalUpdateModal() {
-        // Wait for DOM to be fully loaded before setting up modal
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                this.initializeTechnicalUpdateModal();
-            });
-        } else {
-            this.initializeTechnicalUpdateModal();
+        const form = document.getElementById('technical-update-form');
+        if (form) {
+            form.addEventListener('submit', (event) => this.handleTechnicalUpdateSubmit(event));
         }
-    }
 
-    /**
-     * Initialize technical update modal after DOM is ready
-     */
-    initializeTechnicalUpdateModal() {
-        // Use setTimeout to ensure modal is fully rendered
-        setTimeout(() => {
-            const form = document.getElementById('technical-update-form');
-            if (form) {
-                form.addEventListener('submit', (event) => this.handleTechnicalUpdateSubmit(event));
-            }
-
-            // Check if modal is available and retry if not
-            this.checkModalAvailability();
-        }, 100);
-    }
-
-    /**
-     * Check if modal is available and retry if not
-     */
-    checkModalAvailability() {
-        const categorySelect = document.getElementById('technical-category');
-        if (!categorySelect) {
-            console.log('Modal not yet available, retrying in 500ms...');
-            setTimeout(() => this.checkModalAvailability(), 500);
-        } else {
-            console.log('Modal is now available');
-            this.updateCategoryOptions('repair');
-        }
+        // Initialize with repair categories
+        this.updateCategoryOptions('repair');
     }
 
     /**
@@ -588,7 +561,7 @@ class WorkshopVehicles extends VehicleBase {
         console.log('categorySelect element:', categorySelect);
         
         if (!categorySelect) {
-            console.warn('Category select element not found! Modal may not be loaded yet.');
+            console.error('Category select element not found!');
             return;
         }
 
