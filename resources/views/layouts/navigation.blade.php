@@ -54,7 +54,7 @@
                              x-transition:leave-end="opacity-0 transform scale-95 -translate-y-2"
                              class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 border border-neutral-200">
                             <div class="py-2">
-                                <a href="{{ route('vehicles.index', ['filter' => 'active']) }}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors duration-150">
+                                <a href="{{ route('vehicles.active') }}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 transition-colors duration-150">
                                     <div class="flex items-center">
                                         <svg class="mr-3 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -320,7 +320,7 @@
              <div>
                  <h3 class="px-3 mb-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Điều phối xe</h3>
                  <div class="space-y-1">
-                     <a href="{{ route('vehicles.index', ['filter' => 'active']) }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
+                     <a href="{{ route('vehicles.active') }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
                          Xe hoạt động
                      </a>
                      <a href="{{ route('vehicles.ready') }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
@@ -361,7 +361,7 @@
                      <a href="{{ route('vehicles.repairing') }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
                          Sửa chữa
                      </a>
-                     <a href="{{ route('vehicles.index', ['filter' => 'maintaining']) }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
+                     <a href="{{ route('maintenance.schedules.index') }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
                          Bảo trì
                      </a>
                  </div>

@@ -24,6 +24,7 @@ class VehicleManagementController extends Controller
             $routeName = $request->route()->getName();
             if ($routeName) {
                 $filter = match($routeName) {
+                    'vehicles.active' => 'active',
                     'vehicles.ready' => 'ready',
                     'vehicles.running' => 'running',
                     'vehicles.paused' => 'paused',

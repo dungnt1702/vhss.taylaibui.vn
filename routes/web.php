@@ -416,6 +416,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/vehicles', [VehicleManagementController::class, 'index'])->name('vehicles.index');
     
     // RESTful vehicle status routes
+    Route::get('/vehicles/active', [VehicleManagementController::class, 'index'])->name('vehicles.active');
     Route::get('/vehicles/ready', [VehicleManagementController::class, 'index'])->name('vehicles.ready');
     Route::get('/vehicles/running', [VehicleManagementController::class, 'index'])->name('vehicles.running');
     Route::get('/vehicles/paused', [VehicleManagementController::class, 'index'])->name('vehicles.paused');
