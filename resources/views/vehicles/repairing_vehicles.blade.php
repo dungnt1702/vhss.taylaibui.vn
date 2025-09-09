@@ -11,68 +11,85 @@
         <p class="text-neutral-600 mt-2">Báo cáo và lịch sử các vấn đề sửa chữa</p>
     </div>
 
-    <!-- Grid Display for repair issues -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="repair-issues-grid">
-        @foreach($repairIssues as $issue)
-        <div class="bg-white rounded-lg shadow-md p-4 border-l-4 border-orange-500" data-issue-id="{{ $issue->id }}">
-            <div class="flex justify-between items-start mb-3">
-                <h3 class="text-lg font-semibold text-neutral-900">{{ $issue->vehicle->name }}</h3>
-                <span class="px-2 py-1 text-xs font-medium rounded-full {{ \App\Models\VehicleTechnicalIssue::getStatusLabels()[$issue->status] ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800' }}">
-                    {{ \App\Models\VehicleTechnicalIssue::getStatusLabels()[$issue->status] ?? $issue->status }}
-                </span>
-            </div>
-            
-            <div class="space-y-2 mb-4">
-                <div class="flex items-center text-sm text-neutral-600">
-                    <div class="w-4 h-4 rounded-full mr-2" style="background-color: {{ $issue->vehicle->color }};"></div>
-                    <span>{{ $issue->vehicle->color }}</span>
-                </div>
-                
-                <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                    <div class="text-sm font-medium text-orange-800 mb-1">
-                        {{ \App\Models\VehicleTechnicalIssue::getRepairCategories()[$issue->category] ?? $issue->category }}
-                    </div>
-                    @if($issue->description)
-                        <div class="text-xs text-orange-700 mb-1">
-                            {{ Str::limit($issue->description, 100) }}
-                        </div>
-                    @endif
-                    @if($issue->notes)
-                        <div class="text-xs text-orange-600">
-                            <span class="font-medium">Ghi chú:</span> {{ Str::limit($issue->notes, 80) }}
-                        </div>
-                    @endif
-                    <div class="text-xs text-orange-600 mt-1">
-                        <span class="font-medium">Báo cáo:</span> {{ $issue->reported_at->format('d/m/Y H:i') }}
-                    </div>
-                    @if($issue->reporter)
-                        <div class="text-xs text-orange-600">
-                            <span class="font-medium">Người báo cáo:</span> {{ $issue->reporter->name }}
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex flex-wrap gap-2" id="issue-buttons-{{ $issue->id }}">
-                @if($issue->status !== 'completed')
-                    <button onclick="vehicleOperations.completeRepairIssue({{ $issue->id }})" class="btn btn-success btn-sm">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Hoàn thành
-                    </button>
-                @endif
-                <button onclick="vehicleOperations.viewIssueDetails({{ $issue->id }})" class="btn btn-info btn-sm">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    Chi tiết
-                </button>
-            </div>
+    <!-- Table Display for repair issues -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Xe</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hạng mục</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mô tả</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Người báo cáo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời gian</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($repairIssues as $issue)
+                    <tr class="hover:bg-gray-50" data-issue-id="{{ $issue->id }}">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 rounded-full mr-3" style="background-color: {{ $issue->vehicle->color }};"></div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $issue->vehicle->name }}</div>
+                                    <div class="text-sm text-gray-500">{{ $issue->vehicle->color }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">
+                                {{ \App\Models\VehicleTechnicalIssue::getRepairCategories()[$issue->category] ?? $issue->category }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-900">
+                                @if($issue->description)
+                                    {{ Str::limit($issue->description, 50) }}
+                                @else
+                                    <span class="text-gray-400">Không có mô tả</span>
+                                @endif
+                            </div>
+                            @if($issue->notes)
+                                <div class="text-xs text-gray-500 mt-1">
+                                    <span class="font-medium">Ghi chú:</span> {{ Str::limit($issue->notes, 30) }}
+                                </div>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full {{ \App\Models\VehicleTechnicalIssue::getStatusLabels()[$issue->status] ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800' }}">
+                                {{ \App\Models\VehicleTechnicalIssue::getStatusLabels()[$issue->status] ?? $issue->status }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ $issue->reporter->name ?? 'N/A' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ $issue->reported_at->format('d/m/Y H:i') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                @if($issue->status !== 'completed')
+                                    <button onclick="vehicleOperations.completeRepairIssue({{ $issue->id }})" class="text-green-600 hover:text-green-900">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </button>
+                                @endif
+                                <button onclick="vehicleOperations.viewIssueDetails({{ $issue->id }})" class="text-blue-600 hover:text-blue-900">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-        @endforeach
     </div>
 
     <!-- Empty State -->

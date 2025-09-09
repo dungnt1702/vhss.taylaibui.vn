@@ -34,6 +34,22 @@ class VehicleManagementController extends Controller
             default => Vehicle::latest()->paginate($perPage)->appends($request->query())
         };
 
+        // Get technical issues for repairing and maintaining views
+        $repairIssues = null;
+        $maintenanceIssues = null;
+        
+        if ($filter === 'repairing') {
+            $repairIssues = \App\Models\VehicleTechnicalIssue::where('issue_type', 'repair')
+                ->with(['vehicle', 'reporter'])
+                ->latest('reported_at')
+                ->get();
+        } elseif ($filter === 'maintaining') {
+            $maintenanceIssues = \App\Models\VehicleTechnicalIssue::where('issue_type', 'maintenance')
+                ->with(['vehicle', 'reporter'])
+                ->latest('reported_at')
+                ->get();
+        }
+
         $pageTitle = match($filter) {
             'vehicles_list' => 'Danh sách xe',
             'active' => 'Xe hoạt động',
@@ -88,6 +104,8 @@ class VehicleManagementController extends Controller
             'pausedVehicles',
             'expiredVehicles',
             'routingVehicles',
+            'repairIssues',
+            'maintenanceIssues',
             'filter', 
             'pageTitle', 
             'displayMode', 
