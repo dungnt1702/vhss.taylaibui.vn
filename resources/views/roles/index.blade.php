@@ -35,8 +35,8 @@
                     </div>
                 @endif
 
-                <!-- Roles Table -->
-                <div class="overflow-x-auto">
+                <!-- Desktop Table View -->
+                <div class="hidden md:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -128,6 +128,83 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Mobile Card View -->
+                <div class="md:hidden space-y-4">
+                    @forelse($roles as $role)
+                        <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                            <!-- Role Header -->
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h4 class="text-lg font-medium text-gray-900">{{ $role->display_name }}</h4>
+                                    <p class="text-sm text-gray-500">{{ $role->name }}</p>
+                                </div>
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    {{ $role->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $role->is_active ? 'Hoạt động' : 'Không hoạt động' }}
+                                </span>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-3">
+                                <p class="text-sm text-gray-600">{{ $role->description ?? 'Không có mô tả' }}</p>
+                            </div>
+
+                            <!-- Stats -->
+                            <div class="flex space-x-4 mb-4">
+                                <div class="text-center">
+                                    <div class="text-lg font-semibold text-blue-600">{{ $role->permissions ? $role->permissions->count() : 0 }}</div>
+                                    <div class="text-xs text-gray-500">Quyền hạn</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-semibold text-green-600">{{ $role->users ? $role->users->count() : 0 }}</div>
+                                    <div class="text-xs text-gray-500">Người dùng</div>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex flex-wrap gap-2">
+                                @if(auth()->user()->hasPermission('roles.view'))
+                                    <a href="{{ route('roles.show', $role) }}" 
+                                       class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100">
+                                        Xem
+                                    </a>
+                                @endif
+                                @if(auth()->user()->hasPermission('roles.edit'))
+                                    <a href="{{ route('roles.edit', $role) }}" 
+                                       class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100">
+                                        Sửa
+                                    </a>
+                                @endif
+                                @if(auth()->user()->hasPermission('roles.manage'))
+                                    <a href="{{ route('roles.permissions', $role) }}" 
+                                       class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-600 bg-green-50 rounded-md hover:bg-green-100">
+                                        Quyền hạn
+                                    </a>
+                                @endif
+                                @if(auth()->user()->hasPermission('roles.delete') && (!$role->users || $role->users->count() == 0))
+                                    <form method="POST" action="{{ route('roles.destroy', $role) }}" 
+                                          class="inline" 
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa vai trò này?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-md hover:bg-red-100">
+                                            Xóa
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-8">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                            </svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">Không có vai trò nào</h3>
+                            <p class="mt-1 text-sm text-gray-500">Bắt đầu bằng cách tạo vai trò mới.</p>
+                        </div>
+                    @endforelse
                 </div>
 
                 <!-- Pagination -->
