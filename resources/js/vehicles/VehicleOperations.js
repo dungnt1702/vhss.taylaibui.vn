@@ -459,34 +459,34 @@ class VehicleOperations extends VehicleBase {
      * Show navigation hint
      */
     showNavigationHint(vehicleId, newStatus) {
-        const currentFilter = new URLSearchParams(window.location.search).get('filter');
-        let targetFilter = null;
+        const currentPath = window.location.pathname;
+        let targetRoute = null;
         
-        // Determine target filter based on new status
+        // Determine target route based on new status
         switch (newStatus) {
             case 'running':
-                targetFilter = 'running';
+                targetRoute = '/vehicles/running';
                 break;
             case 'paused':
-                targetFilter = 'paused';
+                targetRoute = '/vehicles/paused';
                 break;
             case 'expired':
-                targetFilter = 'expired';
+                targetRoute = '/vehicles/expired';
                 break;
             case 'ready':
-                targetFilter = 'ready'; // active screen shows ready vehicles
+                targetRoute = '/vehicles/ready';
                 break;
         }
         
         // Show hint if we're not on the target screen
-        if (targetFilter && currentFilter !== targetFilter) {
+        if (targetRoute && !currentPath.includes(targetRoute.replace('/vehicles/', ''))) {
             const vehicleName = this.getVehicleName(vehicleId);
             const statusText = newStatus === 'running' ? 'đang chạy' : 
                              newStatus === 'paused' ? 'tạm dừng' : 
-                             newStatus === 'expired' ? 'hết giờ' : 'đang chờ';
+                             newStatus === 'expired' ? 'hết giờ' : 'sẵn sàng';
             
             // Optional: Show a small notification to user
-            this.showNotification(`Xe ${vehicleName} đã ${statusText}. Chuyển đến màn hình ${targetFilter} để xem.`, 'info');
+            this.showNotification(`Xe ${vehicleName} đã ${statusText}. Chuyển đến màn hình tương ứng để xem.`, 'info');
         }
     }
 
