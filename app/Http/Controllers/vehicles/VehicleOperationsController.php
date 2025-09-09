@@ -619,5 +619,83 @@ class VehicleOperationsController extends Controller
             }
         }
     }
+
+    /**
+     * Process technical issue (assign, update status, add result)
+     */
+    public function processIssue(Request $request, $issueId)
+    {
+        try {
+            // Validate request data
+            $request->validate([
+                'assigned_to' => 'required|exists:users,id',
+                'status' => 'required|in:pending,in_progress,completed,cancelled',
+                'result' => 'nullable|string|max:1000'
+            ]);
+
+            // Get the technical issue
+            $issue = \App\Models\VehicleTechnicalIssue::findOrFail($issueId);
+
+            // Update the issue
+            $issue->update([
+                'assigned_to' => $request->assigned_to,
+                'status' => $request->status,
+                'result' => $request->input('result', ''),
+                'completed_at' => $request->status === 'completed' ? now() : null
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật thông tin xử lý thành công!',
+                'issue' => $issue->load(['vehicle', 'reporter', 'assignee'])
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi xử lý vấn đề kỹ thuật: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi xử lý vấn đề kỹ thuật'
+            ], 500);
+        }
+    }
+
+    public function editIssue(Request $request, $issueId)
+    {
+        try {
+            $request->validate([
+                'description' => 'required|string|max:1000',
+                'notes' => 'nullable|string|max:500',
+                'category' => 'required|string'
+            ]);
+
+            $issue = \App\Models\VehicleTechnicalIssue::findOrFail($issueId);
+            
+            // Check if user is the reporter
+            if ($issue->reported_by != auth()->id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn chỉ có thể chỉnh sửa báo cáo của chính mình'
+                ], 403);
+            }
+
+            $issue->update([
+                'description' => $request->description,
+                'notes' => $request->input('notes', ''),
+                'category' => $request->category
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật báo cáo thành công!',
+                'issue' => $issue->load(['vehicle', 'reporter', 'assignee'])
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi chỉnh sửa báo cáo: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi chỉnh sửa báo cáo'
+            ], 500);
+        }
+    }
 }
 

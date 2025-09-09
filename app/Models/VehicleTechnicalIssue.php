@@ -13,6 +13,7 @@ class VehicleTechnicalIssue extends Model
         'category',
         'description',
         'notes',
+        'result',
         'status',
         'reported_at',
         'completed_at',

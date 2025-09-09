@@ -38,17 +38,17 @@ class VehicleManagementController extends Controller
         $repairIssues = null;
         $maintenanceIssues = null;
         
-        if ($filter === 'repairing') {
-            $repairIssues = \App\Models\VehicleTechnicalIssue::where('issue_type', 'repair')
-                ->with(['vehicle', 'reporter'])
-                ->latest('reported_at')
-                ->get();
-        } elseif ($filter === 'maintaining') {
-            $maintenanceIssues = \App\Models\VehicleTechnicalIssue::where('issue_type', 'maintenance')
-                ->with(['vehicle', 'reporter'])
-                ->latest('reported_at')
-                ->get();
-        }
+            if ($filter === 'repairing') {
+                $repairIssues = \App\Models\VehicleTechnicalIssue::where('issue_type', 'repair')
+                    ->with(['vehicle', 'reporter', 'assignee'])
+                    ->latest('reported_at')
+                    ->get();
+            } elseif ($filter === 'maintaining') {
+                $maintenanceIssues = \App\Models\VehicleTechnicalIssue::where('issue_type', 'maintenance')
+                    ->with(['vehicle', 'reporter', 'assignee'])
+                    ->latest('reported_at')
+                    ->get();
+            }
 
         $pageTitle = match($filter) {
             'vehicles_list' => 'Danh sách xe',

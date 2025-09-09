@@ -96,6 +96,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/api/vehicles/return-yard', [VehicleOperationsController::class, 'returnToYard'])->name('api.vehicles.return-yard');
     Route::post('/api/vehicles/return-yard-with-notes', [VehicleOperationsController::class, 'returnToYardWithNotes'])->name('api.vehicles.return-yard-with-notes');
     Route::post('/api/vehicles/technical-update', [VehicleOperationsController::class, 'technicalUpdate'])->name('api.vehicles.technical-update');
+    Route::post('/api/technical-issues/{issue}/process', [VehicleOperationsController::class, 'processIssue'])->name('api.technical-issues.process');
+Route::post('/api/technical-issues/{issue}/edit', [VehicleOperationsController::class, 'editIssue'])->name('api.technical-issues.edit');
     Route::patch('/api/vehicles/{vehicle}/pause', [VehicleOperationsController::class, 'pause'])->name('api.vehicles.pause');
     Route::patch('/api/vehicles/{vehicle}/resume', [VehicleOperationsController::class, 'resume'])->name('api.vehicles.resume');
     Route::post('/api/vehicles/add-time', [VehicleOperationsController::class, 'addTime'])->name('api.vehicles.add-time');
