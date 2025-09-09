@@ -18,6 +18,11 @@ class VehicleManagementController extends Controller
     {
         $filter = $request->get('filter', 'all');
         $perPage = $request->get('per_page', 10);
+
+        // Redirect legacy maintaining filter to the new Maintenance module
+        if ($filter === 'maintaining') {
+            return redirect()->route('maintenance.schedules.index');
+        }
         
         $vehicles = match($filter) {
             'vehicles_list' => Vehicle::latest()->paginate($perPage)->appends($request->query()),
@@ -29,7 +34,7 @@ class VehicleManagementController extends Controller
             'paused' => Vehicle::paused()->latest()->paginate($perPage)->appends($request->query()),
             'route' => Vehicle::route()->latest()->paginate($perPage)->appends($request->query()),
             'repairing' => Vehicle::where('status', 'repairing')->latest()->paginate($perPage)->appends($request->query()),
-            'maintaining' => Vehicle::where('status', 'maintaining')->latest()->paginate($perPage)->appends($request->query()),
+            // 'maintaining' legacy handled above by redirect
             'attributes' => Vehicle::latest()->paginate($perPage)->appends($request->query()),
             default => Vehicle::latest()->paginate($perPage)->appends($request->query())
         };
@@ -40,11 +45,6 @@ class VehicleManagementController extends Controller
         
             if ($filter === 'repairing') {
                 $repairIssues = \App\Models\VehicleTechnicalIssue::where('issue_type', 'repair')
-                    ->with(['vehicle', 'reporter', 'assignee'])
-                    ->latest('reported_at')
-                    ->get();
-            } elseif ($filter === 'maintaining') {
-                $maintenanceIssues = \App\Models\VehicleTechnicalIssue::where('issue_type', 'maintenance')
                     ->with(['vehicle', 'reporter', 'assignee'])
                     ->latest('reported_at')
                     ->get();
@@ -59,7 +59,7 @@ class VehicleManagementController extends Controller
             'expired' => 'Xe hết giờ',
             'paused' => 'Xe tạm dừng',
             'repairing' => 'Xe đang sửa chữa',
-            'maintaining' => 'Xe đang bảo trì',
+            // 'maintaining' legacy handled by redirect
             'attributes' => 'Thuộc tính xe',
             default => 'Danh sách xe'
         };

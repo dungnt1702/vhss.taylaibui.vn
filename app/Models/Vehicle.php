@@ -182,4 +182,14 @@ class Vehicle extends Model
     {
         return $this->hasMany(\App\Models\VehicleTechnicalIssue::class)->where('issue_type', 'maintenance');
     }
+
+    public function maintenanceSchedules()
+    {
+        return $this->hasMany(MaintenanceSchedule::class);
+    }
+
+    public function maintenanceRecords()
+    {
+        return $this->hasManyThrough(MaintenanceRecord::class, MaintenanceSchedule::class);
+    }
 }

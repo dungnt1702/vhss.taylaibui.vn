@@ -480,6 +480,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/api/vehicles/technical-update', [VehicleOperationsController::class, 'technicalUpdate'])->name('api.vehicles.technical-update');
     Route::post('/api/technical-issues/{issue}/process', [VehicleOperationsController::class, 'processIssue'])->name('api.technical-issues.process');
 Route::post('/api/technical-issues/{issue}/edit', [VehicleOperationsController::class, 'editIssue'])->name('api.technical-issues.edit');
+
+// Maintenance Schedule Routes
+Route::prefix('maintenance')->name('maintenance.')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\MaintenanceScheduleController::class, 'dashboard'])->name('dashboard');
+    Route::get('/schedules', [App\Http\Controllers\MaintenanceScheduleController::class, 'index'])->name('schedules.index');
+    Route::get('/schedules/calendar', [App\Http\Controllers\MaintenanceScheduleController::class, 'calendar'])->name('schedules.calendar');
+    Route::get('/schedules/create', [App\Http\Controllers\MaintenanceScheduleController::class, 'create'])->name('schedules.create');
+    Route::post('/schedules', [App\Http\Controllers\MaintenanceScheduleController::class, 'store'])->name('schedules.store');
+    Route::get('/schedules/{schedule}', [App\Http\Controllers\MaintenanceScheduleController::class, 'show'])->name('schedules.show');
+    Route::get('/schedules/{schedule}/perform', [App\Http\Controllers\MaintenanceScheduleController::class, 'perform'])->name('schedules.perform');
+    Route::post('/schedules/{schedule}/record', [App\Http\Controllers\MaintenanceScheduleController::class, 'storeRecord'])->name('schedules.record');
+    Route::post('/schedules/mark-overdue', [App\Http\Controllers\MaintenanceScheduleController::class, 'markOverdue'])->name('schedules.mark-overdue');
+});
     Route::patch('/api/vehicles/{vehicle}/pause', [VehicleOperationsController::class, 'pause'])->name('api.vehicles.pause');
     Route::patch('/api/vehicles/{vehicle}/resume', [VehicleOperationsController::class, 'resume'])->name('api.vehicles.resume');
     Route::post('/api/vehicles/add-time', [VehicleOperationsController::class, 'addTime'])->name('api.vehicles.add-time');
