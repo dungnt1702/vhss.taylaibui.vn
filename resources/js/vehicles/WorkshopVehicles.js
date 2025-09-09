@@ -502,13 +502,30 @@ class WorkshopVehicles extends VehicleBase {
      * Setup technical update modal
      */
     setupTechnicalUpdateModal() {
-        const form = document.getElementById('technical-update-form');
-        if (form) {
-            form.addEventListener('submit', (event) => this.handleTechnicalUpdateSubmit(event));
+        // Wait for DOM to be fully loaded before setting up modal
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.initializeTechnicalUpdateModal();
+            });
+        } else {
+            this.initializeTechnicalUpdateModal();
         }
+    }
 
-        // Initialize with repair categories (no need for issue type change handler)
-        this.updateCategoryOptions('repair');
+    /**
+     * Initialize technical update modal after DOM is ready
+     */
+    initializeTechnicalUpdateModal() {
+        // Use setTimeout to ensure modal is fully rendered
+        setTimeout(() => {
+            const form = document.getElementById('technical-update-form');
+            if (form) {
+                form.addEventListener('submit', (event) => this.handleTechnicalUpdateSubmit(event));
+            }
+
+            // Initialize with repair categories (no need for issue type change handler)
+            this.updateCategoryOptions('repair');
+        }, 100);
     }
 
     /**
@@ -557,7 +574,7 @@ class WorkshopVehicles extends VehicleBase {
         console.log('categorySelect element:', categorySelect);
         
         if (!categorySelect) {
-            console.error('Category select element not found!');
+            console.warn('Category select element not found! Modal may not be loaded yet.');
             return;
         }
 
