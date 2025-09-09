@@ -470,8 +470,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Vehicle Attributes
     Route::get('/attributes-list', [AttributesListController::class, 'index'])->name('attributes-list.index');
     
-    // Vehicles List
-    Route::get('/vehicles-list', [VehiclesListController::class, 'index'])->name('vehicles.list');
+    // Vehicles List (legacy route - redirect to new RESTful route)
+    Route::get('/vehicles-list', function() {
+        return redirect()->route('vehicles.list');
+    });
     
 
     

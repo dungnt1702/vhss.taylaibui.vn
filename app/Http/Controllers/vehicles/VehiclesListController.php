@@ -48,8 +48,24 @@ class VehiclesListController extends Controller
         $powerOptions = VehicleAttribute::getPowerOptions();
         $wheelSizes = VehicleAttribute::getWheelSizes();
 
-        return view('vehicles.vehicles_list', compact(
+        // Initialize all vehicle arrays for consistency with VehicleManagementController
+        $activeVehicles = collect();
+        $runningVehicles = collect();
+        $pausedVehicles = collect();
+        $expiredVehicles = collect();
+        $routingVehicles = collect();
+        $repairIssues = null;
+        $maintenanceIssues = null;
+
+        return view('vehicles.vehicles_management', compact(
             'vehicles', 
+            'activeVehicles',
+            'runningVehicles',
+            'pausedVehicles',
+            'expiredVehicles',
+            'routingVehicles',
+            'repairIssues',
+            'maintenanceIssues',
             'filter', 
             'pageTitle', 
             'displayMode', 
