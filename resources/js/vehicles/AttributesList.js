@@ -3,7 +3,6 @@
  * Extends VehicleBase with attributes-specific functionality
  */
 
-import { VehicleBase } from './VehicleBase.js';
 
 class AttributesList extends VehicleBase {
     constructor() {
@@ -105,18 +104,32 @@ class AttributesList extends VehicleBase {
      * Delete attribute
      */
     deleteAttribute(type, value) {
-        if (confirm(`Bạn có chắc muốn xóa ${this.getTypeName(type)} "${value}"?`)) {
-            this.performAttributeOperation('/api/attributes/delete', {
-                type: type,
-                value: value
-            });
-        }
+        this.showNotificationModal(
+            'Xác nhận', 
+            `Bạn có chắc muốn xóa ${this.getTypeName(type)} "${value}"?`, 
+            'confirm',
+            () => {
+                this.performAttributeOperation('/api/attributes/delete', {
+                    type: type,
+                    value: value
+                });
+            }
+        );
     }
 
     /**
      * Edit attribute
      */
     editAttribute(type, value) {
+        // For now, use a simple prompt replacement with modal
+        this.showNotificationModal(
+            'Chỉnh sửa', 
+            `Chỉnh sửa ${this.getTypeName(type)} "${value}":`, 
+            'info'
+        );
+        
+        // TODO: Implement proper input modal for editing
+        // For now, we'll keep the prompt functionality
         const newValue = prompt(`Chỉnh sửa ${this.getTypeName(type)} "${value}":`, value);
         if (newValue && newValue !== value) {
             this.performAttributeOperation('/api/attributes/edit', {
@@ -309,5 +322,5 @@ document.addEventListener('DOMContentLoaded', function() {
     window.attributesList = attributesList;
 });
 
-// Export for ES6 modules
-export default AttributesList;
+// Make AttributesList available globally
+window.AttributesList = AttributesList;

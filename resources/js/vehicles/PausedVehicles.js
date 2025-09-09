@@ -3,7 +3,6 @@
  * Extends VehicleBase with paused-specific functionality
  */
 
-import { VehicleBase } from './VehicleBase.js';
 
 class PausedVehicles extends VehicleBase {
     constructor() {
@@ -104,5 +103,5 @@ document.addEventListener('DOMContentLoaded', function() {
     window.pausedVehicles = pausedVehicles;
 });
 
-// Export for ES6 modules
-export default PausedVehicles;
+// Make PausedVehicles available globally
+window.PausedVehicles = PausedVehicles;

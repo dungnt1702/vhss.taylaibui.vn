@@ -7,9 +7,6 @@ export default defineConfig({
             input: [
                 'resources/css/app.css', 
                 'resources/js/app.js',
-                'resources/css/vehicles/vehicles-list.css',
-                // Use the VehicleClasses.js entry point for proper dependency management
-                'resources/js/vehicles/VehicleClasses.js',
                 // Vehicle-specific CSS files
                 'resources/css/vehicles/active-vehicles.css',
                 'resources/css/vehicles/ready-vehicles.css',
@@ -18,7 +15,19 @@ export default defineConfig({
                 'resources/css/vehicles/expired-vehicles.css',
                 'resources/css/vehicles/workshop-vehicles.css',
                 'resources/css/vehicles/repairing-vehicles.css',
-                'resources/css/vehicles/attributes-list.css'
+                'resources/css/vehicles/attributes-list.css',
+                'resources/css/vehicles/vehicles-list.css',
+                // Vehicle-specific JS files
+                'resources/js/vehicles/VehicleBase.js',
+                'resources/js/vehicles/ActiveVehicles.js',
+                'resources/js/vehicles/ReadyVehicles.js',
+                'resources/js/vehicles/RunningVehicles.js',
+                'resources/js/vehicles/PausedVehicles.js',
+                'resources/js/vehicles/ExpiredVehicles.js',
+                'resources/js/vehicles/WorkshopVehicles.js',
+                'resources/js/vehicles/RepairingVehicles.js',
+                'resources/js/vehicles/AttributesList.js',
+                'resources/js/vehicles/VehiclesList.js'
             ],
             refresh: true,
         }),

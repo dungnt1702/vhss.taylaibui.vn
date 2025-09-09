@@ -3,8 +3,6 @@
  * Extends VehicleBase with repair-specific functionality
  */
 
-import { VehicleBase } from './VehicleBase.js';
-
 class RepairingVehicles extends VehicleBase {
     constructor() {
         super('Repairing Vehicles');
@@ -327,15 +325,15 @@ class RepairingVehicles extends VehicleBase {
             const result = await response.json();
             
             if (result.success) {
-                alert('Thêm báo cáo sửa chữa thành công!');
+                this.showNotification('Thêm báo cáo sửa chữa thành công!', 'success');
                 this.closeAddRepairModal();
                 window.location.reload();
             } else {
-                alert('Lỗi: ' + (result.message || 'Có lỗi xảy ra'));
+                this.showNotification('Lỗi: ' + (result.message || 'Có lỗi xảy ra'), 'error');
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Lỗi: ' + error.message);
+            this.showNotification('Lỗi: ' + error.message, 'error');
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
@@ -374,15 +372,15 @@ class RepairingVehicles extends VehicleBase {
             const data = await response.json();
             
             if (data.success) {
-                alert('Cập nhật thành công!');
+                this.showNotification('Cập nhật thành công!', 'success');
                 this.closeProcessModal();
                 window.location.reload();
             } else {
-                alert('Có lỗi xảy ra: ' + (data.message || 'Không thể cập nhật'));
+                this.showNotification('Có lỗi xảy ra: ' + (data.message || 'Không thể cập nhật'), 'error');
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Có lỗi xảy ra khi cập nhật');
+            this.showNotification('Có lỗi xảy ra khi cập nhật', 'error');
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
@@ -421,15 +419,15 @@ class RepairingVehicles extends VehicleBase {
             const data = await response.json();
             
             if (data.success) {
-                alert('Cập nhật thành công!');
+                this.showNotification('Cập nhật thành công!', 'success');
                 this.closeEditModal();
                 window.location.reload();
             } else {
-                alert('Có lỗi xảy ra: ' + (data.message || 'Không thể cập nhật'));
+                this.showNotification('Có lỗi xảy ra: ' + (data.message || 'Không thể cập nhật'), 'error');
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Có lỗi xảy ra khi cập nhật');
+            this.showNotification('Có lỗi xảy ra khi cập nhật', 'error');
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
@@ -595,28 +593,33 @@ class RepairingVehicles extends VehicleBase {
      * Complete repair for vehicle
      */
     async completeRepair(vehicleId, button) {
-        if (confirm(`Bạn có chắc muốn hoàn thành sửa chữa xe ${vehicleId}?`)) {
-            try {
-                this.showButtonLoading(button, 'Đang hoàn thành sửa chữa...');
-                
-                const response = await this.makeApiCall(`/api/vehicles/${vehicleId}/complete-repair`, {
-                    method: 'POST',
-                    body: JSON.stringify({})
-                });
+        this.showNotificationModal(
+            'Xác nhận', 
+            `Bạn có chắc muốn hoàn thành sửa chữa xe ${vehicleId}?`, 
+            'confirm',
+            async () => {
+                try {
+                    this.showButtonLoading(button, 'Đang hoàn thành sửa chữa...');
+                    
+                    const response = await this.makeApiCall(`/api/vehicles/${vehicleId}/complete-repair`, {
+                        method: 'POST',
+                        body: JSON.stringify({})
+                    });
 
-                if (response.success) {
-                    this.showNotification('Hoàn thành sửa chữa thành công!', 'success');
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+                    if (response.success) {
+                        this.showNotification('Hoàn thành sửa chữa thành công!', 'success');
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error completing repair:', error);
+                    this.showNotification('Có lỗi xảy ra khi hoàn thành sửa chữa', 'error');
+                } finally {
+                    this.restoreButtonState(button);
                 }
-            } catch (error) {
-                console.error('Error completing repair:', error);
-                this.showNotification('Có lỗi xảy ra khi hoàn thành sửa chữa', 'error');
-            } finally {
-                this.restoreButtonState(button);
             }
-        }
+        );
     }
 
     /**
@@ -794,7 +797,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
 });
 
-// Export for ES6 modules
-export default RepairingVehicles;
+// Make RepairingVehicles available globally
+window.RepairingVehicles = RepairingVehicles;
 
 

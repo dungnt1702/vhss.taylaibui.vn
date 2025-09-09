@@ -3,7 +3,7 @@
  * Contains common methods and utilities used across all vehicle statuses
  */
 
-export class VehicleBase {
+class VehicleBase {
     constructor(pageName) {
         this.pageName = pageName;
         this.vehicleCards = [];
@@ -30,6 +30,16 @@ export class VehicleBase {
      * Setup global modal functions
      */
     setupGlobalModalFunctions() {
+        // Create global functions immediately
+        this.setupModalFunctions();
+    }
+
+    /**
+     * Setup modal functions after delay
+     */
+    setupModalFunctions() {
+        console.log('🔧 Setting up modal functions...');
+        
         // Add Repair Modal functions
         window.closeAddRepairModal = () => {
             const modal = document.getElementById('add-repair-modal');
@@ -62,6 +72,151 @@ export class VehicleBase {
                 modal.classList.add('hidden');
             }
         };
+
+        // Workshop Modal functions
+        window.openWorkshopModal = (vehicleId) => {
+            console.log('🔧 openWorkshopModal called with vehicleId:', vehicleId);
+            const modal = document.getElementById('move-workshop-modal');
+            const vehicleIdInput = document.getElementById('workshop-vehicle-id');
+            if (modal && vehicleIdInput) {
+                vehicleIdInput.value = vehicleId;
+                modal.classList.remove('hidden');
+                console.log('✅ Workshop modal opened successfully');
+            } else {
+                console.error('❌ Workshop modal elements not found');
+            }
+        };
+
+        window.closeWorkshopModal = () => {
+            const modal = document.getElementById('move-workshop-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        // Additional modal functions for different screens
+        window.closeStartTimerModal = () => {
+            const modal = document.getElementById('start-timer-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeAssignRouteModal = () => {
+            const modal = document.getElementById('assign-route-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeMoveWorkshopModal = () => {
+            const modal = document.getElementById('move-workshop-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeEditNotesModal = () => {
+            const modal = document.getElementById('edit-notes-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeTechnicalUpdateModal = () => {
+            const modal = document.getElementById('technical-update-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeProcessIssueModal = () => {
+            const modal = document.getElementById('process-issue-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeDescriptionDetailModal = () => {
+            const modal = document.getElementById('description-detail-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeReturnToYardModal = () => {
+            const modal = document.getElementById('return-to-yard-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeEditIssueModal = () => {
+            const modal = document.getElementById('edit-issue-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        // Additional global functions for active vehicles
+        window.returnSelectedRoutingVehiclesToYard = () => {
+            if (window.activeVehicles && window.activeVehicles.returnSelectedRoutingVehiclesToYard) {
+                window.activeVehicles.returnSelectedRoutingVehiclesToYard();
+            } else {
+                console.error('window.activeVehicles not found');
+            }
+        };
+
+        window.returnSelectedVehiclesToYard = () => {
+            if (window.activeVehicles && window.activeVehicles.returnSelectedVehiclesToYard) {
+                window.activeVehicles.returnSelectedVehiclesToYard();
+            } else {
+                console.error('window.activeVehicles not found');
+            }
+        };
+
+        window.toggleSection = (sectionId) => {
+            const section = document.getElementById(sectionId);
+            const arrow = document.getElementById(sectionId.replace('-section', '-arrow'));
+            
+            if (section && arrow) {
+                if (section.style.display === 'none' || section.classList.contains('hidden')) {
+                    section.style.display = 'block';
+                    section.classList.remove('hidden');
+                    arrow.style.transform = 'rotate(180deg)';
+                } else {
+                    section.style.display = 'none';
+                    section.classList.add('hidden');
+                    arrow.style.transform = 'rotate(0deg)';
+                }
+            }
+        };
+
+        window.returnSelectedVehiclesToYard = () => {
+            if (window.activeVehicles && window.activeVehicles.returnSelectedVehiclesToYard) {
+                window.activeVehicles.returnSelectedVehiclesToYard();
+            } else {
+                console.error('window.activeVehicles not found');
+            }
+        };
+
+        // Toggle section function
+        window.toggleSection = (sectionId) => {
+            const section = document.getElementById(sectionId);
+            const arrow = document.getElementById(sectionId.replace('-section', '-arrow'));
+            
+            if (section && arrow) {
+                if (section.classList.contains('hidden')) {
+                    section.classList.remove('hidden');
+                    arrow.style.transform = 'rotate(180deg)';
+                } else {
+                    section.classList.add('hidden');
+                    arrow.style.transform = 'rotate(0deg)';
+                }
+            }
+        };
+
+        console.log('✅ Modal functions setup complete');
     }
 
     /**
@@ -1070,6 +1225,7 @@ export class VehicleBase {
      * Show success notification
      */
     showSuccess(message) {
+        console.log('=== showSuccess called with message:', message);
         this.showNotificationModal('Thành công', message, 'success');
     }
 
@@ -1149,7 +1305,7 @@ export class VehicleBase {
     /**
      * Show notification modal
      */
-    showNotificationModal(title, message, type = 'info') {
+    showNotificationModal(title, message, type = 'info', callback = null) {
         const callId = Math.random().toString(36).substr(2, 9);
         console.log(`🔔 [${callId}] showNotificationModal called: ${title} - ${message}`);
         
@@ -1158,7 +1314,7 @@ export class VehicleBase {
         if (modal) {
             // Modal is available, show it directly
             console.log(`✅ [${callId}] Modal available, showing directly`);
-            this.displayNotificationModalDirect(modal, title, message, type);
+            this.displayNotificationModalDirect(modal, title, message, type, callback);
         } else {
             // Modal not available, use retry mechanism
             console.log(`⏳ [${callId}] Modal not available, starting retry mechanism`);
@@ -1166,7 +1322,7 @@ export class VehicleBase {
                 const modal = document.getElementById('notification-modal');
                 if (modal) {
                     console.log(`✅ [${callId}] Modal found after retry, showing`);
-                    this.displayNotificationModalDirect(modal, title, message, type);
+                    this.displayNotificationModalDirect(modal, title, message, type, callback);
                 } else {
                     console.error(`❌ [${callId}] Notification modal not found after retry`);
                 }
@@ -1203,9 +1359,37 @@ export class VehicleBase {
     }
 
     /**
+     * Ensure workshop modal is loaded with retry mechanism
+     */
+    ensureWorkshopModalLoaded() {
+        return new Promise((resolve) => {
+            let retryCount = 0;
+            const maxRetries = 10; // 1 second max
+            
+            const checkModal = () => {
+                const modal = document.getElementById('move-workshop-modal');
+                if (modal) {
+                    console.log('✅ Workshop modal found after', retryCount, 'retries');
+                    resolve();
+                } else if (retryCount < maxRetries) {
+                    retryCount++;
+                    if (retryCount <= 3) { // Only log first 3 attempts
+                        console.log('⏳ Workshop modal not found, retrying in 100ms... (attempt', retryCount, '/', maxRetries, ')');
+                    }
+                    setTimeout(checkModal, 100);
+                } else {
+                    console.error('❌ Workshop modal not found after', maxRetries, 'retries');
+                    resolve(); // Resolve anyway to prevent infinite waiting
+                }
+            };
+            checkModal();
+        });
+    }
+
+    /**
      * Display notification modal directly (when modal is already available)
      */
-    displayNotificationModalDirect(modal, title, message, type) {
+    displayNotificationModalDirect(modal, title, message, type, callback = null) {
         const modalTitle = document.getElementById('notification-title');
         const modalMessage = document.getElementById('notification-message');
         const iconContainer = document.getElementById('notification-icon-container');
@@ -1217,20 +1401,25 @@ export class VehicleBase {
             return;
         }
 
-        this.displayNotificationModal(modal, modalTitle, modalMessage, iconContainer, icon, closeBtn, title, message, type);
+        this.displayNotificationModal(modal, modalTitle, modalMessage, iconContainer, icon, closeBtn, title, message, type, callback);
     }
 
     /**
      * Display the notification modal
      */
-    displayNotificationModal(modal, modalTitle, modalMessage, iconContainer, icon, closeBtn, title, message, type) {
+    displayNotificationModal(modal, modalTitle, modalMessage, iconContainer, icon, closeBtn, title, message, type, callback = null) {
 
         // Set title and message
         modalTitle.textContent = title;
         modalMessage.textContent = message;
 
         // Setup close button event listener
-        closeBtn.onclick = () => this.closeNotificationModal();
+        closeBtn.onclick = () => {
+            this.closeNotificationModal();
+            if (callback && typeof callback === 'function') {
+                callback();
+            }
+        };
 
         // Set icon and color based on type
         let iconSvg = '';
@@ -1252,6 +1441,11 @@ export class VehicleBase {
                 iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />';
                 iconColor = 'text-yellow-600';
                 bgColor = 'bg-yellow-100';
+                break;
+            case 'confirm':
+                iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />';
+                iconColor = 'text-blue-600';
+                bgColor = 'bg-blue-100';
                 break;
             default:
                 iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />';
@@ -1326,5 +1520,155 @@ if (typeof window !== 'undefined') {
         }
     };
     
+    // Make VehicleBase available globally
+    window.VehicleBase = VehicleBase;
+
+    // Create global functions immediately
+    (function() {
+        console.log('🔧 Creating global functions immediately...');
+        
+        // Status Modal functions
+        window.closeStatusModal = () => {
+            const modal = document.getElementById('status-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        // Workshop Modal functions
+        window.openWorkshopModal = (vehicleId) => {
+            console.log('🔧 openWorkshopModal called with vehicleId:', vehicleId);
+            const modal = document.getElementById('move-workshop-modal');
+            const vehicleIdInput = document.getElementById('workshop-vehicle-id');
+            if (modal && vehicleIdInput) {
+                vehicleIdInput.value = vehicleId;
+                modal.classList.remove('hidden');
+                console.log('✅ Workshop modal opened successfully');
+            } else {
+                console.error('❌ Workshop modal elements not found');
+            }
+        };
+
+        window.closeWorkshopModal = () => {
+            const modal = document.getElementById('move-workshop-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        // Additional modal functions
+        window.closeStartTimerModal = () => {
+            const modal = document.getElementById('start-timer-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeAssignRouteModal = () => {
+            const modal = document.getElementById('assign-route-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeMoveWorkshopModal = () => {
+            const modal = document.getElementById('move-workshop-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeEditNotesModal = () => {
+            const modal = document.getElementById('edit-notes-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeTechnicalUpdateModal = () => {
+            const modal = document.getElementById('technical-update-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeProcessIssueModal = () => {
+            const modal = document.getElementById('process-issue-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeDescriptionDetailModal = () => {
+            const modal = document.getElementById('description-detail-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeReturnToYardModal = () => {
+            const modal = document.getElementById('return-to-yard-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        window.closeEditIssueModal = () => {
+            const modal = document.getElementById('edit-issue-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+
+        // Additional global functions for active vehicles
+        window.returnSelectedRoutingVehiclesToYard = () => {
+            if (window.activeVehicles && window.activeVehicles.returnSelectedRoutingVehiclesToYard) {
+                window.activeVehicles.returnSelectedRoutingVehiclesToYard();
+            } else {
+                console.error('window.activeVehicles not found');
+            }
+        };
+
+        window.returnSelectedVehiclesToYard = () => {
+            if (window.activeVehicles && window.activeVehicles.returnSelectedVehiclesToYard) {
+                window.activeVehicles.returnSelectedVehiclesToYard();
+            } else {
+                console.error('window.activeVehicles not found');
+            }
+        };
+
+        window.toggleSection = (sectionId) => {
+            const section = document.getElementById(sectionId);
+            const arrow = document.getElementById(sectionId.replace('-section', '-arrow'));
+            
+            if (section && arrow) {
+                if (section.style.display === 'none' || section.classList.contains('hidden')) {
+                    section.style.display = 'block';
+                    section.classList.remove('hidden');
+                    arrow.style.transform = 'rotate(180deg)';
+                } else {
+                    section.style.display = 'none';
+                    section.classList.add('hidden');
+                    arrow.style.transform = 'rotate(0deg)';
+                }
+            }
+        };
+
+        console.log('✅ Global functions created successfully');
+    })();
+
+    // Initialize VehicleBase when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🔍 VehicleBase DOMContentLoaded event fired ...');
+        
+        // Initialize global VehicleBase instance
+        window.vehicleBase = new VehicleBase('Global');
+        window.vehicleBase.init();
+        
+        console.log('✅ VehicleBase initialized successfully');
+    });
 
 }
+
+
+

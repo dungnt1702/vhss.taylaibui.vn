@@ -3,7 +3,6 @@
  * Extends VehicleBase with list-specific functionality
  */
 
-import { VehicleBase } from './VehicleBase.js';
 
 class VehiclesList extends VehicleBase {
     constructor() {
@@ -571,29 +570,34 @@ class VehiclesList extends VehicleBase {
      * Delete vehicle
      */
     async deleteVehicle(vehicleId) {
-        if (confirm('Bạn có chắc chắn muốn xóa xe này?')) {
-            try {
-                // Call API to delete vehicle
-                const response = await fetch(`/vehicles/${vehicleId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+        this.showNotificationModal(
+            'Xác nhận', 
+            'Bạn có chắc chắn muốn xóa xe này?', 
+            'confirm',
+            async () => {
+                try {
+                    // Call API to delete vehicle
+                    const response = await fetch(`/vehicles/${vehicleId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        // Reload page after successful deletion
+                        window.location.reload();
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                });
-                
-                if (response.ok) {
-                    // Reload page after successful deletion
-                    window.location.reload();
-                } else {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                } catch (error) {
+                    console.error('Error deleting vehicle:', error);
+                    this.showNotification('Không thể xóa xe. Vui lòng thử lại.', 'error');
                 }
-            } catch (error) {
-                console.error('Error deleting vehicle:', error);
-                this.showNotification('Không thể xóa xe. Vui lòng thử lại.', 'error');
             }
-        }
+        );
     }
 }
 
@@ -787,5 +791,5 @@ VehiclesList.prototype.handleStatusFormSubmit = async function(event) {
     }
 };
 
-// Export for ES6 modules
-export default VehiclesList;
+// Make VehiclesList available globally
+window.VehiclesList = VehiclesList;

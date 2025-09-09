@@ -1,9 +1,5 @@
-@extends('layouts.app')
-
-@section('title', 'Xe hết giờ')
-
-@section('content')
-<div class="container mx-auto px-4 py-6" id="vehicle-page" data-page-type="expired">
+{{-- This file is included by vehicles_management.blade.php, so no need to extend layout --}}
+<div id="vehicle-page" data-page-type="expired">
 
     <!-- Header for Expired Vehicles -->
     <div class="mb-6">
@@ -68,5 +64,5 @@
 </div>
 
 
-@endsection
+{{-- Modals are included by vehicles_management.blade.php --}}
 

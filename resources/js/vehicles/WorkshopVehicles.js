@@ -3,8 +3,6 @@
  * Extends VehicleBase with workshop-specific functionality
  */
 
-import { VehicleBase } from './VehicleBase.js';
-
 class WorkshopVehicles extends VehicleBase {
     constructor() {
         super('Workshop Vehicles');
@@ -178,28 +176,33 @@ class WorkshopVehicles extends VehicleBase {
      * Complete repair for vehicle
      */
     async completeRepair(vehicleId, button) {
-        if (confirm(`Bạn có chắc muốn hoàn thành sửa chữa xe ${vehicleId}?`)) {
-            try {
-                this.showButtonLoading(button, 'Đang hoàn thành sửa chữa...');
-                
-                const response = await this.makeApiCall(`/api/vehicles/${vehicleId}/complete-repair`, {
-                    method: 'POST',
-                    body: JSON.stringify({})
-                });
+        this.showNotificationModal(
+            'Xác nhận', 
+            `Bạn có chắc muốn hoàn thành sửa chữa xe ${vehicleId}?`, 
+            'confirm',
+            async () => {
+                try {
+                    this.showButtonLoading(button, 'Đang hoàn thành sửa chữa...');
+                    
+                    const response = await this.makeApiCall(`/api/vehicles/${vehicleId}/complete-repair`, {
+                        method: 'POST',
+                        body: JSON.stringify({})
+                    });
 
-                if (response.success) {
-                    this.showNotification('Hoàn thành sửa chữa thành công!', 'success');
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+                    if (response.success) {
+                        this.showNotification('Hoàn thành sửa chữa thành công!', 'success');
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        this.showNotification(response.message || 'Có lỗi xảy ra', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error completing repair:', error);
+                    this.showNotification('Có lỗi xảy ra khi hoàn thành sửa chữa', 'error');
+                } finally {
+                    this.restoreButtonState(button);
                 }
-            } catch (error) {
-                console.error('Error completing repair:', error);
-                this.showNotification('Có lỗi xảy ra khi hoàn thành sửa chữa', 'error');
-            } finally {
-                this.restoreButtonState(button);
             }
-        }
+        );
     }
 
     /**
@@ -671,6 +674,36 @@ class WorkshopVehicles extends VehicleBase {
             this.restoreButtonState(submitBtn);
         }
     }
+
+    /**
+     * Close process issue modal
+     */
+    closeProcessIssueModal() {
+        const modal = document.getElementById('process-issue-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Close description detail modal
+     */
+    closeDescriptionDetailModal() {
+        const modal = document.getElementById('description-detail-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Close edit issue modal
+     */
+    closeEditIssueModal() {
+        const modal = document.getElementById('edit-issue-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
 }
 
 // Initialize when DOM is loaded
@@ -685,5 +718,5 @@ document.addEventListener('DOMContentLoaded', function() {
     window.workshopVehicles = workshopVehicles;
 });
 
-// Export for ES6 modules
-export default WorkshopVehicles;
+// Make WorkshopVehicles available globally
+window.WorkshopVehicles = WorkshopVehicles;

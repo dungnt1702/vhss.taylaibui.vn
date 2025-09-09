@@ -3,8 +3,6 @@
  * Extends VehicleBase with active-specific functionality
  */
 
-import { VehicleBase } from './VehicleBase.js';
-
 class ActiveVehicles extends VehicleBase {
     constructor() {
         super('Active Vehicles');
@@ -310,6 +308,67 @@ class ActiveVehicles extends VehicleBase {
     }
 
     /**
+     * Override handleAssignTimer to handle bulk actions properly
+     */
+    handleAssignTimer(e) {
+        const button = e.target;
+        const vehicleId = button.dataset.vehicleId;
+        const duration = parseInt(button.dataset.duration);
+        
+        // Nếu có vehicleId và duration trực tiếp trên button (single vehicle action)
+        if (vehicleId && duration) {
+            this.assignTimer(vehicleId, duration, button);
+            return;
+        }
+        
+        // Nếu không có vehicleId (bulk action - cần chọn xe từ bảng)
+        const selectedVehicles = this.getSelectedVehicles();
+        
+        if (selectedVehicles.length === 0) {
+            // Hiển thị modal cảnh báo thay vì notification
+            this.showNotificationModal('Cảnh báo', 'Bạn phải chọn xe trước!', 'warning');
+            return;
+        }
+
+        // Lấy duration từ select box
+        const timeSelect = document.getElementById('time-select');
+        const durationFromSelect = parseInt(timeSelect.value);
+        
+        if (durationFromSelect) {
+            // Gọi method assignTimerBulk
+            this.assignTimerBulk(durationFromSelect);
+        } else {
+            this.showNotificationModal('Cảnh báo', 'Vui lòng chọn thời gian.', 'warning');
+        }
+    }
+
+    /**
+     * Override handleAssignRoute to handle bulk actions properly
+     */
+    handleAssignRoute(e) {
+        const button = e.target;
+        const vehicleId = button.dataset.vehicleId;
+        
+        // Nếu có vehicleId (single vehicle action)
+        if (vehicleId) {
+            this.assignRoute(vehicleId, button);
+            return;
+        }
+        
+        // Nếu không có vehicleId (bulk action - cần chọn xe từ bảng)
+        const selectedVehicles = this.getSelectedVehicles();
+        
+        if (selectedVehicles.length === 0) {
+            // Hiển thị modal cảnh báo thay vì notification
+            this.showNotificationModal('Cảnh báo', 'Bạn phải chọn xe trước!', 'warning');
+            return;
+        }
+
+        // Gọi method assignRouteBulk
+        this.assignRouteBulk();
+    }
+
+    /**
      * Setup bulk assign timer
      */
     setupBulkAssignTimer() {
@@ -460,26 +519,31 @@ class ActiveVehicles extends VehicleBase {
             return;
         }
 
-        if (confirm(`Bạn có chắc muốn chuyển ${selectedVehicles.length} xe vào xưởng?`)) {
-            try {
-                const response = await this.makeApiCall('/api/vehicles/move-workshop', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        vehicle_ids: selectedVehicles
-                    })
-                });
+        this.showNotificationModal(
+            'Xác nhận', 
+            `Bạn có chắc muốn chuyển ${selectedVehicles.length} xe vào xưởng?`, 
+            'confirm',
+            async () => {
+                try {
+                    const response = await this.makeApiCall('/api/vehicles/move-workshop', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            vehicle_ids: selectedVehicles
+                        })
+                    });
 
-                if (response.success) {
-                    VehicleBase.prototype.showNotificationModal.call(this, 'Thành công', `Chuyển xưởng thành công cho ${selectedVehicles.length} xe!`, 'success');
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    VehicleBase.prototype.showNotificationModal.call(this, 'Lỗi', response.message || 'Có lỗi xảy ra', 'error');
+                    if (response.success) {
+                        VehicleBase.prototype.showNotificationModal.call(this, 'Thành công', `Chuyển xưởng thành công cho ${selectedVehicles.length} xe!`, 'success');
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        VehicleBase.prototype.showNotificationModal.call(this, 'Lỗi', response.message || 'Có lỗi xảy ra', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error moving bulk to workshop:', error);
+                    VehicleBase.prototype.showNotificationModal.call(this, 'Lỗi', 'Có lỗi xảy ra khi chuyển xưởng hàng loạt', 'error');
                 }
-            } catch (error) {
-                console.error('Error moving bulk to workshop:', error);
-                VehicleBase.prototype.showNotificationModal.call(this, 'Lỗi', 'Có lỗi xảy ra khi chuyển xưởng hàng loạt', 'error');
             }
-        }
+        );
     }
 
     /**
@@ -507,7 +571,8 @@ class ActiveVehicles extends VehicleBase {
         console.log('Selected checkboxes:', selectedCheckboxes.length);
         
         if (selectedCheckboxes.length === 0) {
-            this.showWarning('Bạn phải chọn xe trước');
+            // Hiển thị modal cảnh báo thay vì showWarning
+            this.showNotificationModal('Cảnh báo', 'Bạn phải chọn xe trước!', 'warning');
             return;
         }
         
@@ -525,21 +590,31 @@ class ActiveVehicles extends VehicleBase {
         const vehicleDetails = this.getVehicleDetailsFromTimerTable(selectedVehicleIds);
         console.log('Vehicle details:', vehicleDetails);
         
-        // Show confirmation message
+        // Show confirmation modal
         const vehicleNamesText = selectedVehicleNames.join(', ');
-        this.showSuccess(`Xe số ${vehicleNamesText} đã được chuyển về bãi`);
-        
-        // Update UI immediately (optimistic update)
-        console.log('About to add vehicles to ready table...');
-        this.addVehiclesToReadyTableFromTimer(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
-        
-        // Reload page after success
-        setTimeout(() => window.location.reload(), 1500);
-        console.log('About to hide vehicles from timer table...');
-        this.hideSelectedVehiclesFromTimerTable(selectedVehicleIds);
-        
-        // Call returnToYard with selected vehicle IDs in background
-        this.returnToYardAndUpdateUI(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
+        this.showNotificationModal(
+            'Xác nhận', 
+            `Bạn có chắc muốn chuyển xe số ${vehicleNamesText} về bãi?`, 
+            'confirm',
+            () => {
+                // Callback function when user confirms
+                // Show success message immediately
+                const vehicleNamesText = selectedVehicleNames.join(', ');
+                console.log('=== Showing success message from callback ===');
+                this.showSuccess(`Xe số ${vehicleNamesText} đã được chuyển về bãi`);
+                
+                // Update UI immediately (optimistic update)
+                console.log('About to add vehicles to ready table...');
+                this.addVehiclesToReadyTableFromTimer(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
+                
+                // Hide vehicles from timer table
+                console.log('About to hide vehicles from timer table...');
+                this.hideSelectedVehiclesFromTimerTable(selectedVehicleIds);
+                
+                // Call returnToYard with selected vehicle IDs in background (without showing success message)
+                this.returnToYardSilently(selectedVehicleIds);
+            }
+        );
     }
 
     /**
@@ -679,7 +754,8 @@ class ActiveVehicles extends VehicleBase {
         console.log('Selected checkboxes:', selectedCheckboxes.length);
         
         if (selectedCheckboxes.length === 0) {
-            this.showWarning('Bạn phải chọn xe trước');
+            // Hiển thị modal cảnh báo thay vì showWarning
+            this.showNotificationModal('Cảnh báo', 'Bạn phải chọn xe trước!', 'warning');
             return;
         }
         
@@ -698,21 +774,61 @@ class ActiveVehicles extends VehicleBase {
         const vehicleDetails = this.getVehicleDetailsFromRoutingTable(selectedVehicleIds);
         console.log('Vehicle details:', vehicleDetails);
         
-        // Show confirmation message
+        // Show confirmation modal
         const vehicleNamesText = selectedVehicleNames.join(', ');
-        this.showSuccess(`Xe số ${vehicleNamesText} đã được chuyển về bãi`);
-        
-        // Update UI immediately (optimistic update)
-        console.log('About to add vehicles to ready table...');
-        this.addVehiclesToReadyTableFromRouting(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
-        
-        // Reload page after success
-        setTimeout(() => window.location.reload(), 1500);
-        console.log('About to hide vehicles from routing table...');
-        this.hideSelectedVehiclesFromRoutingTable(selectedVehicleIds);
-        
-        // Call returnToYard with selected vehicle IDs in background
-        this.returnToYardAndUpdateUI(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
+        this.showNotificationModal(
+            'Xác nhận', 
+            `Bạn có chắc muốn chuyển xe số ${vehicleNamesText} về bãi?`, 
+            'confirm',
+            () => {
+                // Callback function when user confirms
+                // Show success message immediately
+                const vehicleNamesText = selectedVehicleNames.join(', ');
+                console.log('=== Showing success message from routing callback ===');
+                this.showSuccess(`Xe số ${vehicleNamesText} đã được chuyển về bãi`);
+                
+                // Update UI immediately (optimistic update)
+                console.log('About to add vehicles to ready table...');
+                this.addVehiclesToReadyTableFromRouting(selectedVehicleIds, selectedVehicleNames, vehicleDetails);
+                
+                // Hide vehicles from routing table
+                console.log('About to hide vehicles from routing table...');
+                this.hideSelectedVehiclesFromRoutingTable(selectedVehicleIds);
+                
+                // Call returnToYard with selected vehicle IDs in background (without showing success message)
+                this.returnToYardSilently(selectedVehicleIds);
+            }
+        );
+    }
+
+    /**
+     * Return vehicles to yard silently (without showing success message)
+     */
+    async returnToYardSilently(selectedVehicleIds) {
+        try {
+            console.log('Starting returnToYardSilently...');
+            
+            // Call API directly without showing success message
+            const response = await this.makeApiCall('/api/vehicles/return-yard', {
+                method: 'POST',
+                body: JSON.stringify({
+                    vehicle_ids: selectedVehicleIds
+                })
+            });
+            
+            if (response.success) {
+                console.log('API call completed successfully');
+                // Reload page after success
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                console.error('API call failed:', response.message);
+                this.showError('Có lỗi xảy ra khi chuyển xe về bãi');
+            }
+            
+        } catch (error) {
+            console.error('Error in returnToYardSilently:', error);
+            this.showError('Có lỗi xảy ra khi chuyển xe về bãi');
+        }
     }
 
     /**
@@ -726,7 +842,13 @@ class ActiveVehicles extends VehicleBase {
             await super.returnToYard(selectedVehicleIds);
             console.log('API call completed successfully');
             
-            // UI has already been updated optimistically, no need to do it again
+            // Show success message after API call completes
+            const vehicleNamesText = selectedVehicleNames.join(', ');
+            console.log('=== Showing success message from returnToYardAndUpdateUI ===');
+            this.showSuccess(`Xe số ${vehicleNamesText} đã được chuyển về bãi`);
+            
+            // Reload page after success
+            setTimeout(() => window.location.reload(), 1500);
             
         } catch (error) {
             console.error('Error in returnToYardAndUpdateUI:', error);
@@ -1498,34 +1620,65 @@ class ActiveVehicles extends VehicleBase {
             `;
         }
     }
+
+    /**
+     * Close start timer modal
+     */
+    closeStartTimerModal() {
+        const modal = document.getElementById('start-timer-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Close assign route modal
+     */
+    closeAssignRouteModal() {
+        const modal = document.getElementById('assign-route-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Close move workshop modal
+     */
+    closeMoveWorkshopModal() {
+        const modal = document.getElementById('move-workshop-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Close edit notes modal
+     */
+    closeEditNotesModal() {
+        const modal = document.getElementById('edit-notes-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
 }
 
-// Initialize when DOM is loaded
+// Make ActiveVehicles available globally
+window.ActiveVehicles = ActiveVehicles;
+
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔍 ActiveVehicles DOMContentLoaded event fired');
-    
-    try {
-        // Check if instance already exists to prevent duplicates
-        if (window.activeVehicles) {
-            console.log('🔍 ActiveVehicles instance already exists, skipping creation');
-            return;
-        }
+    // Check if we're on the active vehicles page
+    const vehiclePage = document.getElementById('vehicle-page');
+    if (vehiclePage && vehiclePage.getAttribute('data-page-type') === 'active') {
+        console.log('🔍 ActiveVehicles DOMContentLoaded event fired ...');
         
-        // Create and initialize ActiveVehicles instance
-        console.log('🔍 Creating ActiveVehicles instance...');
+        // Initialize ActiveVehicles
         const activeVehicles = new ActiveVehicles();
-        console.log('🔍 ActiveVehicles instance created:', activeVehicles);
-        
-        console.log('🔍 Calling activeVehicles.init()...');
         activeVehicles.init();
         
-        // Make it available globally for debugging
+        // Make activeVehicles instance available globally
         window.activeVehicles = activeVehicles;
-        console.log('✅ ActiveVehicles initialized and available as window.activeVehicles');
-    } catch (error) {
-        console.error('❌ Error initializing ActiveVehicles:', error);
+        
+        console.log('✅ ActiveVehicles initialized successfully');
     }
 });
-
-// Export for ES6 modules
-export default ActiveVehicles;

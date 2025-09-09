@@ -136,6 +136,13 @@ class VehicleManagementController extends Controller
             $routingVehicles = Vehicle::where('status', 'routing')
                 ->orderBy('start_time', 'asc')
                 ->get();
+        } else {
+            // Always initialize these variables to avoid undefined variable errors
+            $activeVehicles = collect();
+            $runningVehicles = collect();
+            $pausedVehicles = collect();
+            $expiredVehicles = collect();
+            $routingVehicles = collect();
         }
         
         // Get ready vehicles for ready_vehicles.blade.php when filter = 'ready'

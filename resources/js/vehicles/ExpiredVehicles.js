@@ -3,7 +3,6 @@
  * Extends VehicleBase with expired-specific functionality
  */
 
-import { VehicleBase } from './VehicleBase.js';
 
 class ExpiredVehicles extends VehicleBase {
     constructor() {
@@ -271,5 +270,5 @@ document.addEventListener('DOMContentLoaded', function() {
     window.expiredVehicles = expiredVehicles;
 });
 
-// Export for ES6 modules
-export default ExpiredVehicles;
+// Make ExpiredVehicles available globally
+window.ExpiredVehicles = ExpiredVehicles;

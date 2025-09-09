@@ -3,8 +3,6 @@
  * Extends VehicleBase with ready-specific functionality
  */
 
-import { VehicleBase } from './VehicleBase.js';
-
 class ReadyVehicles extends VehicleBase {
     constructor() {
         super('Ready Vehicles');
@@ -241,6 +239,16 @@ class ReadyVehicles extends VehicleBase {
             `;
         }
     }
+
+    /**
+     * Close move workshop modal
+     */
+    closeMoveWorkshopModal() {
+        const modal = document.getElementById('move-workshop-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
 }
 
 // Initialize when DOM is loaded
@@ -255,5 +263,5 @@ document.addEventListener('DOMContentLoaded', function() {
     window.readyVehicles = readyVehicles;
 });
 
-// Export for ES6 modules
-export default ReadyVehicles;
+// Make ReadyVehicles available globally
+window.ReadyVehicles = ReadyVehicles;

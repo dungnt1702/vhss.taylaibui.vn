@@ -1,9 +1,5 @@
-@extends('layouts.app')
-
-@section('title', 'Danh sách thuộc tính xe')
-
-@section('content')
-<div class="container mx-auto px-4 py-6">
+{{-- This file is included by vehicles_management.blade.php, so no need to extend layout --}}
+<div>
 
     <!-- Header for Vehicle Attributes -->
     <div class="mb-6">
@@ -159,5 +155,5 @@
 </div>
 
 
-@endsection
+{{-- Modals are included by vehicles_management.blade.php --}}
 

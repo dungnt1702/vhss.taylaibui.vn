@@ -3,7 +3,6 @@
  * Extends VehicleBase with running-specific functionality
  */
 
-import { VehicleBase } from './VehicleBase.js';
 
 class RunningVehicles extends VehicleBase {
     constructor() {
@@ -209,5 +208,5 @@ document.addEventListener('DOMContentLoaded', function() {
     window.runningVehicles = runningVehicles;
 });
 
-// Export for ES6 modules
-export default RunningVehicles;
+// Make RunningVehicles available globally
+window.RunningVehicles = RunningVehicles;

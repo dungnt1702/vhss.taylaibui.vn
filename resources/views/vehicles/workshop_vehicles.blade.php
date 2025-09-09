@@ -1,9 +1,5 @@
-@extends('layouts.app')
-
-@section('title', 'Xe trong xưởng')
-
-@section('content')
-<div class="container mx-auto px-4 py-6">
+{{-- This file is included by vehicles_management.blade.php, so no need to extend layout --}}
+<div>
     <!-- Page identifier for VehicleClasses.js -->
     <div id="vehicle-page" data-page-type="workshop" style="display: none;"></div>
 
@@ -189,7 +185,7 @@
 <!-- Modals -->
 
 
-@endsection
+{{-- Modals are included by vehicles_management.blade.php --}}
 
 <!-- Include modals -->
 @include('vehicles.partials.vehicle_modals')
