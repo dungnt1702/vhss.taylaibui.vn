@@ -207,6 +207,20 @@
                             {{ __('profile.Profile') }}
                         </x-dropdown-link>
 
+                        <!-- Vai trò -->
+                        @if(auth()->user()->hasPermission('roles.view'))
+                            <x-dropdown-link :href="route('roles.index')">
+                                Vai trò
+                            </x-dropdown-link>
+                        @endif
+
+                        <!-- Người dùng -->
+                        @if(auth()->user()->hasPermission('users.view'))
+                            <x-dropdown-link :href="route('users.index')">
+                                Người dùng
+                            </x-dropdown-link>
+                        @endif
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}" id="logout-form-nav">
                             @csrf
@@ -313,6 +327,20 @@
                      <a href="{{ route('profile.edit') }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-3 transition-all duration-200">
                          Profile
                      </a>
+                     
+                     <!-- Vai trò -->
+                     @if(auth()->user()->hasPermission('roles.view'))
+                         <a href="{{ route('roles.index') }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-3 transition-all duration-200">
+                             Vai trò
+                         </a>
+                     @endif
+                     
+                     <!-- Người dùng -->
+                     @if(auth()->user()->hasPermission('users.view'))
+                         <a href="{{ route('users.index') }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-3 transition-all duration-200">
+                             Người dùng
+                         </a>
+                     @endif
                      
                      <form method="POST" action="{{ route('logout') }}" class="mt-2">
                          @csrf

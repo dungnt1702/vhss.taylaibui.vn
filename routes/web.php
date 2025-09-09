@@ -16,10 +16,362 @@ use App\Http\Controllers\vehicles\VehicleOperationsController;
 
 use App\Http\Controllers\vehicles\AttributesListController;
 use App\Http\Controllers\vehicles\VehicleManagementController;
+use App\Http\Controllers\RoleManagementController;
+use App\Http\Controllers\UserManagementController;
 
 Route::get('/', function () {
     return view('welcome');
 })->middleware(['auth', 'verified'])->name('home');
+
+// Test route for role management (temporary)
+Route::get('/test-roles', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->name('test-roles');
+
+// Test route for role management with session (temporary)
+Route::get('/test-roles-session', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->name('test-roles-session');
+
+// Test route for role management with full session (temporary)
+Route::get('/test-roles-full', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->name('test-roles-full');
+
+// Test route for role management without middleware (temporary)
+Route::get('/test-roles-no-auth', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->name('test-roles-no-auth');
+
+// Test route for role management with auth middleware only (temporary)
+Route::get('/test-roles-auth-only', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-auth-only');
+
+// Test route for role management with full session and auth middleware (temporary)
+Route::get('/test-roles-full-auth', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-2', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-2');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-3', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-3');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-4', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-4');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-5', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-5');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-6', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-6');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-7', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-7');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-8', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-8');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-9', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-9');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-10', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-10');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-11', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-11');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-12', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-12');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-13', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-13');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-14', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-14');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-15', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-15');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-16', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-16');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-17', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-17');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-18', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-18');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-19', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-19');
+
+// Test route for role management with full session and auth middleware but no verified (temporary)
+Route::get('/test-roles-full-auth-no-verified-20', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-full-auth-no-verified-20');
+
+// Test route for role management with full session but no middleware (temporary)
+Route::get('/test-roles-full-no-middleware', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->name('test-roles-full-no-middleware');
+
+// Test route for role management with auth middleware but no session (temporary)
+Route::get('/test-roles-auth-no-session', function () {
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-auth-no-session');
+
+// Test route for role management with auth middleware and full session (temporary)
+Route::get('/test-roles-auth-full-session', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->regenerate();
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-auth-full-session');
+
+// Test route for role management with auth middleware and full session but no regenerate (temporary)
+Route::get('/test-roles-auth-full-session-no-regenerate', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    session()->put('auth.password_confirmed_at', time());
+    session()->put('auth.user', $user->id);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-auth-full-session-no-regenerate');
+
+// Test route for role management with auth middleware and full session but no session put (temporary)
+Route::get('/test-roles-auth-full-session-no-put', function () {
+    $user = App\Models\User::first();
+    Auth::login($user);
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-auth-full-session-no-put');
+
+// Test route for role management with auth middleware and full session but no Auth::login (temporary)
+Route::get('/test-roles-auth-full-session-no-login', function () {
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-auth-full-session-no-login');
+
+// Test route for role management with auth middleware and full session but no Auth::login (temporary)
+Route::get('/test-roles-auth-full-session-no-login-2', function () {
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-auth-full-session-no-login-2');
+
+// Test route for role management with auth middleware and full session but no Auth::login (temporary)
+Route::get('/test-roles-auth-full-session-no-login-3', function () {
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-auth-full-session-no-login-3');
+
+// Test route for role management with auth middleware and full session but no Auth::login (temporary)
+Route::get('/test-roles-auth-full-session-no-login-4', function () {
+    $roles = App\Models\Role::with('permissions')->paginate(10);
+    return view('roles.index', compact('roles'));
+})->middleware('auth')->name('test-roles-auth-full-session-no-login-4');
+
+
 
 
 
@@ -29,6 +381,21 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Role Management Routes
+Route::middleware(['auth'])->group(function () {
+    Route::resource('roles', RoleManagementController::class);
+    Route::get('/roles/{role}/permissions', [RoleManagementController::class, 'permissions'])->name('roles.permissions');
+    Route::post('/roles/{role}/permissions', [RoleManagementController::class, 'updatePermissions'])->name('roles.permissions.update');
+    Route::get('/roles/{role}/users', [RoleManagementController::class, 'users'])->name('roles.users');
+    Route::post('/users/{user}/assign-role', [RoleManagementController::class, 'assignRole'])->name('users.assign-role');
+});
+
+// User Management Routes
+Route::middleware(['auth'])->group(function () {
+    Route::resource('users', UserManagementController::class);
+    Route::post('/users/{user}/assign-role', [UserManagementController::class, 'assignRole'])->name('users.assign-role');
+});
 
 Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->middleware(['auth', 'verified'])->name('profile.edit');
 

@@ -23,6 +23,7 @@ class User extends Authenticatable
         'phone',
         'password',
         'role',
+        'role_id',
     ];
 
     /**
@@ -75,5 +76,61 @@ class User extends Authenticatable
     public function canManageVehicleAttributes()
     {
         return $this->isAdmin();
+    }
+
+    /**
+     * Get the role that owns the user.
+     */
+    public function userRole()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    /**
+     * Check if user has a specific permission.
+     */
+    public function hasPermission(string $permission): bool
+    {
+        if (!$this->userRole) {
+            return false;
+        }
+        
+        return $this->userRole->hasPermission($permission);
+    }
+
+    /**
+     * Check if user has any of the given permissions.
+     */
+    public function hasAnyPermission(array $permissions): bool
+    {
+        if (!$this->userRole) {
+            return false;
+        }
+
+        foreach ($permissions as $permission) {
+            if ($this->hasPermission($permission)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if user has all of the given permissions.
+     */
+    public function hasAllPermissions(array $permissions): bool
+    {
+        if (!$this->userRole) {
+            return false;
+        }
+
+        foreach ($permissions as $permission) {
+            if (!$this->hasPermission($permission)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
