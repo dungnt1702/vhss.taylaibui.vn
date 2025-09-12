@@ -43,7 +43,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                                 @if(($vehicle->repair_count ?? 0) > 0)
-                                    <a href="{{ route('vehicles.repairing', ['vehicle_id' => $vehicle->id]) }}" 
+                                    <a href="{{ route('vehicles.repairing.vehicle', ['vehicle_id' => $vehicle->id]) }}" 
                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 hover:bg-red-200 transition-colors duration-200 cursor-pointer"
                                        title="Xem lịch sử sửa chữa của xe {{ $vehicle->name }}">
                                         {{ $vehicle->repair_count ?? 0 }}
@@ -112,7 +112,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                                 @if(($vehicle->repair_count ?? 0) > 0)
-                                    <a href="{{ route('vehicles.repairing', ['vehicle_id' => $vehicle->id]) }}" 
+                                    <a href="{{ route('vehicles.repairing.vehicle', ['vehicle_id' => $vehicle->id]) }}" 
                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 hover:bg-red-200 transition-colors duration-200 cursor-pointer"
                                        title="Xem lịch sử sửa chữa của xe {{ $vehicle->name }}">
                                         {{ $vehicle->repair_count ?? 0 }}

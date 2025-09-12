@@ -31,7 +31,7 @@ class VehicleManagementController extends Controller
                     'vehicles.paused', 'vehicles.paused.page' => 'paused',
                     'vehicles.expired', 'vehicles.expired.page' => 'expired',
                     'vehicles.workshop', 'vehicles.workshop.page' => 'workshop',
-                    'vehicles.repairing', 'vehicles.repairing.page' => 'repairing',
+                    'vehicles.repairing', 'vehicles.repairing.page', 'vehicles.repairing.vehicle' => 'repairing',
                     'vehicles.attributes', 'vehicles.attributes.page' => 'attributes',
                     'vehicles.list', 'vehicles.list.page' => 'vehicles_list',
                     default => 'all'
@@ -85,9 +85,10 @@ class VehicleManagementController extends Controller
                 $query = \App\Models\VehicleTechnicalIssue::where('issue_type', 'repair')
                     ->with(['vehicle', 'reporter', 'assignee']);
                 
-                // Filter by vehicle_id if provided
-                if ($request->has('vehicle_id') && $request->get('vehicle_id')) {
-                    $query->where('vehicle_id', $request->get('vehicle_id'));
+                // Filter by vehicle_id if provided (from query parameter or route parameter)
+                $vehicleId = $request->get('vehicle_id') ?? $request->route('vehicle_id');
+                if ($vehicleId) {
+                    $query->where('vehicle_id', $vehicleId);
                 }
                 
                 // Sort: pending/in_progress first, then by reported_at desc
