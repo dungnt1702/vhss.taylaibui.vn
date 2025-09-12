@@ -607,8 +607,7 @@ class WorkshopVehicles extends VehicleBase {
         const form = event.target;
         const formData = new FormData(form);
         const vehicleId = formData.get('vehicle_id');
-        const issueType = formData.get('issue_type');
-        const category = formData.get('category');
+        const categoryId = formData.get('category_id');
         const description = formData.get('description');
         const notes = formData.get('notes');
         
@@ -624,8 +623,7 @@ class WorkshopVehicles extends VehicleBase {
                 },
                 body: JSON.stringify({
                     vehicle_id: vehicleId,
-                    issue_type: issueType,
-                    category: category,
+                    category_id: categoryId,
                     description: description,
                     notes: notes
                 })

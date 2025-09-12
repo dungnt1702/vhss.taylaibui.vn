@@ -508,8 +508,7 @@ class VehicleOperationsController extends Controller
             // Validate request data
             $request->validate([
                 'vehicle_id' => 'required|exists:vehicles,id',
-                'issue_type' => 'required|in:repair,maintenance',
-                'category' => 'required|string|max:100',
+                'category_id' => 'required|exists:repair_categories,id',
                 'description' => 'nullable|string|max:1000',
                 'notes' => 'nullable|string|max:500'
             ]);
@@ -531,7 +530,7 @@ class VehicleOperationsController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => "Báo cáo sửa chữa đã được ghi nhận thành công!",
-                'technical_issue' => $technicalIssue,
+                'technical_issue' => $technicalIssue->load('category'),
                 'vehicle' => $vehicle
             ]);
         } catch (\Exception $e) {
@@ -661,7 +660,7 @@ class VehicleOperationsController extends Controller
             $request->validate([
                 'description' => 'required|string|max:1000',
                 'notes' => 'nullable|string|max:500',
-                'category' => 'required|string'
+                'category_id' => 'required|exists:repair_categories,id'
             ]);
 
             $issue = \App\Models\VehicleTechnicalIssue::findOrFail($issueId);
@@ -677,13 +676,13 @@ class VehicleOperationsController extends Controller
             $issue->update([
                 'description' => $request->description,
                 'notes' => $request->input('notes', ''),
-                'category' => $request->category
+                'category_id' => $request->category_id
             ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Cập nhật báo cáo thành công!',
-                'issue' => $issue->load(['vehicle', 'reporter', 'assignee'])
+                'issue' => $issue->load(['vehicle', 'reporter', 'assignee', 'category'])
             ]);
 
         } catch (\Exception $e) {
