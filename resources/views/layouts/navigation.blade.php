@@ -378,8 +378,24 @@
                              Hạng mục sửa chữa
                          </a>
                      @endif
+                 </div>
+             </div>
+
+             <!-- Bảo trì theo lịch Section -->
+             <div>
+                 <h3 class="px-3 mb-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Bảo trì theo lịch</h3>
+                 <div class="space-y-1">
+                     <a href="{{ route('maintenance.dashboard') }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
+                         Dashboard
+                     </a>
                      <a href="{{ route('maintenance.schedules.index') }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
-                         Bảo trì
+                         Lịch bảo trì
+                     </a>
+                     <a href="{{ route('maintenance.schedules.calendar') }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
+                         Xem lịch
+                     </a>
+                     <a href="{{ route('maintenance.schedules.create') }}" class="block py-2 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 rounded-md px-6 transition-all duration-200">
+                         Tạo lịch mới
                      </a>
                  </div>
              </div>
