@@ -162,13 +162,13 @@ class RepairingVehicles extends VehicleBase {
      * Setup modal functions
      */
     setupModalFunctions() {
-        // Expose modal functions globally
-        window.openDescriptionModal = (description, notes) => this.openDescriptionModal(description, notes);
-        window.closeDescriptionModal = () => this.closeDescriptionModal();
-        window.openEditModal = (issueId, description, notes, category) => this.openEditModal(issueId, description, notes, category);
-        window.closeEditModal = () => this.closeEditModal();
-        window.openProcessModal = (issueId) => this.openProcessModal(issueId);
-        window.closeProcessModal = () => this.closeProcessModal();
+        // Expose modal functions globally with unique names for repairing vehicles
+        window.openRepairDescriptionModal = (description, notes) => this.openDescriptionModal(description, notes);
+        window.closeRepairDescriptionModal = () => this.closeDescriptionModal();
+        window.openRepairEditModal = (issueId, description, notes, category) => this.openEditModal(issueId, description, notes, category);
+        window.closeRepairEditModal = () => this.closeEditModal();
+        window.openRepairProcessModal = (issueId) => this.openProcessModal(issueId);
+        window.closeRepairProcessModal = () => this.closeProcessModal();
         window.openAddRepairModal = () => this.openAddRepairModal();
         window.closeAddRepairModal = () => this.closeAddRepairModal();
     }
@@ -201,20 +201,23 @@ class RepairingVehicles extends VehicleBase {
      */
     openDescriptionModal(description, notes) {
         const modal = document.getElementById('description-detail-modal');
-        const descriptionContent = document.getElementById('description-content');
-        const notesContent = document.getElementById('notes-content');
-        const notesSection = document.getElementById('notes-section');
+        const descriptionContent = document.getElementById('description-detail-content');
         
         if (modal && descriptionContent) {
-            descriptionContent.textContent = description || 'Không có mô tả';
+            // Create HTML content with description and notes
+            let content = `<div class="mb-4">`;
+            content += `<h4 class="text-sm font-medium text-neutral-700 mb-2">Mô tả vấn đề:</h4>`;
+            content += `<p class="text-neutral-900 whitespace-pre-wrap">${description || 'Không có mô tả'}</p>`;
+            content += `</div>`;
             
             if (notes && notes.trim()) {
-                notesContent.textContent = notes;
-                notesSection.classList.remove('hidden');
-            } else {
-                notesSection.classList.add('hidden');
+                content += `<div class="mb-4">`;
+                content += `<h4 class="text-sm font-medium text-neutral-700 mb-2">Ghi chú thêm:</h4>`;
+                content += `<p class="text-neutral-900 whitespace-pre-wrap">${notes}</p>`;
+                content += `</div>`;
             }
             
+            descriptionContent.innerHTML = content;
             modal.classList.remove('hidden');
         }
     }
@@ -235,15 +238,15 @@ class RepairingVehicles extends VehicleBase {
     openEditModal(issueId, description, notes, category) {
         const modal = document.getElementById('edit-issue-modal');
         const issueIdInput = document.getElementById('edit-issue-id');
-        const descriptionInput = document.getElementById('edit-description');
-        const notesInput = document.getElementById('edit-notes');
-        const categorySelect = document.getElementById('edit-category');
+        const descriptionInput = document.getElementById('edit-issue-description');
+        const notesInput = document.getElementById('edit-issue-notes');
+        const categorySelect = document.getElementById('edit-issue-category');
         
         if (modal && issueIdInput) {
             issueIdInput.value = issueId;
-            descriptionInput.value = description;
-            notesInput.value = notes;
-            categorySelect.value = category;
+            if (descriptionInput) descriptionInput.value = description || '';
+            if (notesInput) notesInput.value = notes || '';
+            if (categorySelect) categorySelect.value = category || '';
             modal.classList.remove('hidden');
         }
     }
