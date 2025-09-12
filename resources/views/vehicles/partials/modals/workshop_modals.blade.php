@@ -15,12 +15,12 @@
                     <label for="technical-category" class="block text-sm font-medium text-neutral-700 mb-2">
                         Hạng mục <span class="text-red-500">*</span>
                     </label>
-                    <select id="technical-category" name="category" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                        <option value="">-- Chọn hạng mục --</option>
-                        @foreach(\App\Models\RepairCategory::getActiveCategories() as $key => $label)
-                            <option value="{{ $key }}">{{ $label }}</option>
-                        @endforeach
-                    </select>
+                <select id="technical-category" name="category_id" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                    <option value="">-- Chọn hạng mục --</option>
+                    @foreach(\App\Models\RepairCategory::active()->ordered()->get() as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
+                </select>
                 </div>
                 
                 <div class="mb-4">
@@ -249,10 +249,10 @@
                         <label for="edit-issue-category" class="block text-sm font-medium text-neutral-700 mb-2">
                             Hạng mục <span class="text-red-500">*</span>
                         </label>
-                        <select id="edit-issue-category" name="category" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        <select id="edit-issue-category" name="category_id" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
                             <option value="">-- Chọn hạng mục --</option>
-                            @foreach(\App\Models\RepairCategory::getActiveCategories() as $key => $label)
-                                <option value="{{ $key }}">{{ $label }}</option>
+                            @foreach(\App\Models\RepairCategory::active()->ordered()->get() as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
                         </select>
                     </div>

@@ -14,8 +14,7 @@ class RepairingVehiclesController extends VehicleBaseController
     public function index()
     {
         // Get all repair issues with vehicle information
-        $repairIssues = \App\Models\VehicleTechnicalIssue::where('issue_type', 'repair')
-            ->with(['vehicle', 'reporter'])
+        $repairIssues = \App\Models\VehicleTechnicalIssue::with(['vehicle', 'reporter', 'category'])
             ->latest('reported_at')
             ->get();
             
@@ -30,8 +29,7 @@ class RepairingVehiclesController extends VehicleBaseController
      */
     public function getRepairingVehicles()
     {
-        $repairIssues = \App\Models\VehicleTechnicalIssue::where('issue_type', 'repair')
-            ->with(['vehicle', 'reporter'])
+        $repairIssues = \App\Models\VehicleTechnicalIssue::with(['vehicle', 'reporter', 'category'])
             ->latest('reported_at')
             ->get();
             

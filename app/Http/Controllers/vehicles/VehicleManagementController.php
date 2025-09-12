@@ -71,7 +71,6 @@ class VehicleManagementController extends Controller
         if ($filter === 'workshop') {
             $vehicles->getCollection()->each(function ($vehicle) {
                 $vehicle->repair_count = VehicleTechnicalIssue::where('vehicle_id', $vehicle->id)
-                    ->where('issue_type', 'repair')
                     ->whereIn('status', ['pending', 'in_progress'])
                     ->count();
             });
@@ -82,8 +81,7 @@ class VehicleManagementController extends Controller
         $maintenanceIssues = null;
         
             if ($filter === 'repairing') {
-                $query = \App\Models\VehicleTechnicalIssue::where('issue_type', 'repair')
-                    ->with(['vehicle', 'reporter', 'assignee']);
+                $query = \App\Models\VehicleTechnicalIssue::with(['vehicle', 'reporter', 'assignee', 'category']);
                 
                 // Filter by vehicle_id if provided (from query parameter or route parameter)
                 $vehicleId = $request->get('vehicle_id') ?? $request->route('vehicle_id');

@@ -520,8 +520,7 @@ class VehicleOperationsController extends Controller
             // Create technical issue record
             $technicalIssue = \App\Models\VehicleTechnicalIssue::create([
                 'vehicle_id' => $request->vehicle_id,
-                'issue_type' => $request->issue_type,
-                'category' => $request->category,
+                'category_id' => $request->category_id,
                 'description' => $request->input('description', ''),
                 'notes' => $request->input('notes', ''),
                 'status' => \App\Models\VehicleTechnicalIssue::STATUS_PENDING,
@@ -529,11 +528,9 @@ class VehicleOperationsController extends Controller
                 'reported_by' => auth()->id()
             ]);
 
-            $issueTypeMessage = $request->issue_type === 'repair' ? 'sửa chữa' : 'bảo trì';
-
             return response()->json([
                 'success' => true,
-                'message' => "Báo cáo {$issueTypeMessage} đã được ghi nhận thành công!",
+                'message' => "Báo cáo sửa chữa đã được ghi nhận thành công!",
                 'technical_issue' => $technicalIssue,
                 'vehicle' => $vehicle
             ]);

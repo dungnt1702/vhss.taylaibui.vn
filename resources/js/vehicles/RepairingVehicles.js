@@ -235,7 +235,7 @@ class RepairingVehicles extends VehicleBase {
     /**
      * Open edit modal
      */
-    openEditModal(issueId, description, notes, category) {
+    openEditModal(issueId, description, notes, categoryId) {
         const modal = document.getElementById('edit-issue-modal');
         const issueIdInput = document.getElementById('edit-issue-id');
         const descriptionInput = document.getElementById('edit-issue-description');
@@ -246,7 +246,7 @@ class RepairingVehicles extends VehicleBase {
             issueIdInput.value = issueId;
             if (descriptionInput) descriptionInput.value = description || '';
             if (notesInput) notesInput.value = notes || '';
-            if (categorySelect) categorySelect.value = category || '';
+            if (categorySelect) categorySelect.value = categoryId || '';
             modal.classList.remove('hidden');
         }
     }
@@ -329,8 +329,7 @@ class RepairingVehicles extends VehicleBase {
                 },
                 body: JSON.stringify({
                     vehicle_id: formData.get('vehicle_id'),
-                    issue_type: formData.get('issue_type'),
-                    category: formData.get('category'),
+                    category_id: formData.get('category_id'),
                     description: formData.get('description'),
                     notes: formData.get('notes')
                 })
@@ -426,7 +425,7 @@ class RepairingVehicles extends VehicleBase {
                 body: JSON.stringify({
                     description: formData.get('description'),
                     notes: formData.get('notes'),
-                    category: formData.get('category')
+                    category_id: formData.get('category_id')
                 })
             });
             

@@ -9,8 +9,7 @@ class VehicleTechnicalIssue extends Model
 {
     protected $fillable = [
         'vehicle_id',
-        'issue_type',
-        'category',
+        'category_id',
         'description',
         'notes',
         'result',
@@ -26,7 +25,7 @@ class VehicleTechnicalIssue extends Model
         'completed_at' => 'datetime',
     ];
 
-    // Constants for issue types
+    // Constants for issue types (deprecated - now using category_id)
     const ISSUE_TYPE_REPAIR = 'repair';
     const ISSUE_TYPE_MAINTENANCE = 'maintenance';
 
@@ -58,6 +57,14 @@ class VehicleTechnicalIssue extends Model
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    /**
+     * Get the repair category for this issue
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(RepairCategory::class);
     }
 
     /**
