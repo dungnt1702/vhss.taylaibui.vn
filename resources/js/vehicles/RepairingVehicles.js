@@ -16,12 +16,17 @@ class RepairingVehicles extends VehicleBase {
         this.setupRepairSpecificFeatures();
         console.log('Repairing Vehicles page fully initialized');
         
-        // Test if button exists
+        // Test if button and modal exist
         setTimeout(() => {
             const btn = document.getElementById('add-repair-btn');
+            const modal = document.getElementById('add-repair-modal');
             console.log('Button check after timeout:', btn);
+            console.log('Modal check after timeout:', modal);
             if (btn) {
                 console.log('Button is clickable:', btn.offsetParent !== null);
+            }
+            if (modal) {
+                console.log('Modal classes:', modal.className);
             }
         }, 1000);
     }
@@ -102,8 +107,11 @@ class RepairingVehicles extends VehicleBase {
     setupAddRepairButton() {
         // Use event delegation to handle button clicks
         document.addEventListener('click', (e) => {
-            if (e.target && e.target.id === 'add-repair-btn') {
+            // Check if the clicked element or its parent is the add repair button
+            const button = e.target.closest('#add-repair-btn');
+            if (button) {
                 console.log('Add repair button clicked via delegation');
+                e.preventDefault();
                 this.openAddRepairModal();
             }
         });
@@ -117,6 +125,7 @@ class RepairingVehicles extends VehicleBase {
         const modal = document.getElementById('add-repair-modal');
         console.log('Modal found:', modal);
         if (modal) {
+            // Remove hidden class and add flex class
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             
@@ -131,6 +140,8 @@ class RepairingVehicles extends VehicleBase {
             if (firstInput) {
                 firstInput.focus();
             }
+            
+            console.log('Modal should be visible now');
         } else {
             console.error('Add repair modal not found');
         }

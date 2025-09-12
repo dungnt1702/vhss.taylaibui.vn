@@ -1,9 +1,10 @@
 <!-- Workshop Vehicles Modals -->
+{{-- Debug: Workshop modals loaded --}}
 
 @include('vehicles.partials.modals.common_modals')
 
 <!-- Technical Update Modal -->
-<div id="technical-update-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+<div id="technical-update-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-lg">
         <div class="p-6">
             <h3 class="text-lg font-semibold text-neutral-900 mb-4">Cập nhật kỹ thuật xe</h3>
@@ -134,63 +135,102 @@
 </div>
 
 <!-- Return to Yard Modal -->
-<div id="return-to-yard-modal" class="fixed inset-0 z-50 hidden">
+<div id="return-to-yard-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-    <div class="relative min-h-screen flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-neutral-900">Đưa xe về bãi</h3>
-                    <button onclick="closeReturnToYardModal()" class="text-neutral-400 hover:text-neutral-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+    <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-neutral-900">Đưa xe về bãi</h3>
+                <button onclick="closeReturnToYardModal()" class="text-neutral-400 hover:text-neutral-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="return-to-yard-form">
+                <input type="hidden" id="return-vehicle-id" name="vehicle_id">
+                
+                <div class="mb-4">
+                    <label for="return-notes" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Ghi chú về tình trạng xe
+                    </label>
+                    <textarea 
+                        id="return-notes" 
+                        name="notes" 
+                        rows="4" 
+                        class="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        placeholder="Nhập ghi chú về tình trạng xe..."
+                    >Xe hoạt động tốt</textarea>
                 </div>
                 
-                <form id="return-to-yard-form">
-                    <input type="hidden" id="return-vehicle-id" name="vehicle_id">
+                <div class="flex justify-between items-center">
+                    <button 
+                        type="button" 
+                        onclick="resetReturnNotes()" 
+                        class="text-sm text-neutral-500 hover:text-neutral-700 underline"
+                    >
+                        Xóa nội dung
+                    </button>
                     
-                    <div class="mb-4">
-                        <label for="return-notes" class="block text-sm font-medium text-neutral-700 mb-2">
-                            Ghi chú về tình trạng xe
-                        </label>
-                        <textarea 
-                            id="return-notes" 
-                            name="notes" 
-                            rows="4" 
-                            class="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                            placeholder="Nhập ghi chú về tình trạng xe..."
-                        >Xe hoạt động tốt</textarea>
-                    </div>
-                    
-                    <div class="flex justify-between items-center">
+                    <div class="flex space-x-3">
                         <button 
                             type="button" 
-                            onclick="resetReturnNotes()" 
-                            class="text-sm text-neutral-500 hover:text-neutral-700 underline"
+                            onclick="closeReturnToYardModal()" 
+                            class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-neutral-500"
                         >
-                            Xóa nội dung
+                            Hủy
                         </button>
-                        
-                        <div class="flex space-x-3">
-                            <button 
-                                type="button" 
-                                onclick="closeReturnToYardModal()" 
-                                class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-neutral-500"
-                            >
-                                Hủy
-                            </button>
-                            <button 
-                                type="submit" 
-                                class="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-                            >
-                                Đưa về bãi
-                            </button>
-                        </div>
+                        <button 
+                            type="submit" 
+                            class="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        >
+                            Đưa về bãi
+                        </button>
                     </div>
-                </form>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Notes Modal -->
+<div id="edit-notes-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="edit-notes-modal-title" class="text-lg font-semibold text-neutral-900">Chỉnh sửa ghi chú xe</h3>
+                <button onclick="closeEditNotesModal()" class="text-neutral-400 hover:text-neutral-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
+            
+            <form id="edit-notes-form">
+                <input type="hidden" id="edit-notes-vehicle-id" name="vehicle_id">
+                
+                <div class="mb-6">
+                    <label for="edit-notes-textarea" class="block text-sm font-medium text-neutral-700 mb-2">
+                        Ghi chú xe
+                    </label>
+                    <textarea id="edit-notes-textarea" name="notes" rows="4" 
+                              class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                              placeholder="Nhập ghi chú về xe..."></textarea>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeEditNotesModal()" 
+                            class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-neutral-500">
+                        Hủy
+                    </button>
+                    <button type="submit" id="edit-notes-submit-btn"
+                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        Cập nhật
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

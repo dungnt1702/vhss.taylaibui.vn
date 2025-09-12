@@ -524,13 +524,21 @@ class WorkshopVehicles extends VehicleBase {
     openTechnicalUpdateModal(vehicleId) {
         console.log('Opening technical update modal for vehicle:', vehicleId);
         
+        // Check if modal exists in DOM
         const modal = document.getElementById('technical-update-modal');
         const vehicleIdInput = document.getElementById('technical-vehicle-id');
+        
+        console.log('Modal found:', modal);
+        console.log('Vehicle ID input found:', vehicleIdInput);
         
         if (modal && vehicleIdInput) {
             vehicleIdInput.value = vehicleId;
             modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            modal.classList.add('flex', 'items-center', 'justify-center', 'p-4');
+            
+            console.log('Modal classes after opening:', modal.className);
+            console.log('Modal display style:', modal.style.display);
+            console.log('Modal computed style:', window.getComputedStyle(modal).display);
             
             // Reset form
             document.getElementById('technical-update-form').reset();
@@ -540,7 +548,20 @@ class WorkshopVehicles extends VehicleBase {
             this.updateCategoryOptions('repair');
             
             // Focus on category select
-            document.getElementById('technical-category').focus();
+            const categorySelect = document.getElementById('technical-category');
+            if (categorySelect) {
+                categorySelect.focus();
+            }
+            
+            console.log('Modal should be visible now');
+        } else {
+            console.error('Modal or vehicle ID input not found!');
+            console.error('Modal:', modal);
+            console.error('Vehicle ID input:', vehicleIdInput);
+            
+            // Check if modal exists anywhere in the DOM
+            const allModals = document.querySelectorAll('[id*="modal"]');
+            console.log('All modals in DOM:', allModals);
         }
     }
 
@@ -551,7 +572,7 @@ class WorkshopVehicles extends VehicleBase {
         const modal = document.getElementById('technical-update-modal');
         if (modal) {
             modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            modal.classList.remove('flex', 'items-center', 'justify-center', 'p-4');
         }
     }
 
