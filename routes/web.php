@@ -530,4 +530,10 @@ Route::prefix('maintenance')->name('maintenance.')->group(function () {
     Route::get('/api/active-vehicles/by-status', [VehicleOperationsController::class, 'getVehiclesByStatus'])->name('api.active-vehicles.by-status');
 });
 
+// Admin Routes - Repair Categories Management
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('repair-categories', App\Http\Controllers\Admin\RepairCategoriesController::class);
+    Route::patch('/repair-categories/{repairCategory}/toggle', [App\Http\Controllers\Admin\RepairCategoriesController::class, 'toggle'])->name('repair-categories.toggle');
+});
+
 require __DIR__.'/auth.php';

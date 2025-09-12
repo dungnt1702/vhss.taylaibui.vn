@@ -33,7 +33,7 @@
                     </label>
                     <select id="add-repair-category" name="category" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
                         <option value="">-- Chọn hạng mục --</option>
-                        @foreach(\App\Models\VehicleTechnicalIssue::getRepairCategories() as $key => $label)
+                        @foreach(\App\Models\RepairCategory::getActiveCategories() as $key => $label)
                             <option value="{{ $key }}">{{ $label }}</option>
                         @endforeach
                     </select>
@@ -88,7 +88,7 @@
                         </label>
                         <select id="edit-issue-category" name="category" class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
                             <option value="">-- Chọn hạng mục --</option>
-                            @foreach(\App\Models\VehicleTechnicalIssue::getRepairCategories() as $key => $label)
+                            @foreach(\App\Models\RepairCategory::getActiveCategories() as $key => $label)
                                 <option value="{{ $key }}">{{ $label }}</option>
                             @endforeach
                         </select>

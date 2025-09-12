@@ -589,58 +589,11 @@ class WorkshopVehicles extends VehicleBase {
             return;
         }
 
-        // Clear existing options
-        categorySelect.innerHTML = '<option value="">-- Chọn hạng mục --</option>';
-
-        if (!issueType) {
-            console.log('No issue type provided');
-            return;
-        }
-
-        // Define categories based on issue type
-        const categories = {
-            'repair': {
-                'engine': 'Động cơ',
-                'brake_system': 'Hệ thống phanh',
-                'transmission': 'Hộp số',
-                'electrical': 'Hệ thống điện',
-                'suspension': 'Hệ thống treo',
-                'steering': 'Hệ thống lái',
-                'exhaust': 'Hệ thống xả',
-                'cooling': 'Hệ thống làm mát',
-                'fuel_system': 'Hệ thống nhiên liệu',
-                'tires': 'Lốp xe',
-                'lights': 'Hệ thống đèn',
-                'air_conditioning': 'Điều hòa',
-                'other': 'Khác'
-            },
-            'maintenance': {
-                'oil_change': 'Thay dầu',
-                'filter_replacement': 'Thay lọc',
-                'brake_inspection': 'Kiểm tra phanh',
-                'tire_rotation': 'Đảo lốp',
-                'battery_check': 'Kiểm tra ắc quy',
-                'belt_replacement': 'Thay dây curoa',
-                'spark_plug': 'Thay bugi',
-                'air_filter': 'Thay lọc gió',
-                'coolant_check': 'Kiểm tra nước làm mát',
-                'general_inspection': 'Kiểm tra tổng thể',
-                'cleaning': 'Vệ sinh',
-                'other': 'Khác'
-            }
-        };
-
-        const selectedCategories = categories[issueType] || {};
+        // The server-side Blade template already populated the select with RepairCategory::getActiveCategories()
+        // So we don't need to modify the options here - they're already correct
+        // Just log the current state for debugging
         
-        // Add options
-        console.log('Adding categories:', selectedCategories);
-        Object.entries(selectedCategories).forEach(([value, label]) => {
-            const option = document.createElement('option');
-            option.value = value;
-            option.textContent = label;
-            categorySelect.appendChild(option);
-        });
-        
+        console.log('Category options are already loaded from server via Blade template');
         console.log('Final categorySelect options count:', categorySelect.options.length);
         console.log('Category select innerHTML:', categorySelect.innerHTML);
     }
