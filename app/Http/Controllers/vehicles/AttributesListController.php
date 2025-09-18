@@ -149,7 +149,8 @@ class AttributesListController extends Controller
         $request->validate([
             'type' => 'required|string|in:color,seats,power,wheel_size',
             'old_value' => 'required|string',
-            'new_value' => 'required|string|max:255'
+            'new_value' => 'required|string|max:255',
+            'sort_order' => 'nullable|integer|min:1'
         ]);
 
         $attribute = VehicleAttribute::where('type', $request->type)
@@ -176,12 +177,18 @@ class AttributesListController extends Controller
             ], 400);
         }
 
-        $attribute->update(['value' => $request->new_value]);
+        // Update both value and sort_order
+        $updateData = ['value' => $request->new_value];
+        if ($request->has('sort_order') && $request->sort_order) {
+            $updateData['sort_order'] = $request->sort_order;
+        }
+        
+        $attribute->update($updateData);
 
         return response()->json([
             'success' => true,
             'message' => 'Cập nhật thuộc tính thành công',
-            'attribute' => $attribute
+            'attribute' => $attribute->fresh()
         ]);
     }
 

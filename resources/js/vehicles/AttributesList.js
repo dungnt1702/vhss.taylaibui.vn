@@ -371,6 +371,8 @@ class AttributesList extends VehicleBase {
      */
     openEditAttributeModal(type, value, sortOrder = 1) {
         console.log('openEditAttributeModal called with:', { type, value, sortOrder });
+        console.log('sortOrder type:', typeof sortOrder);
+        console.log('sortOrder value:', sortOrder);
         this.currentAttributeType = type;
         this.currentAttributeValue = value;
         this.currentSortOrder = sortOrder;
@@ -496,6 +498,13 @@ class AttributesList extends VehicleBase {
             sort_order: formData.get('sort_order') || 1,
             is_active: formData.get('is_active') ? true : false
         };
+        
+        console.log('saveAttribute - form data:', {
+            value: formData.get('value'),
+            sort_order: formData.get('sort_order'),
+            is_active: formData.get('is_active')
+        });
+        console.log('saveAttribute - processed data:', data);
         
         // Validate required fields
         if (!data.value || data.value.trim() === '') {
