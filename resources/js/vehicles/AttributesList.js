@@ -391,8 +391,13 @@ class AttributesList extends VehicleBase {
         label.textContent = `Giá trị ${this.getTypeName(type)}`;
         valueInput.value = value;
         console.log('Setting sort order input value to:', sortOrder);
-        sortOrderInput.value = sortOrder;
-        console.log('Sort order input value after setting:', sortOrderInput.value);
+        console.log('Sort order input element found:', !!sortOrderInput);
+        if (sortOrderInput) {
+            sortOrderInput.value = sortOrder;
+            console.log('Sort order input value after setting:', sortOrderInput.value);
+        } else {
+            console.error('Sort order input element not found!');
+        }
         saveBtn.textContent = 'Cập nhật';
         
         // Show/hide color preview
@@ -457,6 +462,8 @@ class AttributesList extends VehicleBase {
         document.getElementById('attributeType').value = '';
         document.getElementById('attributeOldValue').value = '';
         document.getElementById('colorPreview').classList.add('hidden');
+        // Reset sort order to default value
+        document.getElementById('attributeSortOrder').value = '1';
     }
 
     /**
