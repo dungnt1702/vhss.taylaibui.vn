@@ -1071,12 +1071,34 @@ class VehicleBase {
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'X-Requested-With': 'XMLHttpRequest',
                     ...options.headers
                 },
                 ...options
             });
 
+            // Check if response is HTML (likely a redirect to login page)
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('text/html')) {
+                // Check if it's a login page redirect
+                const text = await response.text();
+                if (text.includes('login') || text.includes('<!DOCTYPE html>')) {
+                    throw new Error('AUTHENTICATION_REQUIRED');
+                }
+                throw new Error('INVALID_RESPONSE_FORMAT');
+            }
+
             if (!response.ok) {
+                // Try to get error details for 422 validation errors
+                if (response.status === 422) {
+                    try {
+                        const errorData = await response.json();
+                        console.error('Validation errors:', errorData);
+                        throw new Error(`VALIDATION_ERROR: ${JSON.stringify(errorData)}`);
+                    } catch (e) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
@@ -1084,8 +1106,64 @@ class VehicleBase {
             return data;
         } catch (error) {
             console.error('API call failed:', error);
+            
+            // Handle specific error cases
+            if (error.message === 'AUTHENTICATION_REQUIRED') {
+                this.showNotificationModal(
+                    'Yêu cầu đăng nhập', 
+                    'Vui lòng đăng nhập để sử dụng tính năng này.', 
+                    'warning',
+                    () => {
+                        window.location.href = '/login';
+                    }
+                );
+                return { success: false, message: 'Authentication required' };
+            }
+            
+            if (error.message === 'INVALID_RESPONSE_FORMAT') {
+                this.showNotificationModal(
+                    'Lỗi hệ thống', 
+                    'Phản hồi từ server không đúng định dạng. Vui lòng thử lại.', 
+                    'error'
+                );
+                return { success: false, message: 'Invalid response format' };
+            }
+            
+            if (error.message.startsWith('VALIDATION_ERROR:')) {
+                const errorData = JSON.parse(error.message.replace('VALIDATION_ERROR: ', ''));
+                let errorMessage = 'Dữ liệu không hợp lệ:';
+                
+                if (errorData.errors) {
+                    Object.keys(errorData.errors).forEach(field => {
+                        const fieldName = this.getFieldDisplayName(field);
+                        errorMessage += `\n- ${fieldName}: ${errorData.errors[field].join(', ')}`;
+                    });
+                } else if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+                
+                // Use alert as fallback since modal might not be available
+                alert(errorMessage);
+                return { success: false, message: errorMessage };
+            }
+            
             throw error;
         }
+    }
+
+    /**
+     * Get field display name in Vietnamese
+     */
+    getFieldDisplayName(field) {
+        const fieldNames = {
+            'type': 'Loại thuộc tính',
+            'value': 'Giá trị',
+            'new_value': 'Giá trị mới',
+            'old_value': 'Giá trị cũ',
+            'sort_order': 'Thứ tự sắp xếp',
+            'is_active': 'Trạng thái hoạt động'
+        };
+        return fieldNames[field] || field;
     }
 
     /**
@@ -1325,6 +1403,8 @@ class VehicleBase {
                     this.displayNotificationModalDirect(modal, title, message, type, callback);
                 } else {
                     console.error(`❌ [${callId}] Notification modal not found after retry`);
+                    // Fallback: show alert if modal is not available
+                    alert(`${title}: ${message}`);
                 }
             });
         }

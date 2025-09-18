@@ -9,25 +9,25 @@
 
     <!-- Action Buttons -->
     <div class="mb-6 flex flex-wrap gap-3">
-        <button onclick="addAttribute('color')" class="btn btn-primary">
+        <button onclick="openAddAttributeModal('color')" class="btn btn-primary">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
             Thêm màu sắc
         </button>
-        <button onclick="addAttribute('seat')" class="btn btn-primary">
+        <button onclick="openAddAttributeModal('seats')" class="btn btn-primary">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
             Thêm số ghế
         </button>
-        <button onclick="addAttribute('power')" class="btn btn-primary">
+        <button onclick="openAddAttributeModal('power')" class="btn btn-primary">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
             Thêm công suất
         </button>
-        <button onclick="addAttribute('wheel_size')" class="btn btn-primary">
+        <button onclick="openAddAttributeModal('wheel_size')" class="btn btn-primary">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
@@ -45,22 +45,31 @@
                 </svg>
                 Màu sắc
             </h3>
-            <div class="space-y-2">
-                @foreach($colors as $color)
-                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded">
+            <div class="space-y-2" id="colors-list">
+                @foreach($colors as $index => $color)
+                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded" data-attribute-type="color" data-attribute-value="{{ $color }}">
                     <div class="flex items-center">
                         <div class="w-4 h-4 rounded-full mr-2" style="background-color: {{ $color }};"></div>
                         <span class="text-sm text-neutral-700">{{ $color }}</span>
                     </div>
-                    <button class="text-red-500 hover:text-red-700" onclick="deleteAttribute('color', '{{ $color }}')">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                    </button>
+                    <div class="flex items-center space-x-1">
+                        <button class="text-blue-500 hover:text-blue-700" onclick="openEditAttributeModal('color', '{{ $color }}')" title="Sửa">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </button>
+                        @if(count($colors) > 1)
+                        <button class="text-red-500 hover:text-red-700" onclick="openDeleteAttributeModal('color', '{{ $color }}')" title="Xóa">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                        @endif
+                    </div>
                 </div>
                 @endforeach
             </div>
-            <button class="btn btn-primary btn-sm w-full mt-4" onclick="addAttribute('color')">
+            <button class="btn btn-primary btn-sm w-full mt-4" onclick="openAddAttributeModal('color')">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
@@ -76,19 +85,28 @@
                 </svg>
                 Số ghế
             </h3>
-            <div class="space-y-2">
-                @foreach($seats as $seat)
-                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded">
+            <div class="space-y-2" id="seats-list">
+                @foreach($seats as $index => $seat)
+                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded" data-attribute-type="seats" data-attribute-value="{{ $seat }}">
                     <span class="text-sm text-neutral-700">{{ $seat }}</span>
-                    <button class="text-red-500 hover:text-red-700" onclick="deleteAttribute('seat', '{{ $seat }}')">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                    </button>
+                    <div class="flex items-center space-x-1">
+                        <button class="text-blue-500 hover:text-blue-700" onclick="openEditAttributeModal('seats', '{{ $seat }}')" title="Sửa">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </button>
+                        @if(count($seats) > 1)
+                        <button class="text-red-500 hover:text-red-700" onclick="openDeleteAttributeModal('seats', '{{ $seat }}')" title="Xóa">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                        @endif
+                    </div>
                 </div>
                 @endforeach
             </div>
-            <button class="btn btn-primary btn-sm w-full mt-4" onclick="addAttribute('seat')">
+            <button class="btn btn-primary btn-sm w-full mt-4" onclick="openAddAttributeModal('seats')">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
@@ -104,19 +122,28 @@
                 </svg>
                 Công suất
             </h3>
-            <div class="space-y-2">
-                @foreach($powerOptions as $power)
-                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded">
+            <div class="space-y-2" id="power-list">
+                @foreach($powerOptions as $index => $power)
+                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded" data-attribute-type="power" data-attribute-value="{{ $power }}">
                     <span class="text-sm text-neutral-700">{{ $power }}</span>
-                    <button class="text-red-500 hover:text-red-700" onclick="deleteAttribute('power', '{{ $power }}')">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                    </button>
+                    <div class="flex items-center space-x-1">
+                        <button class="text-blue-500 hover:text-blue-700" onclick="openEditAttributeModal('power', '{{ $power }}')" title="Sửa">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </button>
+                        @if(count($powerOptions) > 1)
+                        <button class="text-red-500 hover:text-red-700" onclick="openDeleteAttributeModal('power', '{{ $power }}')" title="Xóa">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                        @endif
+                    </div>
                 </div>
                 @endforeach
             </div>
-            <button class="btn btn-primary btn-sm w-full mt-4" onclick="addAttribute('power')">
+            <button class="btn btn-primary btn-sm w-full mt-4" onclick="openAddAttributeModal('power')">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
@@ -132,19 +159,28 @@
                 </svg>
                 Kích thước bánh
             </h3>
-            <div class="space-y-2">
-                @foreach($wheelSizes as $wheelSize)
-                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded">
+            <div class="space-y-2" id="wheel-sizes-list">
+                @foreach($wheelSizes as $index => $wheelSize)
+                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded" data-attribute-type="wheel_size" data-attribute-value="{{ $wheelSize }}">
                     <span class="text-sm text-neutral-700">{{ $wheelSize }}</span>
-                    <button class="text-red-500 hover:text-red-700" onclick="deleteAttribute('wheel_size', '{{ $wheelSize }}')">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                    </button>
+                    <div class="flex items-center space-x-1">
+                        <button class="text-blue-500 hover:text-blue-700" onclick="openEditAttributeModal('wheel_size', '{{ $wheelSize }}')" title="Sửa">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </button>
+                        @if(count($wheelSizes) > 1)
+                        <button class="text-red-500 hover:text-red-700" onclick="openDeleteAttributeModal('wheel_size', '{{ $wheelSize }}')" title="Xóa">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                        @endif
+                    </div>
                 </div>
                 @endforeach
             </div>
-            <button class="btn btn-primary btn-sm w-full mt-4" onclick="addAttribute('wheel_size')">
+            <button class="btn btn-primary btn-sm w-full mt-4" onclick="openAddAttributeModal('wheel_size')">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
@@ -155,5 +191,6 @@
 </div>
 
 
-{{-- Modals are included by vehicles_management.blade.php --}}
+{{-- Include modals --}}
+@include('vehicles.partials.modals.attributes_modals')
 

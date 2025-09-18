@@ -491,6 +491,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/vehicles', [VehiclesListController::class, 'getVehicles'])->name('api.vehicles.get');
 
     Route::get('/api/attributes', [AttributesListController::class, 'getAllAttributes'])->name('api.attributes.get');
+    Route::post('/api/attributes/add', [AttributesListController::class, 'addAttribute'])->name('api.attributes.add');
+    Route::post('/api/attributes/delete', [AttributesListController::class, 'deleteAttribute'])->name('api.attributes.delete');
+    Route::post('/api/attributes/edit', [AttributesListController::class, 'editAttribute'])->name('api.attributes.edit');
+    Route::get('/api/attributes/count', [AttributesListController::class, 'getAttributesCount'])->name('api.attributes.count');
     Route::get('/api/vehicles/{id}/data', [VehicleManagementController::class, 'getVehicleData'])->name('api.vehicles.data');
     
     // Vehicle Operations API (Centralized)
