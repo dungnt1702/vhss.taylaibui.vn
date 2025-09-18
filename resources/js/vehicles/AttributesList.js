@@ -370,6 +370,7 @@ class AttributesList extends VehicleBase {
      * Open edit attribute modal
      */
     openEditAttributeModal(type, value, sortOrder = 1) {
+        console.log('openEditAttributeModal called with:', { type, value, sortOrder });
         this.currentAttributeType = type;
         this.currentAttributeValue = value;
         this.currentSortOrder = sortOrder;
@@ -387,7 +388,9 @@ class AttributesList extends VehicleBase {
         title.textContent = `Chỉnh sửa ${this.getTypeName(type)}`;
         label.textContent = `Giá trị ${this.getTypeName(type)}`;
         valueInput.value = value;
+        console.log('Setting sort order input value to:', sortOrder);
         sortOrderInput.value = sortOrder;
+        console.log('Sort order input value after setting:', sortOrderInput.value);
         saveBtn.textContent = 'Cập nhật';
         
         // Show/hide color preview
