@@ -430,8 +430,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/vehicles/repairing', [VehicleManagementController::class, 'index'])->name('vehicles.repairing');
     Route::get('/vehicles/repairing/page/{page}', [VehicleManagementController::class, 'index'])->name('vehicles.repairing.page');
     Route::get('/vehicles/repairing/vehicle_id/{vehicle_id}', [VehicleManagementController::class, 'index'])->name('vehicles.repairing.vehicle');
-    Route::get('/vehicles/attributes', [VehicleManagementController::class, 'index'])->name('vehicles.attributes');
-    Route::get('/vehicles/attributes/page/{page}', [VehicleManagementController::class, 'index'])->name('vehicles.attributes.page');
+    Route::get('/vehicles/attributes', [AttributesListController::class, 'index'])->name('vehicles.attributes');
+    Route::get('/vehicles/attributes/page/{page}', [AttributesListController::class, 'index'])->name('vehicles.attributes.page');
     Route::get('/vehicles/list', [VehicleManagementController::class, 'index'])->name('vehicles.list');
     Route::get('/vehicles/list/page/{page}', [VehicleManagementController::class, 'index'])->name('vehicles.list.page');
     Route::get('/vehicles/create', [VehicleManagementController::class, 'create'])->name('vehicles.create');
