@@ -410,8 +410,17 @@ class AttributesList extends VehicleBase {
         
         // Show modal
         modal.classList.remove('hidden');
-        valueInput.focus();
-        valueInput.select();
+        
+        // Use setTimeout to ensure DOM is ready
+        setTimeout(() => {
+            valueInput.focus();
+            valueInput.select();
+            // Re-set sort order value after modal is shown
+            if (sortOrderInput) {
+                sortOrderInput.value = sortOrder;
+                console.log('Re-setting sort order after modal show:', sortOrder);
+            }
+        }, 10);
     }
 
     /**

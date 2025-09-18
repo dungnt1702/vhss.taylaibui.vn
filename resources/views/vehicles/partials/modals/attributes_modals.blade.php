@@ -47,8 +47,7 @@
                                name="sort_order" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                placeholder="Thứ tự hiển thị"
-                               min="1"
-                               value="1">
+                               min="1">
                     </div>
 
                     <div class="flex items-center mb-4">
