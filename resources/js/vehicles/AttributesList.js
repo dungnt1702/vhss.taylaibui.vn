@@ -379,7 +379,7 @@ class AttributesList extends VehicleBase {
         const title = document.getElementById('attributeModalTitle');
         const label = document.getElementById('attributeLabel');
         const valueInput = document.getElementById('attributeValue');
-        const sortOrderInput = document.getElementById('sort_order');
+        const sortOrderInput = document.getElementById('attributeSortOrder');
         const colorPreview = document.getElementById('colorPreview');
         const saveBtn = document.getElementById('saveAttributeBtn');
         
