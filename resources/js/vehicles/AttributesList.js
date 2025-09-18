@@ -123,7 +123,7 @@ class AttributesList extends VehicleBase {
         
         // Modal functions
         window.openAddAttributeModal = (type) => this.openAddAttributeModal(type);
-        window.openEditAttributeModal = (type, value) => this.openEditAttributeModal(type, value);
+        window.openEditAttributeModal = (type, value, sortOrder) => this.openEditAttributeModal(type, value, sortOrder);
         window.openDeleteAttributeModal = (type, value) => this.openDeleteAttributeModal(type, value);
         window.closeAttributeModal = () => this.closeAttributeModal();
         window.closeDeleteAttributeModal = () => this.closeDeleteAttributeModal();
@@ -131,6 +131,13 @@ class AttributesList extends VehicleBase {
         window.saveAttribute = () => this.saveAttribute();
         window.confirmDeleteAttribute = () => this.confirmDeleteAttribute();
         window.saveBulkAttributes = () => this.saveBulkAttributes();
+        
+        // Debug function
+        window.testEditModal = (type, value, sortOrder) => {
+            console.log('=== TEST EDIT MODAL ===');
+            console.log('Parameters received:', { type, value, sortOrder });
+            this.openEditAttributeModal(type, value, sortOrder);
+        };
     }
 
     /**
