@@ -47,19 +47,20 @@
             </h3>
             <div class="space-y-2" id="colors-list">
                 @foreach($colors as $index => $color)
-                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded" data-attribute-type="color" data-attribute-value="{{ $color }}">
+                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded" data-attribute-type="color" data-attribute-value="{{ $color->value }}" data-sort-order="{{ $color->sort_order }}">
                     <div class="flex items-center">
-                        <div class="w-4 h-4 rounded-full mr-2" style="background-color: {{ $color }};"></div>
-                        <span class="text-sm text-neutral-700">{{ $color }}</span>
+                        <span class="text-xs text-neutral-500 bg-neutral-200 px-2 py-1 rounded mr-3 min-w-[2rem] text-center">{{ $color->sort_order }}</span>
+                        <div class="w-4 h-4 rounded-full mr-2" style="background-color: {{ $color->value }};"></div>
+                        <span class="text-sm text-neutral-700">{{ $color->value }}</span>
                     </div>
                     <div class="flex items-center space-x-1">
-                        <button class="text-blue-500 hover:text-blue-700" onclick="openEditAttributeModal('color', '{{ $color }}')" title="Sửa">
+                        <button class="text-blue-500 hover:text-blue-700" onclick="openEditAttributeModal('color', '{{ $color->value }}', {{ $color->sort_order }})" title="Sửa">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                         </button>
                         @if(count($colors) > 1)
-                        <button class="text-red-500 hover:text-red-700" onclick="openDeleteAttributeModal('color', '{{ $color }}')" title="Xóa">
+                        <button class="text-red-500 hover:text-red-700" onclick="openDeleteAttributeModal('color', '{{ $color->value }}')" title="Xóa">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
@@ -87,16 +88,19 @@
             </h3>
             <div class="space-y-2" id="seats-list">
                 @foreach($seats as $index => $seat)
-                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded" data-attribute-type="seats" data-attribute-value="{{ $seat }}">
-                    <span class="text-sm text-neutral-700">{{ $seat }}</span>
+                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded" data-attribute-type="seats" data-attribute-value="{{ $seat->value }}" data-sort-order="{{ $seat->sort_order }}">
+                    <div class="flex items-center">
+                        <span class="text-xs text-neutral-500 bg-neutral-200 px-2 py-1 rounded mr-3 min-w-[2rem] text-center">{{ $seat->sort_order }}</span>
+                        <span class="text-sm text-neutral-700">{{ $seat->value }}</span>
+                    </div>
                     <div class="flex items-center space-x-1">
-                        <button class="text-blue-500 hover:text-blue-700" onclick="openEditAttributeModal('seats', '{{ $seat }}')" title="Sửa">
+                        <button class="text-blue-500 hover:text-blue-700" onclick="openEditAttributeModal('seats', '{{ $seat->value }}', {{ $seat->sort_order }})" title="Sửa">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                         </button>
                         @if(count($seats) > 1)
-                        <button class="text-red-500 hover:text-red-700" onclick="openDeleteAttributeModal('seats', '{{ $seat }}')" title="Xóa">
+                        <button class="text-red-500 hover:text-red-700" onclick="openDeleteAttributeModal('seats', '{{ $seat->value }}')" title="Xóa">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
@@ -124,16 +128,19 @@
             </h3>
             <div class="space-y-2" id="power-list">
                 @foreach($powerOptions as $index => $power)
-                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded" data-attribute-type="power" data-attribute-value="{{ $power }}">
-                    <span class="text-sm text-neutral-700">{{ $power }}</span>
+                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded" data-attribute-type="power" data-attribute-value="{{ $power->value }}" data-sort-order="{{ $power->sort_order }}">
+                    <div class="flex items-center">
+                        <span class="text-xs text-neutral-500 bg-neutral-200 px-2 py-1 rounded mr-3 min-w-[2rem] text-center">{{ $power->sort_order }}</span>
+                        <span class="text-sm text-neutral-700">{{ $power->value }}</span>
+                    </div>
                     <div class="flex items-center space-x-1">
-                        <button class="text-blue-500 hover:text-blue-700" onclick="openEditAttributeModal('power', '{{ $power }}')" title="Sửa">
+                        <button class="text-blue-500 hover:text-blue-700" onclick="openEditAttributeModal('power', '{{ $power->value }}', {{ $power->sort_order }})" title="Sửa">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                         </button>
                         @if(count($powerOptions) > 1)
-                        <button class="text-red-500 hover:text-red-700" onclick="openDeleteAttributeModal('power', '{{ $power }}')" title="Xóa">
+                        <button class="text-red-500 hover:text-red-700" onclick="openDeleteAttributeModal('power', '{{ $power->value }}')" title="Xóa">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
@@ -161,16 +168,19 @@
             </h3>
             <div class="space-y-2" id="wheel-sizes-list">
                 @foreach($wheelSizes as $index => $wheelSize)
-                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded" data-attribute-type="wheel_size" data-attribute-value="{{ $wheelSize }}">
-                    <span class="text-sm text-neutral-700">{{ $wheelSize }}</span>
+                <div class="flex items-center justify-between p-2 bg-neutral-50 rounded" data-attribute-type="wheel_size" data-attribute-value="{{ $wheelSize->value }}" data-sort-order="{{ $wheelSize->sort_order }}">
+                    <div class="flex items-center">
+                        <span class="text-xs text-neutral-500 bg-neutral-200 px-2 py-1 rounded mr-3 min-w-[2rem] text-center">{{ $wheelSize->sort_order }}</span>
+                        <span class="text-sm text-neutral-700">{{ $wheelSize->value }}</span>
+                    </div>
                     <div class="flex items-center space-x-1">
-                        <button class="text-blue-500 hover:text-blue-700" onclick="openEditAttributeModal('wheel_size', '{{ $wheelSize }}')" title="Sửa">
+                        <button class="text-blue-500 hover:text-blue-700" onclick="openEditAttributeModal('wheel_size', '{{ $wheelSize->value }}', {{ $wheelSize->sort_order }})" title="Sửa">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                         </button>
                         @if(count($wheelSizes) > 1)
-                        <button class="text-red-500 hover:text-red-700" onclick="openDeleteAttributeModal('wheel_size', '{{ $wheelSize }}')" title="Xóa">
+                        <button class="text-red-500 hover:text-red-700" onclick="openDeleteAttributeModal('wheel_size', '{{ $wheelSize->value }}')" title="Xóa">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>

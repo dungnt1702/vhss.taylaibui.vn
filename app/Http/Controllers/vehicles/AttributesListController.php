@@ -13,10 +13,26 @@ class AttributesListController extends Controller
      */
     public function index()
     {
-        $colors = VehicleAttribute::getColors();
-        $seats = VehicleAttribute::getSeats();
-        $powerOptions = VehicleAttribute::getPowerOptions();
-        $wheelSizes = VehicleAttribute::getWheelSizes();
+        // Get full attribute data with sort_order
+        $colors = VehicleAttribute::where('type', 'color')
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get(['value', 'sort_order', 'id']);
+            
+        $seats = VehicleAttribute::where('type', 'seats')
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get(['value', 'sort_order', 'id']);
+            
+        $powerOptions = VehicleAttribute::where('type', 'power')
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get(['value', 'sort_order', 'id']);
+            
+        $wheelSizes = VehicleAttribute::where('type', 'wheel_size')
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get(['value', 'sort_order', 'id']);
 
         return view('vehicles.vehicles_management', [
             'filter' => 'attributes',

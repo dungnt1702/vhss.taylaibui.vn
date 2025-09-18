@@ -369,15 +369,17 @@ class AttributesList extends VehicleBase {
     /**
      * Open edit attribute modal
      */
-    openEditAttributeModal(type, value) {
+    openEditAttributeModal(type, value, sortOrder = 1) {
         this.currentAttributeType = type;
         this.currentAttributeValue = value;
+        this.currentSortOrder = sortOrder;
         this.isEditMode = true;
         
         const modal = document.getElementById('attributeModal');
         const title = document.getElementById('attributeModalTitle');
         const label = document.getElementById('attributeLabel');
         const valueInput = document.getElementById('attributeValue');
+        const sortOrderInput = document.getElementById('sort_order');
         const colorPreview = document.getElementById('colorPreview');
         const saveBtn = document.getElementById('saveAttributeBtn');
         
@@ -385,6 +387,7 @@ class AttributesList extends VehicleBase {
         title.textContent = `Chỉnh sửa ${this.getTypeName(type)}`;
         label.textContent = `Giá trị ${this.getTypeName(type)}`;
         valueInput.value = value;
+        sortOrderInput.value = sortOrder;
         saveBtn.textContent = 'Cập nhật';
         
         // Show/hide color preview
