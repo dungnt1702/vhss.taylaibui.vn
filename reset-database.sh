@@ -15,3 +15,4 @@ php artisan tinker --execute="echo 'Users: ' . App\Models\User::count() . '\n'; 
 echo
 echo "All demo users have password: 12345678"
 echo
+
