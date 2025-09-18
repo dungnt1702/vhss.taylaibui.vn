@@ -39,18 +39,20 @@ class VehicleSeeder extends Seeder
             
             $status = $statuses[array_rand($statuses)];
             
-            $vehicle = Vehicle::create([
-                'name' => (string)$i,
-                'color' => $color,
-                'seats' => $seat,
-                'power' => $power,
-                'wheel_size' => $wheelSize,
-                'status' => $status,
-                'current_location' => $this->getLocationByStatus($status),
-                'notes' => $this->getNotesByStatus($status, $i),
-                'route_number' => $status === Vehicle::STATUS_ROUTE ? rand(1, 10) : null,
-                'status_changed_at' => now(),
-            ]);
+            $vehicle = Vehicle::firstOrCreate(
+                ['name' => (string)$i],
+                [
+                    'color' => $color,
+                    'seats' => $seat,
+                    'power' => $power,
+                    'wheel_size' => $wheelSize,
+                    'status' => $status,
+                    'current_location' => $this->getLocationByStatus($status),
+                    'notes' => $this->getNotesByStatus($status, $i),
+                    'route_number' => $status === Vehicle::STATUS_ROUTE ? rand(1, 10) : null,
+                    'status_changed_at' => now(),
+                ]
+            );
         }
     }
     

@@ -15,33 +15,41 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         // Create roles
-        $adminRole = Role::create([
-            'name' => 'admin',
-            'display_name' => 'Quản trị viên',
-            'description' => 'Có toàn quyền truy cập hệ thống',
-            'is_active' => true,
-        ]);
+        $adminRole = Role::firstOrCreate(
+            ['name' => 'admin'],
+            [
+                'display_name' => 'Quản trị viên',
+                'description' => 'Có toàn quyền truy cập hệ thống',
+                'is_active' => true,
+            ]
+        );
 
-        $managerRole = Role::create([
-            'name' => 'manager',
-            'display_name' => 'Quản lý',
-            'description' => 'Quản lý xe và người dùng',
-            'is_active' => true,
-        ]);
+        $managerRole = Role::firstOrCreate(
+            ['name' => 'manager'],
+            [
+                'display_name' => 'Quản lý',
+                'description' => 'Quản lý xe và người dùng',
+                'is_active' => true,
+            ]
+        );
 
-        $operatorRole = Role::create([
-            'name' => 'operator',
-            'display_name' => 'Vận hành',
-            'description' => 'Vận hành xe và xem báo cáo',
-            'is_active' => true,
-        ]);
+        $operatorRole = Role::firstOrCreate(
+            ['name' => 'operator'],
+            [
+                'display_name' => 'Vận hành',
+                'description' => 'Vận hành xe và xem báo cáo',
+                'is_active' => true,
+            ]
+        );
 
-        $viewerRole = Role::create([
-            'name' => 'viewer',
-            'display_name' => 'Xem',
-            'description' => 'Chỉ xem thông tin',
-            'is_active' => true,
-        ]);
+        $viewerRole = Role::firstOrCreate(
+            ['name' => 'viewer'],
+            [
+                'display_name' => 'Xem',
+                'description' => 'Chỉ xem thông tin',
+                'is_active' => true,
+            ]
+        );
 
         // Create permissions
         $permissions = [
@@ -76,7 +84,10 @@ class RolePermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $permissionData) {
-            Permission::create(array_merge($permissionData, ['is_active' => true]));
+            Permission::firstOrCreate(
+                ['name' => $permissionData['name']],
+                array_merge($permissionData, ['is_active' => true])
+            );
         }
 
         // Assign permissions to roles

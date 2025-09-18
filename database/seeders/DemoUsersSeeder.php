@@ -21,6 +21,18 @@ class DemoUsersSeeder extends Seeder
         $operatorRole = Role::where('name', 'operator')->first();
         $viewerRole = Role::where('name', 'viewer')->first();
 
+        // Tạo Super Admin
+        User::firstOrCreate(
+            ['email' => 'admin@taylaibui.vn'],
+            [
+                'name' => 'TAY LÁI BỤI',
+                'phone' => '0943036579',
+                'password' => Hash::make('0943036579'),
+                'role_id' => $adminRole->id,
+                'email_verified_at' => now(),
+            ]
+        );
+
         // Tạo 10 users demo
         $demoUsers = [
             [
@@ -86,14 +98,16 @@ class DemoUsersSeeder extends Seeder
         ];
 
         foreach ($demoUsers as $userData) {
-            User::create([
-                'name' => $userData['name'],
-                'email' => $userData['email'],
-                'phone' => $userData['phone'],
-                'password' => Hash::make('12345678'),
-                'role_id' => $userData['role_id'],
-                'email_verified_at' => now(),
-            ]);
+            User::firstOrCreate(
+                ['email' => $userData['email']],
+                [
+                    'name' => $userData['name'],
+                    'phone' => $userData['phone'],
+                    'password' => Hash::make('12345678'),
+                    'role_id' => $userData['role_id'],
+                    'email_verified_at' => now(),
+                ]
+            );
         }
 
         $this->command->info('Created 10 demo users successfully!');

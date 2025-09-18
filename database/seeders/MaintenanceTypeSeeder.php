@@ -15,13 +15,15 @@ class MaintenanceTypeSeeder extends Seeder
     public function run(): void
     {
         // Bảo trì hàng ngày
-        $daily = MaintenanceType::create([
-            'name' => 'Bảo trì hàng ngày',
-            'description' => 'Kiểm tra và bảo trì cơ bản hàng ngày',
-            'interval_days' => 1,
-            'color' => '#10B981',
-            'priority' => 1
-        ]);
+        $daily = MaintenanceType::firstOrCreate(
+            ['name' => 'Bảo trì hàng ngày'],
+            [
+                'description' => 'Kiểm tra và bảo trì cơ bản hàng ngày',
+                'interval_days' => 1,
+                'color' => '#10B981',
+                'priority' => 1
+            ]
+        );
 
         // Tasks cho bảo trì hàng ngày
         $dailyTasks = [
